@@ -66,6 +66,9 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.runtime.compose)
 
+    // auth
+    implementation(libs.androidx.browser)
+
     // tests
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

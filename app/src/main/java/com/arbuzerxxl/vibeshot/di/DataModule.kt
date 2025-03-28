@@ -58,7 +58,9 @@ val dataModule = module {
         AuthRepositoryImpl(
             api = get(),
             apiKey = BuildConfig.FLICKR_API_KEY,
-            apiToken = BuildConfig.FLICKR_SECRET
+            apiToken = BuildConfig.FLICKR_SECRET,
+            apiBaseUrl = BuildConfig.FLICKR_API_BASE_URL,
+            apiCallback = BuildConfig.FLICKR_API_CALLBACK
         )
     }
     // endregion

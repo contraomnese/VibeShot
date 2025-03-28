@@ -1,6 +1,7 @@
 package com.arbuzerxxl.vibeshot.app
 
 import android.app.Application
+import com.arbuzerxxl.vibeshot.di.featuresApiModule
 import com.kiparo.chargerapp.di.dataModule
 import com.kiparo.chargerapp.di.domainModule
 import org.koin.android.ext.koin.androidContext
@@ -16,7 +17,8 @@ class App : Application() {
             androidContext(this@App)
             modules(
                 dataModule,
-                domainModule
+                domainModule,
+                featuresApiModule
             )
         }
     }

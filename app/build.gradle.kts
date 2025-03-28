@@ -9,6 +9,7 @@ plugins {
 val FLICKR_API_KEY: String = gradleLocalProperties(rootDir, providers).getProperty("FLICKR_API_KEY")
 val FLICKR_SECRET: String = gradleLocalProperties(rootDir, providers).getProperty("FLICKR_SECRET")
 val FLICKR_API_BASE_URL: String = gradleLocalProperties(rootDir, providers).getProperty("FLICKR_API_BASE_URL")
+val FLICKR_API_CALLBACK: String = gradleLocalProperties(rootDir, providers).getProperty("FLICKR_API_CALLBACK")
 
 android {
     namespace = "com.arbuzerxxl.vibeshot"
@@ -31,6 +32,7 @@ android {
             buildConfigField("String", "FLICKR_API_KEY", "\"${FLICKR_API_KEY}\"")
             buildConfigField("String", "FLICKR_SECRET", "\"${FLICKR_SECRET}\"")
             buildConfigField("String", "FLICKR_API_BASE_URL", "\"${FLICKR_API_BASE_URL}\"")
+            buildConfigField("String", "FLICKR_API_CALLBACK", "\"${FLICKR_API_CALLBACK}\"")
 
             isMinifyEnabled = false
             proguardFiles(
@@ -105,6 +107,9 @@ dependencies {
     implementation(libs.converter.scalars)
     implementation(libs.okhttp3.interceptor)
     implementation(libs.gson)
+
+    // auth
+    implementation(libs.androidx.browser)
 
     // tests
     testImplementation(libs.junit)

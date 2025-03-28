@@ -1,6 +1,6 @@
 package com.arbuzerxxl.vibeshot.domain.models
 
-data class AccessToken(
+data class AccessTokenDomain(
     val accessToken: String,
     val accessTokenSecret: String,
     val user: User

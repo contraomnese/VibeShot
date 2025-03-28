@@ -1,18 +1,22 @@
 package com.arbuzerxxl.vibeshot.domain.usecases.auth
 
+import com.arbuzerxxl.vibeshot.domain.models.AccessTokenDomain
 import com.arbuzerxxl.vibeshot.domain.models.RequestTokenDomain
 import com.arbuzerxxl.vibeshot.domain.repository.AuthRepository
 import com.arbuzerxxl.vibeshot.domain.usecases.UseCaseWithoutParams
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 
-class GetRequestTokenUseCase(
+class GetAccessTokenUseCase(
     private val dispatcher: CoroutineDispatcher,
     private val authRepository: AuthRepository,
-) : UseCaseWithoutParams<RequestTokenDomain> {
+) {
 
-    override suspend fun execute(): RequestTokenDomain =
+    suspend fun execute(requestToken: String, verifier: String, secretToken: String): AccessTokenDomain =
         withContext(dispatcher) {
-            authRepository.getRequestToken()
+            authRepository.getAccessToken(
+                requestToken = requestToken,
+                verifier = verifier,
+                secretToken = secretToken)
         }
 }
