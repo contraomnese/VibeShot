@@ -20,11 +20,13 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "VibeShot"
+include(":features:auth")
+
 include(":app")
 include(":core:navigation")
+include(":core:design")
 include(":core:ui")
 include(":data")
 include(":domain")
-include(":features:auth_api")
-include(":features:auth_impl")
-include(":core:design")
+
+

@@ -1,0 +1,106 @@
+package com.arbuzerxxl.vibeshot.navigation
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.arbuzerxxl.vibeshot.features.auth.navigation.AuthRoute
+import com.arbuzerxxl.vibeshot.features.auth.navigation.authentication
+import kotlinx.serialization.Serializable
+
+@Composable
+fun VibeShotHost(
+    navHostController: NavHostController = rememberNavController(),
+    modifier: Modifier = Modifier,
+) {
+
+    NavHost(
+        navHostController,
+        startDestination = AuthRoute,
+        modifier = modifier,
+    ) {
+        authentication(
+            onNavigateToUserScreen = navHostController::navigateToExampleUserScreen,
+            onNavigateToGuestScreen = navHostController::navigateToExampleGuestScreen
+        )
+        exampleUser()
+        exampleGuest()
+    }
+}
+
+// example user screen
+
+@Serializable
+data object ExampleUserRoute
+
+fun NavController.navigateToExampleUserScreen() {
+    navigate(ExampleUserRoute)
+}
+
+fun NavGraphBuilder.exampleUser() {
+    composable<ExampleUserRoute> {
+        ExampleUserScreen()
+    }
+
+}
+
+@Composable
+internal fun ExampleUserScreen(
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(20.dp)
+        ) {
+            Text(text = "User Screen")
+        }
+    }
+}
+
+// example guest screen
+
+@Serializable
+data object ExampleGuestRoute
+
+fun NavController.navigateToExampleGuestScreen() {
+    navigate(ExampleGuestRoute)
+}
+
+fun NavGraphBuilder.exampleGuest() {
+    composable<ExampleGuestRoute> {
+        ExampleGuestScreen()
+    }
+
+}
+
+@Composable
+internal fun ExampleGuestScreen(
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(20.dp)
+        ) {
+            Text(text = "Guest Screen")
+        }
+    }
+}

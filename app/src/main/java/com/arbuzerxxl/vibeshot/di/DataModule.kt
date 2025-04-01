@@ -6,12 +6,23 @@ package com.kiparo.chargerapp.di
 
 
 import com.arbuzerxxl.vibeshot.BuildConfig
-import com.arbuzerxxl.vibeshot.data.AuthRepositoryImpl
+import com.arbuzerxxl.vibeshot.MainActivity
+import com.arbuzerxxl.vibeshot.data.mappers.AuthDataMapper
+import com.arbuzerxxl.vibeshot.data.repository.TokenRepositoryImpl
 import com.arbuzerxxl.vibeshot.data.network.api.FlickrAuthApi
+import com.arbuzerxxl.vibeshot.data.repository.AuthRepositoryImpl
+import com.arbuzerxxl.vibeshot.data.repository.UserRepositoryImpl
+import com.arbuzerxxl.vibeshot.data.storage.api.UserStorage
+import com.arbuzerxxl.vibeshot.data.storage.memory.UserMemoryStorage
 import com.arbuzerxxl.vibeshot.domain.repository.AuthRepository
-import com.google.gson.GsonBuilder
+import com.arbuzerxxl.vibeshot.domain.repository.TokenRepository
+import com.arbuzerxxl.vibeshot.domain.repository.UserRepository
+import com.arbuzerxxl.vibeshot.domain.usecases.auth.ObserveAuthStateUseCase
+import com.arbuzerxxl.vibeshot.features.auth.presentation.AuthViewModel
+import kotlinx.coroutines.Dispatchers
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -54,8 +65,8 @@ val dataModule = module {
     // endregion
 
     // region Repositories
-    factory<AuthRepository> {
-        AuthRepositoryImpl(
+    single<TokenRepository> {
+        TokenRepositoryImpl(
             api = get(),
             apiKey = BuildConfig.FLICKR_API_KEY,
             apiToken = BuildConfig.FLICKR_SECRET,
@@ -63,5 +74,36 @@ val dataModule = module {
             apiCallback = BuildConfig.FLICKR_API_CALLBACK
         )
     }
+    factory<UserRepository> {
+        UserRepositoryImpl(
+            userStorage = get(),
+            mapper = get(),
+            tokenRepository = get()
+        )
+    }
+    factory<AuthRepository> {
+        AuthRepositoryImpl(
+            userRepository = get(),
+            tokenRepository = get(),
+            dispatcher = Dispatchers.IO
+        )
+    }
     // endregion
+
+    // region Storages
+    single<UserStorage> {
+        UserMemoryStorage(
+            context = get()
+        )
+    }
+    // endregion
+
+    // region Mappers
+    single<AuthDataMapper> {
+        AuthDataMapper()
+    }
+    // endregion
+    single<AuthViewModel> {
+        AuthViewModel(authRepository = get(), observeAuthStateUseCase = get())
+    }
 }

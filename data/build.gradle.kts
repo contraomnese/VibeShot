@@ -49,6 +49,8 @@ dependencies {
     implementation(libs.converter.scalars)
     implementation(libs.okhttp3.interceptor)
     implementation(libs.gson)
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.datastore.preferences.core)
 
     // tests
     testImplementation(libs.junit)

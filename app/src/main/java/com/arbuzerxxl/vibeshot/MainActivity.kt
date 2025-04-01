@@ -5,24 +5,27 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arbuzerxxl.vibeshot.core.design.theme.VibeShotTheme
-import com.arbuzerxxl.vibeshot.features.auth_impl.presentation.AuthScreen
-import com.arbuzerxxl.vibeshot.features.auth_impl.presentation.AuthViewModel
+import com.arbuzerxxl.vibeshot.domain.repository.AuthRepository
+import com.arbuzerxxl.vibeshot.features.auth.presentation.AuthViewModel
+import com.arbuzerxxl.vibeshot.navigation.VibeShotHost
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.getViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : ComponentActivity() {
 
     private val authViewModel: AuthViewModel by viewModel()
+    private val authRepository: AuthRepository by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         handleIntent(intent)
         setContent {
-            VibeShotApp(
-                viewModel = authViewModel
-            )
+            VibeShotApp()
         }
     }
 
@@ -35,25 +38,20 @@ class MainActivity : ComponentActivity() {
         val data = intent.data
         if (data != null && data.toString().startsWith("flickr-auth://oauth")) {
             val oauthVerifier = data.getQueryParameter("oauth_verifier")
-            val oauthToken = data.getQueryParameter("oauth_token")
-            if (oauthVerifier != null && oauthToken != null) {
-                authViewModel.onVerifierChange(verifier = oauthVerifier, token = oauthToken)
+
+            authViewModel.setLoadingState()
+            oauthVerifier?.let {
+                CoroutineScope(Dispatchers.IO).launch {
+                    authRepository.signIn(it)
+                }
             }
         }
     }
 }
 
 @Composable
-fun VibeShotApp(viewModel: AuthViewModel) {
-
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
+fun VibeShotApp() {
     VibeShotTheme {
-        AuthScreen(
-            uiState = uiState,
-            onStart = viewModel::onStart,
-            getAuthorizeUrl = viewModel::getAuthorizeUrl,
-            onSignIn = viewModel::getAccessToken
-        )
+        VibeShotHost()
     }
 }

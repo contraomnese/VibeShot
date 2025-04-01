@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 val FLICKR_API_KEY: String = gradleLocalProperties(rootDir, providers).getProperty("FLICKR_API_KEY")
@@ -69,13 +70,13 @@ dependencies {
     implementation(project(":data"))
     implementation(project(":domain"))
 
-    implementation(project(":features:auth_api"))
-    implementation(project(":features:auth_impl"))
+    implementation(project(":features:auth"))
 
     // di
     implementation(libs.koin.core)
     implementation(libs.koin.android)
-    implementation(libs.koin.android.compat)
+    implementation(libs.koin.androidx.compose)
+    implementation(libs.koin.androidx.compose.navigation)
 
     // core
     implementation(libs.androidx.core.ktx)
@@ -94,6 +95,7 @@ dependencies {
     // navigation
     implementation(libs.navigation)
     implementation(libs.androidx.navigation.runtime.ktx)
+    implementation(libs.androidx.navigation.common.ktx)
 
     // presentation
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
@@ -107,6 +109,9 @@ dependencies {
     implementation(libs.converter.scalars)
     implementation(libs.okhttp3.interceptor)
     implementation(libs.gson)
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.datastore.preferences.core)
+    implementation(libs.kotlinx.serialization.json)
 
     // auth
     implementation(libs.androidx.browser)
