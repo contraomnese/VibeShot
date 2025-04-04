@@ -68,6 +68,7 @@ class TokenRepositoryImpl(
     override suspend fun getAuthorizeUrl(): String {
 
         requestToken = getRequestToken()
+
         return "${apiBaseUrl}${OAuthFlow.AUTHORIZE.step}?oauth_token=${requestToken.token}"
     }
 

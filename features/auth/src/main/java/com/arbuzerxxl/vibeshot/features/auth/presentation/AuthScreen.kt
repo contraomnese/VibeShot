@@ -1,9 +1,7 @@
 package com.arbuzerxxl.vibeshot.features.auth.presentation
 
 
-import android.R.attr.onClick
 import android.content.Context
-import android.net.Uri
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arbuzerxxl.vibeshot.core.design.theme.VibeShotTheme
 import org.koin.androidx.compose.koinViewModel
@@ -71,13 +70,19 @@ internal fun AuthScreen(
             }
             when (uiState) {
                 is AuthUiState.Loading,
-                     -> {}
+                    -> {
+                }
+
                 is AuthUiState.Error,
-                     -> {}
+                    -> {
+                }
+
                 is AuthUiState.UserSuccess,
-                     -> onNavigateToUser()
+                    -> onNavigateToUser()
+
                 is AuthUiState.GuestSuccess,
-                     -> onNavigateToGuest()
+                    -> onNavigateToGuest()
+
                 is AuthUiState.Authorize,
                      -> openTab(context = context, url = uiState.authUrl)
 
@@ -96,7 +101,7 @@ private fun openTab(context: Context, url: String) {
     val customBuilder = builder.build()
 
     customBuilder.intent.setPackage("com.android.chrome")
-    customBuilder.launchUrl(context, Uri.parse(url))
+    customBuilder.launchUrl(context, url.toUri())
 
 }
 

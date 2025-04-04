@@ -70,6 +70,7 @@ dependencies {
     implementation(project(":data"))
     implementation(project(":domain"))
 
+    implementation(project(":features:start"))
     implementation(project(":features:auth"))
 
     // di

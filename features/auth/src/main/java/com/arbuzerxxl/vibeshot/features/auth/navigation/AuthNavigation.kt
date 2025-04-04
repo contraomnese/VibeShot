@@ -18,11 +18,11 @@ fun NavGraphBuilder.authentication(
     onNavigateToUserScreen: () -> Unit,
     onNavigateToGuestScreen: () -> Unit,
 ) {
-        composable<AuthRoute> {
-            AuthRoute(
-                onNavigateToUser = onNavigateToUserScreen,
-                onNavigateToGuest = onNavigateToGuestScreen
-            )
-        }
+    composable<AuthRoute> {
+        AuthRoute(
+            onNavigateToUser = onNavigateToUserScreen,
+            onNavigateToGuest = onNavigateToGuestScreen
+        )
+    }
 
 }

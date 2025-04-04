@@ -58,15 +58,7 @@ class AuthViewModel(
         viewModelScope.launch {
             authRepository.signInAsGuest()
             _uiState.update {
-                AuthUiState.UserSuccess
-            }
-        }
-    }
-
-    fun setLoadingState() {
-        viewModelScope.launch {
-            _uiState.update {
-                AuthUiState.Loading
+                AuthUiState.GuestSuccess
             }
         }
     }

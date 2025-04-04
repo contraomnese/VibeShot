@@ -1,5 +1,6 @@
 package com.arbuzerxxl.vibeshot.navigation
 
+import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -8,6 +9,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.BlendMode.Companion.Screen
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -15,8 +17,12 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navDeepLink
 import com.arbuzerxxl.vibeshot.features.auth.navigation.AuthRoute
 import com.arbuzerxxl.vibeshot.features.auth.navigation.authentication
+import com.arbuzerxxl.vibeshot.features.start.navigation.StartRoute
+import com.arbuzerxxl.vibeshot.features.start.navigation.navigateToStart
+import com.arbuzerxxl.vibeshot.features.start.navigation.start
 import kotlinx.serialization.Serializable
 
 @Composable
@@ -27,9 +33,14 @@ fun VibeShotHost(
 
     NavHost(
         navHostController,
-        startDestination = AuthRoute,
+        startDestination = StartRoute,
         modifier = modifier,
     ) {
+        start(navigateToAuth = {
+            navHostController.navigate(AuthRoute) {
+                popUpTo(StartRoute) { inclusive = true }
+            }
+        })
         authentication(
             onNavigateToUserScreen = navHostController::navigateToExampleUserScreen,
             onNavigateToGuestScreen = navHostController::navigateToExampleGuestScreen
