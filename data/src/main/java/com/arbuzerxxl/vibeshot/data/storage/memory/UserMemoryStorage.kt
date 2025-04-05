@@ -12,6 +12,7 @@ import com.arbuzerxxl.vibeshot.data.storage.models.UserEntity
 import com.arbuzerxxl.vibeshot.data.storage.models.UserType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import java.util.UUID
 
 private val ID = stringPreferencesKey("userId")
 private val FULLNAME = stringPreferencesKey("fullname")
@@ -19,6 +20,7 @@ private val USERNAME = stringPreferencesKey("username")
 private val TOKEN = stringPreferencesKey("token")
 private val TOKEN_SECRET = stringPreferencesKey("secret")
 private val AUTHENTICATED = booleanPreferencesKey("authenticated")
+private const val GUEST = "Guest"
 
 class UserMemoryStorage(private val context: Context) : UserStorage {
 
@@ -50,6 +52,15 @@ class UserMemoryStorage(private val context: Context) : UserStorage {
             preferences[TOKEN] = user.token
             preferences[TOKEN_SECRET] = user.token
             preferences[AUTHENTICATED] = user.type == UserType.AUTHENTICATED
+        }
+    }
+
+    override suspend fun saveAsGuest() {
+        context.dataStore.edit { preferences ->
+            preferences[ID] = UUID.randomUUID().toString()
+            preferences[FULLNAME] = GUEST
+            preferences[USERNAME] = GUEST
+            preferences[AUTHENTICATED] = false
         }
     }
 

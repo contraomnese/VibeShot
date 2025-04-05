@@ -9,5 +9,7 @@ interface UserStorage {
 
     suspend fun save(user: UserEntity)
 
+    suspend fun saveAsGuest()
+
     suspend fun delete()
 }

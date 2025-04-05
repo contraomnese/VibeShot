@@ -11,7 +11,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data object AuthRoute
 
-fun NavController.navigateToSearch(navOptions: NavOptions? = null) =
+fun NavController.navigateToAuth(navOptions: NavOptions? = null) =
     navigate(AuthRoute, navOptions)
 
 fun NavGraphBuilder.authentication(

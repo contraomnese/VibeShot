@@ -56,6 +56,7 @@ fun VibeShotHost(
 data object ExampleUserRoute
 
 fun NavController.navigateToExampleUserScreen() {
+    popBackStack()
     navigate(ExampleUserRoute)
 }
 
@@ -89,6 +90,7 @@ internal fun ExampleUserScreen(
 data object ExampleGuestRoute
 
 fun NavController.navigateToExampleGuestScreen() {
+    popBackStack()
     navigate(ExampleGuestRoute)
 }
 

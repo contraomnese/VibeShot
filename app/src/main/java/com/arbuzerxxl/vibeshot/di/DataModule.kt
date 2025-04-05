@@ -6,23 +6,20 @@ package com.kiparo.chargerapp.di
 
 
 import com.arbuzerxxl.vibeshot.BuildConfig
-import com.arbuzerxxl.vibeshot.MainActivity
 import com.arbuzerxxl.vibeshot.data.mappers.AuthDataMapper
-import com.arbuzerxxl.vibeshot.data.repository.TokenRepositoryImpl
 import com.arbuzerxxl.vibeshot.data.network.api.FlickrAuthApi
 import com.arbuzerxxl.vibeshot.data.repository.AuthRepositoryImpl
+import com.arbuzerxxl.vibeshot.data.repository.TokenRepositoryImpl
 import com.arbuzerxxl.vibeshot.data.repository.UserRepositoryImpl
 import com.arbuzerxxl.vibeshot.data.storage.api.UserStorage
 import com.arbuzerxxl.vibeshot.data.storage.memory.UserMemoryStorage
 import com.arbuzerxxl.vibeshot.domain.repository.AuthRepository
 import com.arbuzerxxl.vibeshot.domain.repository.TokenRepository
 import com.arbuzerxxl.vibeshot.domain.repository.UserRepository
-import com.arbuzerxxl.vibeshot.domain.usecases.auth.ObserveAuthStateUseCase
 import com.arbuzerxxl.vibeshot.features.auth.presentation.AuthViewModel
 import kotlinx.coroutines.Dispatchers
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -104,6 +101,6 @@ val dataModule = module {
     }
     // endregion
     single<AuthViewModel> {
-        AuthViewModel(authRepository = get(), observeAuthStateUseCase = get())
+        AuthViewModel(authRepository = get(), tokenRepository = get(), observeAuthStateUseCase = get())
     }
 }

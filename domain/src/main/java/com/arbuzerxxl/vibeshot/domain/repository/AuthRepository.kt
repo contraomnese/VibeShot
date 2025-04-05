@@ -1,6 +1,7 @@
 package com.arbuzerxxl.vibeshot.domain.repository
 
 import com.arbuzerxxl.vibeshot.domain.models.auth.AuthState
+import com.arbuzerxxl.vibeshot.domain.models.auth.tokens.RequestToken
 import kotlinx.coroutines.flow.Flow
 
 interface AuthRepository {

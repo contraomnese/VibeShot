@@ -1,21 +1,26 @@
 package com.arbuzerxxl.vibeshot.data.repository
 
-import com.arbuzerxxl.vibeshot.data.network.model.OAuthRequestToken
-
+import com.arbuzerxxl.vibeshot.data.exceptions.AccessTokenFetchException
+import com.arbuzerxxl.vibeshot.data.exceptions.AccessTokenInvalidResponseException
+import com.arbuzerxxl.vibeshot.data.exceptions.RequestTokenFetchException
+import com.arbuzerxxl.vibeshot.data.exceptions.RequestTokenInitializeException
+import com.arbuzerxxl.vibeshot.data.exceptions.RequestTokenInvalidResponseException
 import com.arbuzerxxl.vibeshot.data.network.api.FlickrAuthApi
-import com.arbuzerxxl.vibeshot.data.network.model.OAuthAccessToken
+import com.arbuzerxxl.vibeshot.data.network.model.AccessTokenRequest
+import com.arbuzerxxl.vibeshot.data.network.model.RequestTokenRequest
+import com.arbuzerxxl.vibeshot.domain.models.auth.User
+import com.arbuzerxxl.vibeshot.domain.models.auth.tokens.AccessToken
 import com.arbuzerxxl.vibeshot.domain.models.auth.tokens.RequestToken
-import com.arbuzerxxl.vibeshot.domain.models.responses.AccessTokenResponse
-import com.arbuzerxxl.vibeshot.domain.models.responses.RequestTokenResponse
 import com.arbuzerxxl.vibeshot.domain.repository.TokenRepository
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
-import java.io.IOException
+import kotlinx.coroutines.CancellationException
 
-enum class OAuthFlow(val step: String) {
+private const val FLICKR_PARAMS_ID = "user_nsid"
+private const val FLICKR_PARAMS_USERNAME = "username"
+private const val FLICKR_PARAMS_FULLNAME = "fullname"
+private const val FLICKR_PARAMS_TOKEN = "oauth_token"
+private const val FLICKR_PARAMS_SECRET = "oauth_token_secret"
+
+private enum class OAuthFlow(val step: String) {
     REQUEST_TOKEN("oauth/request_token"),
     ACCESS_TOKEN("oauth/access_token"),
     AUTHORIZE("oauth/authorize"),
@@ -29,107 +34,117 @@ class TokenRepositoryImpl(
     private val apiCallback: String,
 ) : TokenRepository {
 
-    private lateinit var requestToken: RequestToken
+    private var requestToken: RequestToken? = null
+
+    override suspend fun getAuthorizeUrlAndSaveRequestToken(): String =
+        try {
+            requestToken = getRequestToken()
+            "${apiBaseUrl}${OAuthFlow.AUTHORIZE.step}?oauth_token=${requestToken!!.token}"
+        } catch (cause: Throwable) {
+            throw RequestTokenInitializeException(cause)
+        }
 
     private suspend fun getRequestToken(): RequestToken {
+        val request = generateRequestTokenRequest()
+        val response = getRequestTokenResponse(request)
+        return parseRequestTokenResponse(response)
+    }
 
-        val oAuthRequest = OAuthRequestToken(
-            baseUrl = apiBaseUrl,
-            oAuthStep = OAuthFlow.REQUEST_TOKEN.step,
-            consumerKey = apiKey,
-            callback = apiCallback,
-            secret = apiToken
-        )
+    private fun generateRequestTokenRequest(): RequestTokenRequest = RequestTokenRequest(
+        baseUrl = apiBaseUrl,
+        oAuthStep = OAuthFlow.REQUEST_TOKEN.step,
+        consumerKey = apiKey,
+        callback = apiCallback,
+        secret = apiToken
+    )
 
+    private suspend fun getRequestTokenResponse(request: RequestTokenRequest): String =
         try {
-            val requestTokenApi = api.getRequestToken(
-                nonce = oAuthRequest.nonce,
-                timestamp = oAuthRequest.timestamp,
-                consumerKey = oAuthRequest.consumerKey,
-                signature = oAuthRequest.signature,
-                method = oAuthRequest.method,
-                oauthVersion = oAuthRequest.oAuthVersion,
-                callback = oAuthRequest.callback
+            api.getRequestToken(
+                nonce = request.nonce,
+                timestamp = request.timestamp,
+                consumerKey = request.consumerKey,
+                signature = request.signature,
+                method = request.method,
+                oauthVersion = request.oAuthVersion,
+                callback = request.callback
             )
-            val tokenResponse = parseRequestTokenResponse(requestTokenApi)
-            tokenResponse.oAuthToken.let { token ->
-                tokenResponse.oAuthTokenSecret.let { secret ->
-                    return RequestToken(
-                        token = token,
-                        secret = secret
-                    )
-                }
-            }
-        } catch (e: Exception) {
-            throw IOException("Failed to fetch request token", e)
+        } catch (cause: Throwable) {
+            if (cause is CancellationException) throw cause
+            throw RequestTokenFetchException(cause)
         }
+
+    override suspend fun getUserBy(verifier: String): User {
+
+        val request = generateAccessTokenRequest(verifier)
+        val response = getAccessTokenResponse(request)
+        return parseAccessTokenResponse(response)
     }
 
-    override suspend fun getAuthorizeUrl(): String {
-
-        requestToken = getRequestToken()
-
-        return "${apiBaseUrl}${OAuthFlow.AUTHORIZE.step}?oauth_token=${requestToken.token}"
-    }
-
-    override suspend fun getAccessToken(verifier: String): AccessTokenResponse {
-
-        val oAuthRequest = OAuthAccessToken(
-            baseUrl = apiBaseUrl,
-            oAuthStep = OAuthFlow.ACCESS_TOKEN.step,
-            consumerKey = apiKey,
-            secret = apiToken,
-            token = requestToken.token,
-            verifier = verifier,
-            secretToken = requestToken.secret
-        )
-
+    private fun generateAccessTokenRequest(verifier: String): AccessTokenRequest =
         try {
-            val accessTokenApi = api.getAccessToken(
-                nonce = oAuthRequest.nonce,
-                timestamp = oAuthRequest.timestamp,
-                consumerKey = oAuthRequest.consumerKey,
-                signature = oAuthRequest.signature,
-                method = oAuthRequest.method,
-                oauthVersion = oAuthRequest.oAuthVersion,
-                token = oAuthRequest.token,
-                verifier = oAuthRequest.verifier
+            AccessTokenRequest(
+                baseUrl = apiBaseUrl,
+                oAuthStep = OAuthFlow.ACCESS_TOKEN.step,
+                consumerKey = apiKey,
+                secret = apiToken,
+                token = requestToken!!.token,
+                verifier = verifier,
+                secretToken = requestToken!!.secret
             )
-            val accessTokenResponse = parseAccessTokenResponse(accessTokenApi)
-            return accessTokenResponse
-        } catch (e: Exception) {
-            throw IOException("Failed to fetch request token", e)
+        } catch (cause: Throwable) {
+            throw RequestTokenInitializeException(cause)
         }
-    }
 
-    private fun parseAccessTokenResponse(response: String): AccessTokenResponse {
+
+    private suspend fun getAccessTokenResponse(request: AccessTokenRequest): String =
+        try {
+            api.getAccessToken(
+                nonce = request.nonce,
+                timestamp = request.timestamp,
+                consumerKey = request.consumerKey,
+                signature = request.signature,
+                method = request.method,
+                oauthVersion = request.oAuthVersion,
+                token = request.token,
+                verifier = request.verifier
+            )
+        } catch (cause: Throwable) {
+            if (cause is CancellationException) throw cause
+            throw AccessTokenFetchException(cause)
+        }
+
+    private fun parseAccessTokenResponse(response: String): User {
 
         val params = parseResponse(response)
 
         return try {
-            AccessTokenResponse(
-                oAuthToken = params.get("oauth_token")!!,
-                oAuthTokenSecret = params.get("oauth_token_secret")!!,
-                fullname = params.get("fullname")!!,
-                username = params.get("username")!!,
-                userId = params.get("user_nsid")!!,
+            User(
+                id = params.getValue(FLICKR_PARAMS_ID),
+                username = params.getValue(FLICKR_PARAMS_USERNAME),
+                fullname = params.getValue(FLICKR_PARAMS_FULLNAME),
+                token = AccessToken(
+                    accessToken = params.getValue(FLICKR_PARAMS_TOKEN),
+                    accessTokenSecret = params.getValue(FLICKR_PARAMS_SECRET)
+                )
             )
-        } catch (e: NullPointerException) {
-            throw NullPointerException("Params can't be null")
+        } catch (cause: Throwable) {
+            throw AccessTokenInvalidResponseException(cause)
         }
     }
 
-    private fun parseRequestTokenResponse(response: String): RequestTokenResponse {
+
+    private fun parseRequestTokenResponse(response: String): RequestToken {
 
         val params = parseResponse(response)
 
         return try {
-            RequestTokenResponse(
-                oAuthToken = params.get("oauth_token")!!,
-                oAuthTokenSecret = params.get("oauth_token_secret")!!,
+            RequestToken(
+                token = params.getValue(FLICKR_PARAMS_TOKEN),
+                secret = params.getValue(FLICKR_PARAMS_SECRET)
             )
-        } catch (e: NullPointerException) {
-            throw NullPointerException("Params can't be null")
+        } catch (cause: Throwable) {
+            throw RequestTokenInvalidResponseException(cause)
         }
     }
 

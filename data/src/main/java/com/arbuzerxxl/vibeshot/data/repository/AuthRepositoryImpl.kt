@@ -6,6 +6,7 @@ import com.arbuzerxxl.vibeshot.domain.repository.TokenRepository
 import com.arbuzerxxl.vibeshot.domain.repository.UserRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.withContext
 
 class AuthRepositoryImpl(
     private val userRepository: UserRepository,
@@ -15,20 +16,22 @@ class AuthRepositoryImpl(
 
     override val authState: Flow<AuthState> = userRepository.observe()
 
-    override suspend fun getAuthUrl(): String =
-        tokenRepository.getAuthorizeUrl()
+    override suspend fun getAuthUrl(): String = withContext(dispatcher) {
 
-
-    override suspend fun signIn(verifier: String) {
-        userRepository.saveUser(verifier)
+        tokenRepository.getAuthorizeUrlAndSaveRequestToken()
     }
 
-    override suspend fun signInAsGuest() {
-        userRepository.saveUserAsGuest()
+    override suspend fun signIn(verifier: String) = withContext(dispatcher)  {
+        val user = userRepository.getBy(verifier)
+        userRepository.save(user)
     }
 
-    override suspend fun signOut() {
-        TODO("Not yet implemented")
+    override suspend fun signInAsGuest() = withContext(dispatcher)  {
+        userRepository.saveAsGuest()
+    }
+
+    override suspend fun signOut() = withContext(dispatcher)  {
+        userRepository.delete()
     }
 
 }

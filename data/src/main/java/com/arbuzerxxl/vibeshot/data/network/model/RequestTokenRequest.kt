@@ -10,7 +10,7 @@ private const val ALGORITHM = "HmacSHA1"
 private const val OAUTH_VERSION = "1.0"
 private const val ENCRYPTION_METHOD = "HMAC-SHA1"
 
-data class OAuthRequestToken(
+data class RequestTokenRequest(
     val baseUrl: String,
     val oAuthStep: String,
     val nonce: String = UUID.randomUUID().toString(),
