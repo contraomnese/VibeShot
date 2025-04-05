@@ -8,6 +8,7 @@ package com.kiparo.chargerapp.di
 import com.arbuzerxxl.vibeshot.BuildConfig
 import com.arbuzerxxl.vibeshot.data.mappers.AuthDataMapper
 import com.arbuzerxxl.vibeshot.data.network.api.FlickrAuthApi
+import com.arbuzerxxl.vibeshot.data.network.interceptors.ErrorInterceptor
 import com.arbuzerxxl.vibeshot.data.repository.AuthRepositoryImpl
 import com.arbuzerxxl.vibeshot.data.repository.TokenRepositoryImpl
 import com.arbuzerxxl.vibeshot.data.repository.UserRepositoryImpl
@@ -40,7 +41,7 @@ val dataModule = module {
     factory<OkHttpClient> {
         OkHttpClient.Builder()
             .addInterceptor(get<HttpLoggingInterceptor>())
-//            .addInterceptor(get<ErrorInterceptor>())
+            .addInterceptor(get<ErrorInterceptor>())
             .build()
     }
 
@@ -54,9 +55,9 @@ val dataModule = module {
         }
     }
 
-//    factory<ErrorInterceptor> {
-//        ErrorInterceptor()
-//    }
+    factory<ErrorInterceptor> {
+        ErrorInterceptor()
+    }
 
     single<FlickrAuthApi> { get<Retrofit>().create(FlickrAuthApi::class.java) }
     // endregion

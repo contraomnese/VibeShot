@@ -1,4 +1,4 @@
-package com.arbuzerxxl.vibeshot.data.network.model
+package com.arbuzerxxl.vibeshot.data.network.model.tokens
 
 import okhttp3.internal.toHexString
 import java.util.Base64

@@ -6,8 +6,8 @@ import com.arbuzerxxl.vibeshot.data.exceptions.RequestTokenFetchException
 import com.arbuzerxxl.vibeshot.data.exceptions.RequestTokenInitializeException
 import com.arbuzerxxl.vibeshot.data.exceptions.RequestTokenInvalidResponseException
 import com.arbuzerxxl.vibeshot.data.network.api.FlickrAuthApi
-import com.arbuzerxxl.vibeshot.data.network.model.AccessTokenRequest
-import com.arbuzerxxl.vibeshot.data.network.model.RequestTokenRequest
+import com.arbuzerxxl.vibeshot.data.network.model.tokens.AccessTokenRequest
+import com.arbuzerxxl.vibeshot.data.network.model.tokens.RequestTokenRequest
 import com.arbuzerxxl.vibeshot.domain.models.auth.User
 import com.arbuzerxxl.vibeshot.domain.models.auth.tokens.AccessToken
 import com.arbuzerxxl.vibeshot.domain.models.auth.tokens.RequestToken
