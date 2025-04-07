@@ -103,6 +103,7 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.androidx.core.splashscreen)
 
     // data
     implementation(libs.retrofit)

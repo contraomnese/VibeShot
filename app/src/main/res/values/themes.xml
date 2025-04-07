@@ -1,5 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
 
-    <style name="Theme.VibeShot" parent="android:Theme.Material.Light.NoActionBar" />
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="NightAdjusted.Theme.VibeShot" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="Theme.VibeShot" parent="NightAdjusted.Theme.VibeShot">
+        <item name="android:forceDarkAllowed" tools:targetApi="29">false</item>
+    </style>
+
+    <style name="NightAdjusted.Theme.Splash" parent="Theme.SplashScreen.IconBackground">
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="27">true</item>
+    </style>
+
+    <style name="Theme.VibeShot.Splash" parent="NightAdjusted.Theme.Splash">
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash</item>
+        <item name="postSplashScreenTheme">@style/Theme.VibeShot</item>
+    </style>
+
 </resources>
