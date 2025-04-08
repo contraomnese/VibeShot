@@ -7,11 +7,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.BlendMode.Companion.Screen
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -23,97 +26,26 @@ import com.arbuzerxxl.vibeshot.features.auth.navigation.authentication
 import com.arbuzerxxl.vibeshot.features.start.navigation.StartRoute
 import com.arbuzerxxl.vibeshot.features.start.navigation.navigateToStart
 import com.arbuzerxxl.vibeshot.features.start.navigation.start
+import com.arbuzerxxl.vibeshot.ui.VibeShotAppState
 import kotlinx.serialization.Serializable
 
 @Composable
 fun VibeShotHost(
-    navHostController: NavHostController = rememberNavController(),
+    navController: NavHostController = rememberNavController(),
     modifier: Modifier = Modifier,
+    skipAuth: Boolean
 ) {
 
     NavHost(
-        navHostController,
-        startDestination = StartRoute,
+        navController,
+        startDestination = if (skipAuth) StartRoute else AuthRoute,
         modifier = modifier,
     ) {
-        start(navigateToAuth = {
-            navHostController.navigate(AuthRoute) {
-                popUpTo(StartRoute) { inclusive = true }
-            }
-        })
+        start()
         authentication(
-            onNavigateToUserScreen = navHostController::navigateToExampleUserScreen,
-            onNavigateToGuestScreen = navHostController::navigateToExampleGuestScreen
+            onNavigateAfterAuth = navController::navigateToStart,
         )
-        exampleUser()
-        exampleGuest()
     }
 }
 
-// example user screen
 
-@Serializable
-data object ExampleUserRoute
-
-fun NavController.navigateToExampleUserScreen() {
-    popBackStack()
-    navigate(ExampleUserRoute)
-}
-
-fun NavGraphBuilder.exampleUser() {
-    composable<ExampleUserRoute> {
-        ExampleUserScreen()
-    }
-
-}
-
-@Composable
-internal fun ExampleUserScreen(
-    modifier: Modifier = Modifier,
-) {
-    Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(20.dp)
-        ) {
-            Text(text = "User Screen")
-        }
-    }
-}
-
-// example guest screen
-
-@Serializable
-data object ExampleGuestRoute
-
-fun NavController.navigateToExampleGuestScreen() {
-    popBackStack()
-    navigate(ExampleGuestRoute)
-}
-
-fun NavGraphBuilder.exampleGuest() {
-    composable<ExampleGuestRoute> {
-        ExampleGuestScreen()
-    }
-
-}
-
-@Composable
-internal fun ExampleGuestScreen(
-    modifier: Modifier = Modifier,
-) {
-    Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(20.dp)
-        ) {
-            Text(text = "Guest Screen")
-        }
-    }
-}

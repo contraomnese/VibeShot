@@ -6,6 +6,4 @@ package com.arbuzerxxl.vibeshot.di
 
 import org.koin.dsl.module
 
-val featuresApiModule = module {
-//    viewModel<AuthViewModel> { AuthViewModel(get(), get(), get()) }
-}
+val featuresApiModule = module { }

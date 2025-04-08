@@ -9,7 +9,7 @@ data class UserEntity(
     val nsid: String,
     val fullName: String = "",
     val userName: String = "",
-    val token: String = "",
-    val tokenSecret: String = "",
+    val token: String? = null,
+    val tokenSecret: String? = null,
     val type: UserType
 )

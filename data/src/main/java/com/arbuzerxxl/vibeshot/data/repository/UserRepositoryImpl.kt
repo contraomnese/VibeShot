@@ -16,7 +16,7 @@ class UserRepositoryImpl(
     private val mapper: AuthDataMapper,
 ) : UserRepository {
 
-    override fun observe(): Flow<AuthState> = userStorage.observe().map { mapper.mapToDomain(it) }
+    override fun observe(): Flow<AuthState> = userStorage.user.map { mapper.mapToDomain(it) }
 
     override suspend fun getBy(verifier: String): User = tokenRepository.getUserBy(verifier)
 

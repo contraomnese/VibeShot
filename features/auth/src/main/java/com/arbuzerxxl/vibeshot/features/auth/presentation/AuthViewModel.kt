@@ -29,7 +29,6 @@ sealed interface AuthUiState {
 
 class AuthViewModel(
     private val authRepository: AuthRepository,
-    private val tokenRepository: TokenRepository,
     private val observeAuthStateUseCase: ObserveAuthStateUseCase
 ) : ViewModel() {
 

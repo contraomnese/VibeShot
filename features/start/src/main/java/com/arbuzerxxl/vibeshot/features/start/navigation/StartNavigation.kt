@@ -14,8 +14,8 @@ fun NavController.navigateToStart(navOptions: NavOptions? = null) {
     navigate(StartRoute, navOptions)
 }
 
-fun NavGraphBuilder.start(navigateToAuth: () -> Unit) {
+fun NavGraphBuilder.start() {
     composable<StartRoute> {
-        StartRoute(navigateToAuth = navigateToAuth)
+        StartRoute()
     }
 }

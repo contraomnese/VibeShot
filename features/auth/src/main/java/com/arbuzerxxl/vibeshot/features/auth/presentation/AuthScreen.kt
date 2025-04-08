@@ -25,10 +25,9 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 internal fun AuthRoute(
     modifier: Modifier = Modifier,
-    onNavigateToUser: () -> Unit,
-    onNavigateToGuest: () -> Unit,
-    authViewModel: AuthViewModel = koinViewModel(),
+    onNavigateAfterAuth: () -> Unit,
 ) {
+    val authViewModel: AuthViewModel = koinViewModel()
     val uiState by authViewModel.uiState.collectAsStateWithLifecycle()
 
     AuthScreen(
@@ -36,9 +35,7 @@ internal fun AuthRoute(
         uiState = uiState,
         onSignInClick = authViewModel::onSignIn,
         onSignInAsGuestClick = authViewModel::onSignInAsGuest,
-        onNavigateToUser = onNavigateToUser,
-        onNavigateToGuest = onNavigateToGuest,
-
+        onNavigateAfterAuth = onNavigateAfterAuth,
     )
 }
 
@@ -48,8 +45,7 @@ internal fun AuthScreen(
     modifier: Modifier = Modifier,
     onSignInClick: () -> Unit,
     onSignInAsGuestClick: () -> Unit,
-    onNavigateToUser: () -> Unit,
-    onNavigateToGuest: () -> Unit,
+    onNavigateAfterAuth: () -> Unit,
 ) {
 
     val context = LocalContext.current
@@ -78,10 +74,10 @@ internal fun AuthScreen(
                 }
 
                 is AuthUiState.UserSuccess,
-                    -> onNavigateToUser()
+                    -> onNavigateAfterAuth()
 
                 is AuthUiState.GuestSuccess,
-                    -> onNavigateToGuest()
+                    -> onNavigateAfterAuth()
 
                 is AuthUiState.Authorize,
                      -> openTab(context = context, url = uiState.authUrl)
@@ -112,8 +108,7 @@ private fun AuthScreenPreview() {
         AuthScreen(
             uiState = AuthUiState.Loading,
             onSignInClick = {},
-            onNavigateToUser = {},
-            onNavigateToGuest = {},
+            onNavigateAfterAuth = {},
             onSignInAsGuestClick = {}
         )
     }

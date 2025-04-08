@@ -15,13 +15,11 @@ fun NavController.navigateToAuth(navOptions: NavOptions? = null) =
     navigate(AuthRoute, navOptions)
 
 fun NavGraphBuilder.authentication(
-    onNavigateToUserScreen: () -> Unit,
-    onNavigateToGuestScreen: () -> Unit,
+    onNavigateAfterAuth: () -> Unit,
 ) {
     composable<AuthRoute> {
         AuthRoute(
-            onNavigateToUser = onNavigateToUserScreen,
-            onNavigateToGuest = onNavigateToGuestScreen
+            onNavigateAfterAuth = onNavigateAfterAuth,
         )
     }
 

@@ -11,14 +11,22 @@ class AuthDataMapper {
     fun mapToDomain(entity: UserEntity?): AuthState {
         return when {
             entity == null -> AuthState.Unauthenticated
-            entity.type == UserType.GUEST -> AuthState.Guest(entity.nsid)
-            else -> AuthState.Authenticated(
+            entity.type == UserType.GUEST
+                -> AuthState.Guest(
+                user = User(
+                    id = entity.nsid, username = entity.userName,
+                    fullname = entity.fullName,
+                    token = null
+                ))
+
+            else
+                -> AuthState.Authenticated(
                 user = User(
                     id = entity.nsid, username = entity.userName,
                     fullname = entity.fullName,
                     token = AccessToken(
-                        accessToken = entity.token,
-                        accessTokenSecret = entity.tokenSecret
+                        accessToken = entity.token!!,
+                        accessTokenSecret = entity.tokenSecret!!
                     ) // TODO add keystore encoding
                 )
             )
@@ -31,13 +39,15 @@ class AuthDataMapper {
                 nsid = state.user.id,
                 fullName = state.user.fullname,
                 userName = state.user.username,
-                token = state.user.token.accessToken,
-                tokenSecret = state.user.token.accessTokenSecret,
+                token = state.user.token!!.accessToken,
+                tokenSecret = state.user.token!!.accessTokenSecret,
                 type = UserType.AUTHENTICATED
             )
 
             is AuthState.Guest -> UserEntity(
-                nsid = state.sessionId,
+                nsid = state.user.id,
+                fullName = state.user.fullname,
+                userName = state.user.username,
                 type = UserType.GUEST
             )
 

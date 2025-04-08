@@ -14,64 +14,66 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.util.UUID
 
-private val ID = stringPreferencesKey("userId")
-private val FULLNAME = stringPreferencesKey("fullname")
-private val USERNAME = stringPreferencesKey("username")
-private val TOKEN = stringPreferencesKey("token")
-private val TOKEN_SECRET = stringPreferencesKey("secret")
-private val AUTHENTICATED = booleanPreferencesKey("authenticated")
 private const val GUEST = "Guest"
 
 class UserMemoryStorage(private val context: Context) : UserStorage {
 
     private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "user")
 
-    override fun observe(): Flow<UserEntity?> {
+    private object PreferencesKeys {
+        val ID = stringPreferencesKey("userId")
+        val FULLNAME = stringPreferencesKey("fullname")
+        val USERNAME = stringPreferencesKey("username")
+        val TOKEN = stringPreferencesKey("token")
+        val TOKEN_SECRET = stringPreferencesKey("secret")
+        val AUTHENTICATED = booleanPreferencesKey("authenticated")
+    }
 
-        return context.dataStore.data.map { preferences ->
+    override val user: Flow<UserEntity?> =
+        context.dataStore.data.map { preferences ->
             try {
                 UserEntity(
-                    nsid = preferences[ID]!!,
-                    fullName = preferences[FULLNAME]!!,
-                    userName = preferences[USERNAME]!!,
-                    token = preferences[TOKEN]!!,
-                    tokenSecret = preferences[TOKEN_SECRET]!!,
-                    type = if (preferences[AUTHENTICATED]!!) UserType.AUTHENTICATED else UserType.GUEST
+                    nsid = preferences[PreferencesKeys.ID]!!,
+                    fullName = preferences[PreferencesKeys.FULLNAME]!!,
+                    userName = preferences[PreferencesKeys.USERNAME]!!,
+                    token = preferences[PreferencesKeys.TOKEN],
+                    tokenSecret = preferences[PreferencesKeys.TOKEN_SECRET],
+                    type = if (preferences[PreferencesKeys.AUTHENTICATED]!!) UserType.AUTHENTICATED else UserType.GUEST
                 )
             } catch (e: NullPointerException) {
                 null
             }
         }
-    }
+
 
     override suspend fun save(user: UserEntity) {
         context.dataStore.edit { preferences ->
-            preferences[ID] = user.nsid
-            preferences[FULLNAME] = user.fullName
-            preferences[USERNAME] = user.userName
-            preferences[TOKEN] = user.token
-            preferences[TOKEN_SECRET] = user.token
-            preferences[AUTHENTICATED] = user.type == UserType.AUTHENTICATED
+            preferences[PreferencesKeys.ID] = user.nsid
+            preferences[PreferencesKeys.FULLNAME] = user.fullName
+            preferences[PreferencesKeys.USERNAME] = user.userName
+            preferences[PreferencesKeys.TOKEN] = user.token!!
+            preferences[PreferencesKeys.TOKEN_SECRET] = user.tokenSecret!!
+            preferences[PreferencesKeys.AUTHENTICATED] = user.type == UserType.AUTHENTICATED
         }
     }
 
     override suspend fun saveAsGuest() {
         context.dataStore.edit { preferences ->
-            preferences[ID] = UUID.randomUUID().toString()
-            preferences[FULLNAME] = GUEST
-            preferences[USERNAME] = GUEST
-            preferences[AUTHENTICATED] = false
+            preferences[PreferencesKeys.ID] = UUID.randomUUID().toString()
+            preferences[PreferencesKeys.FULLNAME] = GUEST
+            preferences[PreferencesKeys.USERNAME] = GUEST
+            preferences[PreferencesKeys.AUTHENTICATED] = false
         }
     }
 
     override suspend fun delete() {
         context.dataStore.edit { preferences ->
-            preferences.remove(ID)
-            preferences.remove(FULLNAME)
-            preferences.remove(USERNAME)
-            preferences.remove(TOKEN)
-            preferences.remove(TOKEN_SECRET)
-            preferences.remove(AUTHENTICATED)
+            preferences.remove(PreferencesKeys.ID)
+            preferences.remove(PreferencesKeys.FULLNAME)
+            preferences.remove(PreferencesKeys.USERNAME)
+            preferences.remove(PreferencesKeys.TOKEN)
+            preferences.remove(PreferencesKeys.TOKEN_SECRET)
+            preferences.remove(PreferencesKeys.AUTHENTICATED)
         }
     }
 }

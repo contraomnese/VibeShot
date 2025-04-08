@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface UserStorage {
 
-    fun observe(): Flow<UserEntity?>
+    val user: Flow<UserEntity?>
 
     suspend fun save(user: UserEntity)
 

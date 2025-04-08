@@ -1,3 +1,6 @@
+import org.gradle.internal.impldep.org.jsoup.nodes.Entities.EscapeMode.extended
+import org.gradle.kotlin.dsl.implementation
+
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
@@ -48,5 +51,6 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.runtime.android)
+    implementation(libs.androidx.compose.material.iconsExtended)
 
 }

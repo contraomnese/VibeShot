@@ -42,6 +42,7 @@ dependencies {
     implementation(project(":core:navigation"))
     implementation(project(":core:ui"))
     implementation(project(":core:design"))
+    implementation(project(":domain"))
 
     // di
     implementation(libs.koin.core)
