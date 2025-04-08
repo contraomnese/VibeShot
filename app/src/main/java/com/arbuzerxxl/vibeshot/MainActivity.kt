@@ -20,7 +20,6 @@ import com.arbuzerxxl.vibeshot.navigation.VibeShotHost
 import com.google.samples.apps.nowinandroid.util.isSystemInDarkTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -40,7 +39,6 @@ class MainActivity : ComponentActivity() {
                 darkTheme = resources.configuration.isSystemInDarkTheme,
             ),
         )
-        var keepSplashScreen = true
 
         // Update the uiState
         lifecycleScope.launch {
@@ -50,31 +48,22 @@ class MainActivity : ComponentActivity() {
                     isSystemInDarkTheme(),
                     viewModel.uiState,
                 ) { systemDark, uiState ->
-                    Pair(
-                        ThemeSettings(uiState.shouldUseDarkTheme(systemDark)),
-                        uiState
-                    )
+                    ThemeSettings(uiState.shouldUseDarkTheme(systemDark))
                 }
-                    .onEach { (settings, state) ->
+                    .onEach { settings ->
                         themeSettings = settings
-                        keepSplashScreen = false
-//                        if (state is MainActivityUiState.Success) {
-//                            delay(2000) // TODO bag: AuthScreen appear without delay
-//
-//                        }
                     }
                     .collect { }
             }
         }
 
         splashscreen.setKeepOnScreenCondition {
-            keepSplashScreen
+            viewModel.keepSplashScreen.value
         }
         handleFlickrAuthIntent(intent)
         setContent {
-
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
+            if (!uiState.shouldKeepSplashScreen()) viewModel.disableSplashScreen()
             VibeShotTheme(
                 darkTheme = themeSettings.darkTheme
             ) {

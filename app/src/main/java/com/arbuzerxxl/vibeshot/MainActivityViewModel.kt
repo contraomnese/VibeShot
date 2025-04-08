@@ -8,10 +8,15 @@ import com.arbuzerxxl.vibeshot.domain.models.UserData
 import com.arbuzerxxl.vibeshot.domain.models.auth.AuthState
 import com.arbuzerxxl.vibeshot.domain.models.ui.DarkThemeConfig
 import com.arbuzerxxl.vibeshot.domain.repository.UserDataRepository
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class MainActivityViewModel(
     private val userDataRepository: UserDataRepository,
@@ -24,6 +29,18 @@ class MainActivityViewModel(
             initialValue = Loading,
             started = SharingStarted.WhileSubscribed(5_000),
         )
+
+    private val _keepSplashScreen = MutableStateFlow(true)
+    val keepSplashScreen: StateFlow<Boolean> = _keepSplashScreen.asStateFlow()
+
+    fun disableSplashScreen() {
+        viewModelScope.launch {
+            delay(2000)
+            _keepSplashScreen.update {
+                false
+            }
+        }
+    }
 }
 
 sealed interface MainActivityUiState {
@@ -33,6 +50,7 @@ sealed interface MainActivityUiState {
     }
 
     data class Success(val userData: UserData) : MainActivityUiState {
+
         override fun shouldSkipAuth(): Boolean = when (userData.authState) {
             is AuthState.Authenticated, is AuthState.Guest -> true
             AuthState.Unauthenticated -> false
