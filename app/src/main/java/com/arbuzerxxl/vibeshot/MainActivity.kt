@@ -44,7 +44,6 @@ class MainActivity : ComponentActivity() {
             ),
         )
 
-        // Update the uiState
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
 
@@ -58,11 +57,6 @@ class MainActivity : ComponentActivity() {
                     .map { it.darkTheme }
                     .distinctUntilChanged()
                     .collect { darkTheme ->
-                        // Turn off the decor fitting system windows, which allows us to handle insets,
-                        // including IME animations, and go edge-to-edge.
-                        // This is the same parameters as the default enableEdgeToEdge call, but we manually
-                        // resolve whether or not to show dark theme using uiState, since it can be different
-                        // than the configuration's dark theme value based on the user preference.
                         enableEdgeToEdge(
                             statusBarStyle = SystemBarStyle.auto(
                                 lightScrim = android.graphics.Color.TRANSPARENT,
