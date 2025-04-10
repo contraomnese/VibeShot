@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -59,8 +61,13 @@ internal fun InterestsScreen(
 
             is InterestsUiState.Success -> {
 
+//                PhotoCard(
+//                    urlLowQuality = uiState.photos.first().lowQualityUrl,
+//                    urlHighQuality = uiState.photos.first().highQualityUrl
+//                )
+
                 LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.fillMaxWidth().heightIn(min = 360.dp, max = 5000.dp), // TODO max height will be fix
                     contentPadding = PaddingValues(16.dp)
                 ) {
                     items(uiState.photos) { photo ->

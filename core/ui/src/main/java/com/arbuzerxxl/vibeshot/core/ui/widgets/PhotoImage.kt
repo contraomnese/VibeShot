@@ -2,33 +2,34 @@ package com.arbuzerxxl.vibeshot.core.ui.widgets
 
 
 import android.util.Log
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.graphics.BlurEffect
+import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.compose.AsyncImage
-import coil.compose.AsyncImagePainter
-import coil.compose.rememberAsyncImagePainter
-import coil.request.ImageRequest
+import coil3.compose.AsyncImage
+import coil3.compose.AsyncImagePainter
+import coil3.compose.rememberAsyncImagePainter
+import coil3.request.ImageRequest
+import coil3.request.crossfade
+import coil3.request.transformations
 import com.arbuzerxxl.vibeshot.core.ui.effects.BlurTransformation
 import com.arbuzerxxl.vibeshot.ui.R
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.layout.ContentScale
+import coil3.compose.AsyncImagePainter.State.Empty.painter
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.flowOf
+
 
 @Composable
 fun PhotoImage(
@@ -39,7 +40,7 @@ fun PhotoImage(
 
 //    val context = LocalContext.current
 //    val painter = rememberAsyncImagePainter(
-//        model = ImageRequest.Builder(context)
+//        ImageRequest.Builder(context)
 //            .data(urlHighQuality)
 //            .listener(
 //                onStart = { Log.d("Coil", "Start loading: $urlHighQuality") },
@@ -48,10 +49,11 @@ fun PhotoImage(
 //                    Log.e("Coil", "Error: ${throwable.throwable.message}")
 //                }
 //            )
+//
 //            .build()
 //    )
 //
-//    var state = painter.state
+//    val state by painter.state.collectAsState()
 //
 //    when (state) {
 //        is AsyncImagePainter.State.Empty,
@@ -64,7 +66,7 @@ fun PhotoImage(
 //                    .transformations(BlurTransformation())
 //                    .build(),
 //                contentDescription = "Low quality image",
-//                placeholder = painterResource(R.drawable.placeholder_bg)
+////                placeholder = painterResource(R.drawable.placeholder_bg)
 //            )
 //        }
 //
@@ -85,29 +87,19 @@ fun PhotoImage(
     val highQualityPainter = rememberAsyncImagePainter(
         model = ImageRequest.Builder(context)
             .data(urlHighQuality)
-            .listener(
-                onStart = { Log.d("Coil", "Start loading: $urlHighQuality") },
-                onSuccess = { _, _ -> Log.d("Coil", "Success: $urlHighQuality") },
-                onError = { _, throwable ->
-                    Log.e("Coil", "Error: ${throwable.throwable.message}")
-                }
-            )
             .crossfade(true)
             .build()
     )
 
     // Состояние загрузки
 
-    val _st = MutableStateFlow(highQualityPainter.state)
-    val _state = _st.asStateFlow()
-
-    val photo by _state.collectAsState()
+    val state by highQualityPainter.state.collectAsState()
 
     Box(modifier = modifier) {
         when {
             // Показываем размытое превью при загрузке
-            photo is AsyncImagePainter.State.Loading ||
-                    photo is AsyncImagePainter.State.Error -> {
+            state is AsyncImagePainter.State.Loading ||
+                    state is AsyncImagePainter.State.Error -> {
                 AsyncImage(
                     model = ImageRequest.Builder(context)
                         .data(urlLowQuality)
@@ -118,11 +110,10 @@ fun PhotoImage(
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxSize()
                 )
-
             }
 
             // Показываем основное изображение
-            photo is AsyncImagePainter.State.Success -> {
+            state is AsyncImagePainter.State.Success -> {
                 Image(
                     painter = highQualityPainter,
                     contentDescription = "High quality image",
@@ -133,7 +124,7 @@ fun PhotoImage(
         }
 
         // Индикатор загрузки (опционально)
-        if (photo is AsyncImagePainter.State.Loading) {
+        if (state is AsyncImagePainter.State.Loading) {
             CircularProgressIndicator(
                 modifier = Modifier.align(Alignment.Center)
             )
