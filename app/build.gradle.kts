@@ -84,6 +84,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.kotlinx.collections.immutable)
     implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.kotlinx.coroutines.core)
 
     // ui compose
     implementation(libs.androidx.activity.compose)
@@ -101,10 +102,10 @@ dependencies {
 
     // presentation
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
-    implementation(libs.coil.compose)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.core.splashscreen)
+    implementation(libs.coil.compose)
 
     // data
     implementation(libs.retrofit)

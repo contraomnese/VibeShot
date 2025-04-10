@@ -19,7 +19,7 @@ class InterestsRepositoryImpl(
 
     override suspend fun getPhotos(): Flow<List<InterestsResourceItem>> = withContext(dispatcher) {
         try {
-            flowOf(api.getPhotos(key = key, extras = "url_m").photos.photo.map { it.toDomain() })
+            flowOf(api.getPhotos(key = key, extras = "url_m, url_l").photos.photo.map { it.toDomain() })
         }
         catch (cause: Throwable) {
             if (cause is CancellationException) throw cause

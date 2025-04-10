@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/loading">
+        <shape android:shape="rectangle">
+            <size android:height="4dp" />
+            <solid android:color="@color/loading" />
+        </shape>
+    </item>
+</animated-selector>

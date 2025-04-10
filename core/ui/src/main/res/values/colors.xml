@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="loading">#FF6F61</color>
+    <color name="placeholder_bg">#FCFCFC</color>
+</resources>

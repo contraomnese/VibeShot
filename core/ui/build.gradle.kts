@@ -44,6 +44,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.kotlinx.collections.immutable)
     implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.kotlinx.coroutines.core)
 
     // ui compose
     implementation(platform(libs.androidx.compose.bom))
@@ -55,10 +56,9 @@ dependencies {
 
     // presentation
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
-    implementation(libs.coil.compose)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.runtime.compose)
-
+    implementation(libs.coil.compose)
     // tests
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

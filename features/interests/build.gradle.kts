@@ -72,7 +72,6 @@ dependencies {
     implementation(libs.navigation)
     implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.androidx.navigation.common.ktx)
-    implementation(libs.coil.compose)
 
     // parsing
     implementation(libs.kotlinx.serialization.json)

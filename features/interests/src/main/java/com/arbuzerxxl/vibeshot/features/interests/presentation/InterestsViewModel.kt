@@ -14,7 +14,7 @@ sealed interface InterestsUiState {
 
     data object Loading : InterestsUiState
 
-    data class Success(val url: ImmutableList<String>) : InterestsUiState
+    data class Success(val photos: ImmutableList<Photo>) : InterestsUiState
 }
 
 class InterestsViewModel(
@@ -29,11 +29,12 @@ class InterestsViewModel(
             interestsRepository.getPhotos().collect { items ->
                 _uiState.update {
                     InterestsUiState.Success(
-                        items.map { it.url }.toImmutableList()
+                        items.map { Photo(lowQualityUrl = it.url_m, highQualityUrl = it.url_l) }.toImmutableList()
                     )
                 }
             }
         }
     }
-
 }
+
+data class Photo(val lowQualityUrl: String, val highQualityUrl: String,)
