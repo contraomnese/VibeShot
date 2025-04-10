@@ -17,6 +17,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arbuzerxxl.vibeshot.core.design.icon.VibeShotIcons
 import com.arbuzerxxl.vibeshot.core.design.theme.VibeShotTheme
 import com.arbuzerxxl.vibeshot.core.ui.DevicePreviews
+import com.arbuzerxxl.vibeshot.core.ui.widgets.LoadingIndicator
 import com.arbuzerxxl.vibeshot.features.start.di.startModule
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.module.rememberKoinModules
@@ -25,47 +26,57 @@ import org.koin.core.annotation.KoinExperimentalAPI
 @OptIn(KoinExperimentalAPI::class)
 @Composable
 internal fun StartRoute(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     rememberKoinModules(unloadOnForgotten = true) { listOf(startModule) }
 
     val startViewModel: StartViewModel = koinViewModel()
     val uiState by startViewModel.uiState.collectAsStateWithLifecycle()
 
-    when (uiState) {
-        is StartUiState.Success -> StartScreen(
-            modifier = modifier,
-            uiState = uiState as StartUiState.Success,
-            setTheme = startViewModel::setTheme
-        )
-
-        else -> Unit
-    }
+    StartScreen(
+        modifier = modifier,
+        uiState = uiState,
+        setTheme = startViewModel::setTheme
+    )
 }
 
 @Composable
 internal fun StartScreen(
     modifier: Modifier = Modifier,
-    uiState: StartUiState.Success,
+    uiState: StartUiState,
     setTheme: (Boolean) -> Unit,
 ) {
     Box(
-        modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background),
         contentAlignment = Alignment.Center
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(
-                text = "Hello, ${uiState.username}",
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.onBackground
-            )
-            uiState.darkMode?.let {
-                IconButton(onClick = { setTheme(!uiState.darkMode) }) {
-                    if (uiState.darkMode) Icon(imageVector = VibeShotIcons.DarkMode, contentDescription = null, tint = MaterialTheme.colorScheme.onBackground)
-                    else Icon(imageVector = VibeShotIcons.LightMode, contentDescription = null, tint = MaterialTheme.colorScheme.onBackground)
-                }
-            } ?: setTheme(isSystemInDarkTheme())
+        when (uiState) {
+            StartUiState.Loading -> LoadingIndicator()
+            is StartUiState.Success -> Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    text = "Hello, ${uiState.username}",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+                uiState.darkMode?.let {
+                    IconButton(onClick = { setTheme(!uiState.darkMode) }) {
+                        if (uiState.darkMode) Icon(
+                            imageVector = VibeShotIcons.DarkMode,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onBackground
+                        )
+                        else Icon(
+                            imageVector = VibeShotIcons.LightMode,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
+                } ?: setTheme(isSystemInDarkTheme())
+            }
         }
+
     }
 }
 
@@ -73,6 +84,6 @@ internal fun StartScreen(
 @Composable
 private fun AuthScreenPreview() {
     VibeShotTheme {
-        StartScreen(uiState = StartUiState.Success(username = "Sergey Belov", darkMode = false), setTheme = {true})
+        StartScreen(uiState = StartUiState.Success(username = "Sergey Belov", darkMode = false), setTheme = { true })
     }
 }

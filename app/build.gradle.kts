@@ -72,6 +72,7 @@ dependencies {
 
     implementation(project(":features:start"))
     implementation(project(":features:auth"))
+    implementation(project(":features:interests"))
 
     // di
     implementation(libs.koin.core)

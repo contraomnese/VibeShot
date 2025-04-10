@@ -9,8 +9,10 @@ import com.arbuzerxxl.vibeshot.BuildConfig
 import com.arbuzerxxl.vibeshot.MainActivityViewModel
 import com.arbuzerxxl.vibeshot.data.mappers.AuthDataMapper
 import com.arbuzerxxl.vibeshot.data.network.api.FlickrAuthApi
+import com.arbuzerxxl.vibeshot.data.network.api.FlickrInterestsApi
 import com.arbuzerxxl.vibeshot.data.network.interceptors.ErrorInterceptor
 import com.arbuzerxxl.vibeshot.data.repository.AuthRepositoryImpl
+import com.arbuzerxxl.vibeshot.data.repository.InterestsRepositoryImpl
 import com.arbuzerxxl.vibeshot.data.repository.TokenRepositoryImpl
 import com.arbuzerxxl.vibeshot.data.repository.UserDataRepositoryImpl
 import com.arbuzerxxl.vibeshot.data.repository.UserRepositoryImpl
@@ -19,6 +21,7 @@ import com.arbuzerxxl.vibeshot.data.storage.api.UserStorage
 import com.arbuzerxxl.vibeshot.data.storage.memory.SettingsMemoryStorage
 import com.arbuzerxxl.vibeshot.data.storage.memory.UserMemoryStorage
 import com.arbuzerxxl.vibeshot.domain.repository.AuthRepository
+import com.arbuzerxxl.vibeshot.domain.repository.InterestsRepository
 import com.arbuzerxxl.vibeshot.domain.repository.TokenRepository
 import com.arbuzerxxl.vibeshot.domain.repository.UserDataRepository
 import com.arbuzerxxl.vibeshot.domain.repository.UserRepository
@@ -65,6 +68,7 @@ val dataModule = module {
     }
 
     single<FlickrAuthApi> { get<Retrofit>().create(FlickrAuthApi::class.java) }
+    single<FlickrInterestsApi> { get<Retrofit>().create(FlickrInterestsApi::class.java) }
     // endregion
 
     // region Repositories
@@ -97,6 +101,13 @@ val dataModule = module {
             settingsStorage = get()
         )
     }
+    factory<InterestsRepository> {
+        InterestsRepositoryImpl(
+            api = get(),
+            key = BuildConfig.FLICKR_API_KEY,
+            dispatcher = Dispatchers.IO
+        )
+    }
     // endregion
 
     // region Storages
@@ -117,10 +128,13 @@ val dataModule = module {
         AuthDataMapper()
     }
     // endregion
+
+    // region viewModels
     single<AuthViewModel> {
         AuthViewModel(authRepository = get(), observeAuthStateUseCase = get())
     }
     single<MainActivityViewModel> {
         MainActivityViewModel(userDataRepository = get())
     }
+    // endregion
 }

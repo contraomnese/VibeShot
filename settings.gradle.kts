@@ -31,3 +31,4 @@ include(":domain")
 
 
 include(":features:start")
+include(":features:interests")

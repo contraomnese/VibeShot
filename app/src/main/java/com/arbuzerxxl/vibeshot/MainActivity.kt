@@ -17,6 +17,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.arbuzerxxl.vibeshot.core.design.theme.VibeShotTheme
+import com.arbuzerxxl.vibeshot.core.ui.widgets.LoadingIndicator
 import com.arbuzerxxl.vibeshot.domain.repository.AuthRepository
 import com.arbuzerxxl.vibeshot.navigation.VibeShotHost
 import com.google.samples.apps.nowinandroid.util.isSystemInDarkTheme
@@ -72,19 +73,19 @@ class MainActivity : ComponentActivity() {
         }
 
         splashscreen.setKeepOnScreenCondition {
-            viewModel.keepSplashScreen.value
+            viewModel.uiState.value.shouldKeepSplashScreen()
         }
         handleFlickrAuthIntent(intent)
         setContent {
+
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-            if (!uiState.shouldKeepSplashScreen()) viewModel.disableSplashScreen()
+
             VibeShotTheme(
                 darkTheme = themeSettings.darkTheme
             ) {
-                VibeShotApp(uiState.shouldSkipAuth())
+                VibeShotApp(uiState)
             }
         }
-
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -107,8 +108,11 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun VibeShotApp(skipAuth: Boolean) {
-    VibeShotHost(skipAuth = skipAuth)
+fun VibeShotApp(uiState: MainActivityUiState) {
+    when (uiState) {
+        MainActivityUiState.Loading -> LoadingIndicator()
+        is MainActivityUiState.Success -> VibeShotHost()
+    }
 }
 
 /**

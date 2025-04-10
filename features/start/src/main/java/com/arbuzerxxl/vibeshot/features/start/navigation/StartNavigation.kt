@@ -8,14 +8,14 @@ import com.arbuzerxxl.vibeshot.features.start.StartRoute
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object StartRoute
+object StartDestination
 
 fun NavController.navigateToStart(navOptions: NavOptions? = null) {
-    navigate(StartRoute, navOptions)
+    navigate(StartDestination, navOptions)
 }
 
 fun NavGraphBuilder.start() {
-    composable<StartRoute> {
+    composable<StartDestination> {
         StartRoute()
     }
 }

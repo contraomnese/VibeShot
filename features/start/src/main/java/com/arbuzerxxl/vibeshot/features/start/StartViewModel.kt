@@ -1,7 +1,5 @@
 package com.arbuzerxxl.vibeshot.features.start
 
-import android.R.attr.theme
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arbuzerxxl.vibeshot.domain.models.auth.AuthState
@@ -34,7 +32,6 @@ class StartViewModel(
                     is AuthState.Guest -> StartUiState.Success(username = authState.user.username, darkMode = (data.theme == DarkThemeConfig.DARK))
                     AuthState.Unauthenticated -> StartUiState.Loading
                 } }
-
             }
         }
     }

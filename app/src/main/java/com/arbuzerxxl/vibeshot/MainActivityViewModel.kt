@@ -29,21 +29,10 @@ class MainActivityViewModel(
             initialValue = Loading,
             started = SharingStarted.WhileSubscribed(5_000),
         )
-
-    private val _keepSplashScreen = MutableStateFlow(true)
-    val keepSplashScreen: StateFlow<Boolean> = _keepSplashScreen.asStateFlow()
-
-    fun disableSplashScreen() {
-        viewModelScope.launch {
-            delay(2000)
-            _keepSplashScreen.update {
-                false
-            }
-        }
-    }
 }
 
 sealed interface MainActivityUiState {
+
     data object Loading : MainActivityUiState {
         override fun shouldSkipAuth(): Boolean = false
         override fun shouldUseDarkTheme(isSystemDarkTheme: Boolean) = isSystemDarkTheme

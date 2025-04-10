@@ -9,15 +9,15 @@ import com.arbuzerxxl.vibeshot.features.auth.presentation.AuthRoute
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object AuthRoute
+object AuthDestination
 
 fun NavController.navigateToAuth(navOptions: NavOptions? = null) =
-    navigate(AuthRoute, navOptions)
+    navigate(AuthDestination, navOptions)
 
 fun NavGraphBuilder.authentication(
     onNavigateAfterAuth: () -> Unit,
 ) {
-    composable<AuthRoute> {
+    composable<AuthDestination> {
         AuthRoute(
             onNavigateAfterAuth = onNavigateAfterAuth,
         )
