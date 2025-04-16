@@ -13,12 +13,12 @@ data class InterestsPhotoNetwork(
     @SerializedName("isfriend") val isFriend: Int,
     @SerializedName("isfamily") val isFamily: Int,
 
-    @SerializedName("height_m")
-    val heightM: Int?,
-    @SerializedName("width_m")
-    val widthM: Int?,
-    @SerializedName("url_m")
-    val urlM: String?,
+    @SerializedName("height_s")
+    val heightS: Int?,
+    @SerializedName("width_s")
+    val widthS: Int?,
+    @SerializedName("url_s")
+    val urlS: String?,
 
     @SerializedName("height_l")
     val heightL: Int?,

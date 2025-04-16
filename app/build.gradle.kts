@@ -109,6 +109,7 @@ dependencies {
     implementation(libs.coil)
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
+    implementation(libs.coil.transformations)
 
     // data
     implementation(libs.retrofit)

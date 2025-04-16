@@ -1,5 +1,5 @@
 [versions]
-coil = "3.1.0"
+coil = "3.0.0"
 runtimeAndroid = "1.7.8"
 
 # app config
@@ -53,6 +53,7 @@ junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 appcompat = "1.6.1"
 material = "1.10.0"
+transformations = "3.0.0"
 
 
 [libraries]
@@ -62,6 +63,7 @@ material = "1.10.0"
 coil = { module = "io.coil-kt.coil3:coil", version.ref = "coil" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
+coil-transformations = { module = "com.github.Commit451.coil-transformations:transformations", version.ref = "coil" }
 
 koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin" }
 koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
@@ -119,6 +121,7 @@ navigation-testing = { group = "androidx.navigation", name = "navigation-testing
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -1,16 +1,17 @@
 package com.arbuzerxxl.vibeshot.core.ui.widgets
 
-import android.graphics.drawable.Drawable
+import android.content.Context
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 
@@ -19,12 +20,17 @@ fun PhotoCard(
     modifier: Modifier = Modifier,
     urlLowQuality: String,
     urlHighQuality: String,
+    height: Int,
+    width: Int,
+    isScrolling: Boolean
 ) {
 
+    val context = LocalContext.current
+
     Card(
-        modifier = modifier
-            .padding(10.dp)
-            .wrapContentHeight(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(max = pxToDp(context, height).dp),
         shape = MaterialTheme.shapes.medium,
         elevation = CardDefaults.cardElevation(),
 
@@ -34,18 +40,27 @@ fun PhotoCard(
         ) {
             PhotoImage(
                 urlLowQuality = urlLowQuality,
-                urlHighQuality = urlHighQuality
+                urlHighQuality = urlHighQuality,
+                height = height,
+                width = width,
+                isScrolling = isScrolling
             )
         }
     }
 }
 
-//@Preview(showBackground = true)
-//@Composable
-//fun ItemCardPreview() {
-//    PhotoCard(
-//        urlLowQuality = "",
-//        urlHighQuality = "",
-//        placeholder = painterResource(R.drawable.compose_placeholder)
-//    )
-//}
+private fun pxToDp(context: Context, px: Int): Float {
+    return px / context.resources.displayMetrics.density
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ItemCardPreview() {
+    PhotoCard(
+        urlLowQuality = "",
+        urlHighQuality = "",
+        height = 200,
+        width = 400,
+        isScrolling = false
+    )
+}

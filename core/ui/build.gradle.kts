@@ -60,6 +60,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.coil)
     implementation(libs.coil.compose)
+    implementation(libs.coil.transformations)
     implementation(libs.coil.network.okhttp)
 
     // tests

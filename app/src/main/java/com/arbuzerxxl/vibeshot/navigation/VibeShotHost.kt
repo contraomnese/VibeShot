@@ -12,6 +12,7 @@ import com.arbuzerxxl.vibeshot.features.auth.navigation.AuthDestination
 import com.arbuzerxxl.vibeshot.features.auth.navigation.authentication
 import com.arbuzerxxl.vibeshot.features.interests.navigation.InterestsDestination
 import com.arbuzerxxl.vibeshot.features.interests.navigation.interests
+import com.arbuzerxxl.vibeshot.features.interests.navigation.navigateToInterests
 import com.arbuzerxxl.vibeshot.features.start.navigation.StartDestination
 import com.arbuzerxxl.vibeshot.features.start.navigation.navigateToStart
 import com.arbuzerxxl.vibeshot.features.start.navigation.start
@@ -33,7 +34,7 @@ fun VibeShotHost(
         modifier = modifier,
     ) {
         start()
-        authentication(onNavigateAfterAuth = navController::navigateToStart,)
+        authentication(onNavigateAfterAuth = navController::navigateToInterests,)
         interests()
     }
 }

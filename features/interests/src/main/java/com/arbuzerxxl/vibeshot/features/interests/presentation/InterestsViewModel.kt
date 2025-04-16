@@ -18,8 +18,8 @@ sealed interface InterestsUiState {
 }
 
 class InterestsViewModel(
-    private val interestsRepository: InterestsRepository
-): ViewModel() {
+    private val interestsRepository: InterestsRepository,
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow<InterestsUiState>(InterestsUiState.Loading)
     val uiState = _uiState.asStateFlow()
@@ -29,7 +29,14 @@ class InterestsViewModel(
             interestsRepository.getPhotos().collect { items ->
                 _uiState.update {
                     InterestsUiState.Success(
-                        items.map { Photo(lowQualityUrl = it.url_m, highQualityUrl = it.url_l) }.toImmutableList()
+                        items.map {
+                            Photo(
+                                lowQualityUrl = it.lowQualityImageUrl,
+                                highQualityUrl = it.highQualityImageUrl,
+                                height = it.height,
+                                width = it.width
+                            )
+                        }.toImmutableList()
                     )
                 }
             }
@@ -37,4 +44,4 @@ class InterestsViewModel(
     }
 }
 
-data class Photo(val lowQualityUrl: String, val highQualityUrl: String,)
+data class Photo(val lowQualityUrl: String, val highQualityUrl: String, val height: Int, val width: Int)

@@ -2,6 +2,8 @@ package com.arbuzerxxl.vibeshot.domain.models
 
 data class InterestsResourceItem(
     val title: String,
-    val url_m: String,
-    val url_l: String
+    val lowQualityImageUrl: String,
+    val highQualityImageUrl: String,
+    val height: Int,
+    val width: Int
 )
