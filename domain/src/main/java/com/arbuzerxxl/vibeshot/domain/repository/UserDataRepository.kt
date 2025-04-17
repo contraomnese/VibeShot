@@ -10,4 +10,6 @@ interface UserDataRepository {
 
     suspend fun setTheme(darkTheme: Boolean)
 
+    suspend fun clearUserData()
+
 }

@@ -30,8 +30,10 @@ android {
 }
 
 dependencies {
+
     // core
     implementation(libs.androidx.core.ktx)
+    implementation(libs.kotlinx.collections.immutable)
 
     // navigation
     implementation(libs.navigation)

@@ -9,7 +9,6 @@ import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -23,19 +22,16 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arbuzerxxl.vibeshot.core.ui.widgets.LoadingIndicator
 import com.arbuzerxxl.vibeshot.core.ui.widgets.PhotoCard
-import com.arbuzerxxl.vibeshot.features.interests.di.interestsModule
 import org.koin.androidx.compose.koinViewModel
-import org.koin.compose.module.rememberKoinModules
 import org.koin.core.annotation.KoinExperimentalAPI
 
 @OptIn(KoinExperimentalAPI::class)
 @Composable
-fun InterestsRoute(
+internal fun InterestsRoute(
     modifier: Modifier = Modifier,
+    viewmodel: InterestsViewModel = koinViewModel()
 ) {
-    rememberKoinModules(unloadOnForgotten = true) { listOf(interestsModule) }
 
-    val viewmodel: InterestsViewModel = koinViewModel()
     val uiState by viewmodel.uiState.collectAsStateWithLifecycle()
 
     InterestsScreen(

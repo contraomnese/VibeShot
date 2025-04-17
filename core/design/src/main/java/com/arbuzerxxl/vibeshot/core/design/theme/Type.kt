@@ -48,12 +48,11 @@ val vibeTypography = Typography(
         fontSize = 24.sp,
         fontFamily = victorMonoFamily,
         fontWeight = FontWeight.Bold,
-        fontStyle = FontStyle.Italic
     ),
     titleSmall = TextStyle(
         fontSize = 17.sp,
         fontFamily = victorMonoFamily,
-        fontWeight = FontWeight.W600,
+        fontWeight = FontWeight.SemiBold,
     ),
     labelLarge = TextStyle(
         fontSize = 20.sp,

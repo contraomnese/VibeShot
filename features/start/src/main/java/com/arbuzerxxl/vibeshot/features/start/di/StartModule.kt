@@ -4,7 +4,7 @@ import com.arbuzerxxl.vibeshot.features.start.StartViewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
-val startModule = module {
+internal val startModule = module {
 
     viewModelOf(::StartViewModel)
 }

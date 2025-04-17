@@ -1,5 +1,6 @@
 package com.arbuzerxxl.vibeshot.data.storage.memory
 
+import android.R.attr.theme
 import android.content.Context
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -23,6 +24,12 @@ class SettingsMemoryStorage(private val context: Context): SettingsStorage {
     override suspend fun setTheme(theme: DarkThemeConfig) {
         dataStore.edit { preferences ->
             preferences[PreferencesKeys.THEME] = theme.name
+        }
+    }
+
+    override suspend fun clearSettings() {
+        dataStore.edit { preferences ->
+            preferences.remove(PreferencesKeys.THEME)
         }
     }
 

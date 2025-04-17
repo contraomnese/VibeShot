@@ -8,13 +8,9 @@ import androidx.navigation.compose.NavHost
 import androidx.compose.runtime.getValue
 import androidx.navigation.compose.rememberNavController
 import com.arbuzerxxl.vibeshot.MainActivityViewModel
-import com.arbuzerxxl.vibeshot.features.auth.navigation.AuthDestination
 import com.arbuzerxxl.vibeshot.features.auth.navigation.authentication
-import com.arbuzerxxl.vibeshot.features.interests.navigation.InterestsDestination
-import com.arbuzerxxl.vibeshot.features.interests.navigation.interests
-import com.arbuzerxxl.vibeshot.features.interests.navigation.navigateToInterests
+import com.arbuzerxxl.vibeshot.features.bottom_menu.navigation.bottomMenu
 import com.arbuzerxxl.vibeshot.features.start.navigation.StartDestination
-import com.arbuzerxxl.vibeshot.features.start.navigation.navigateToStart
 import com.arbuzerxxl.vibeshot.features.start.navigation.start
 import org.koin.androidx.compose.koinViewModel
 
@@ -26,16 +22,16 @@ fun VibeShotHost(
 ) {
 
     val uiState by viewModel.uiState.collectAsState()
-    val startDestination = if (uiState.shouldSkipAuth()) InterestsDestination else AuthDestination
+    val shouldSkipAuth = uiState.shouldSkipAuth()
 
     NavHost(
         navController,
-        startDestination = startDestination,
+        startDestination = StartDestination,
         modifier = modifier,
     ) {
-        start()
-        authentication(onNavigateAfterAuth = navController::navigateToInterests,)
-        interests()
+        start(navController.startNavigator(shouldSkipAuth))
+        authentication(navController.authNavigator())
+        bottomMenu(navController.bottomMenuNavigator())
     }
 }
 

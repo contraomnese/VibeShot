@@ -4,7 +4,7 @@ import com.arbuzerxxl.vibeshot.features.auth.presentation.AuthViewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
-val authModule = module {
+internal val authModule = module {
 
-//    viewModelOf(::AuthViewModel)
+    viewModelOf(::AuthViewModel)
 }

@@ -4,7 +4,7 @@ import com.arbuzerxxl.vibeshot.features.interests.presentation.InterestsViewMode
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
-val interestsModule = module {
+internal val interestsModule = module {
 
     viewModelOf(::InterestsViewModel)
 }

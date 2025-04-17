@@ -24,5 +24,8 @@ import androidx.compose.ui.tooling.preview.Preview
  * to render various devices.
  */
 @Preview(name = "phone", showBackground = true,)
-@Preview(name = "darkPhone", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL)
+@Preview(name = "darkPhone",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL,
+    backgroundColor = 1)
 annotation class DevicePreviews

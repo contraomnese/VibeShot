@@ -10,14 +10,14 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-sealed interface InterestsUiState {
+internal sealed interface InterestsUiState {
 
     data object Loading : InterestsUiState
 
     data class Success(val photos: ImmutableList<Photo>) : InterestsUiState
 }
 
-class InterestsViewModel(
+internal class InterestsViewModel(
     private val interestsRepository: InterestsRepository,
 ) : ViewModel() {
 

@@ -4,16 +4,14 @@ import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arbuzerxxl.vibeshot.domain.models.auth.AuthState
-import com.arbuzerxxl.vibeshot.domain.models.auth.tokens.RequestToken
 import com.arbuzerxxl.vibeshot.domain.repository.AuthRepository
-import com.arbuzerxxl.vibeshot.domain.repository.TokenRepository
 import com.arbuzerxxl.vibeshot.domain.usecases.auth.ObserveAuthStateUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-sealed interface AuthUiState {
+internal sealed interface AuthUiState {
 
     data object Loading : AuthUiState
 
@@ -27,7 +25,7 @@ sealed interface AuthUiState {
     data object UserSuccess : AuthUiState
 }
 
-class AuthViewModel(
+internal class AuthViewModel(
     private val authRepository: AuthRepository,
     private val observeAuthStateUseCase: ObserveAuthStateUseCase
 ) : ViewModel() {

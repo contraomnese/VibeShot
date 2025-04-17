@@ -26,4 +26,9 @@ class UserDataRepositoryImpl(
         settingsStorage.setTheme(if (darkTheme) DarkThemeConfig.DARK else DarkThemeConfig.LIGHT)
     }
 
+    override suspend fun clearUserData() {
+        authRepository.logOut()
+        settingsStorage.clearSettings()
+    }
+
 }

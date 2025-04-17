@@ -33,3 +33,5 @@ include(":domain")
 
 include(":features:start")
 include(":features:interests")
+include(":features:bottom_menu")
+include(":features:profile")

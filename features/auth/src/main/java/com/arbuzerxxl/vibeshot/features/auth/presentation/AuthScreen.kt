@@ -21,20 +21,23 @@ import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arbuzerxxl.vibeshot.core.design.theme.VibeShotTheme
 import org.koin.androidx.compose.koinViewModel
+import org.koin.core.annotation.KoinExperimentalAPI
 
+@OptIn(KoinExperimentalAPI::class)
 @Composable
 internal fun AuthRoute(
     modifier: Modifier = Modifier,
+    viewModel: AuthViewModel = koinViewModel(),
     onNavigateAfterAuth: () -> Unit,
 ) {
-    val authViewModel: AuthViewModel = koinViewModel()
-    val uiState by authViewModel.uiState.collectAsStateWithLifecycle()
+
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     AuthScreen(
         modifier = modifier,
         uiState = uiState,
-        onSignInClick = authViewModel::onSignIn,
-        onSignInAsGuestClick = authViewModel::onSignInAsGuest,
+        onSignInClick = viewModel::onSignIn,
+        onSignInAsGuestClick = viewModel::onSignInAsGuest,
         onNavigateAfterAuth = onNavigateAfterAuth,
     )
 }

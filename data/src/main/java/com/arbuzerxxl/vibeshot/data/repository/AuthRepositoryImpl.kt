@@ -30,7 +30,7 @@ class AuthRepositoryImpl(
         userRepository.saveAsGuest()
     }
 
-    override suspend fun signOut() = withContext(dispatcher)  {
+    override suspend fun logOut() = withContext(dispatcher)  {
         userRepository.delete()
     }
 

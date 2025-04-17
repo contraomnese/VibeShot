@@ -8,19 +8,15 @@ import com.arbuzerxxl.vibeshot.domain.models.UserData
 import com.arbuzerxxl.vibeshot.domain.models.auth.AuthState
 import com.arbuzerxxl.vibeshot.domain.models.ui.DarkThemeConfig
 import com.arbuzerxxl.vibeshot.domain.repository.UserDataRepository
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
 class MainActivityViewModel(
     private val userDataRepository: UserDataRepository,
 ) : ViewModel() {
+
 
     val uiState: StateFlow<MainActivityUiState> = userDataRepository.userData
         .map { Success(it) }

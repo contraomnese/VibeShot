@@ -7,6 +7,7 @@ package com.kiparo.chargerapp.di
 
 import com.arbuzerxxl.vibeshot.BuildConfig
 import com.arbuzerxxl.vibeshot.MainActivityViewModel
+import com.arbuzerxxl.vibeshot.core.navigation.TopDestinationsCollection
 import com.arbuzerxxl.vibeshot.data.mappers.AuthDataMapper
 import com.arbuzerxxl.vibeshot.data.network.api.FlickrAuthApi
 import com.arbuzerxxl.vibeshot.data.network.api.FlickrInterestsApi
@@ -25,7 +26,7 @@ import com.arbuzerxxl.vibeshot.domain.repository.InterestsRepository
 import com.arbuzerxxl.vibeshot.domain.repository.TokenRepository
 import com.arbuzerxxl.vibeshot.domain.repository.UserDataRepository
 import com.arbuzerxxl.vibeshot.domain.repository.UserRepository
-import com.arbuzerxxl.vibeshot.features.auth.presentation.AuthViewModel
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.Dispatchers
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -130,9 +131,6 @@ val dataModule = module {
     // endregion
 
     // region viewModels
-    single<AuthViewModel> {
-        AuthViewModel(authRepository = get(), observeAuthStateUseCase = get())
-    }
     single<MainActivityViewModel> {
         MainActivityViewModel(userDataRepository = get())
     }

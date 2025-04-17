@@ -9,4 +9,5 @@ interface SettingsStorage {
 
     val settings: Flow<SettingsEntity>
     suspend fun setTheme(theme: DarkThemeConfig)
+    suspend fun clearSettings()
 }

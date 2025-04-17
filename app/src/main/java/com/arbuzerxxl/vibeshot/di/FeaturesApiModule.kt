@@ -6,4 +6,6 @@ package com.arbuzerxxl.vibeshot.di
 
 import org.koin.dsl.module
 
-val featuresApiModule = module { }
+val featuresApiModule = module {
+
+}
