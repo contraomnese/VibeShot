@@ -8,9 +8,9 @@ import androidx.compose.ui.Modifier
 import com.arbuzerxxl.vibeshot.core.design.theme.itemWidth64
 
 @Composable
-fun LoadingIndicator() {
+fun LoadingIndicator(modifier: Modifier = Modifier) {
     CircularProgressIndicator(
-        modifier = Modifier.width(itemWidth64),
+        modifier = modifier.width(itemWidth64),
         color = MaterialTheme.colorScheme.surfaceVariant,
         trackColor = MaterialTheme.colorScheme.secondary,
     )

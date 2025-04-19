@@ -1,6 +1,6 @@
 package com.arbuzerxxl.vibeshot.data.network.api
 
-import com.arbuzerxxl.vibeshot.data.network.model.interestingness.InterestingnessNetworkResponse
+import com.arbuzerxxl.vibeshot.data.network.model.interestingness.InterestsNetworkResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -13,8 +13,7 @@ interface FlickrInterestsApi {
         @Query("nojsoncallback") noJsonCallback: String = "1",
         @Query("date") date: String? = null,
         @Query("extras") extras: String? = null,
-        @Query("per_page") perPage: String? = null,
-        @Query("page") page: String? = null,
-    ): InterestingnessNetworkResponse
-
+        @Query("per_page") perPage: Int? = null,
+        @Query("page") page: Int? = null,
+    ): InterestsNetworkResponse
 }

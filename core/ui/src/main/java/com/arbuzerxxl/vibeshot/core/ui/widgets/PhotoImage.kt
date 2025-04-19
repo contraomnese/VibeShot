@@ -10,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.BlurEffect
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import coil3.compose.AsyncImage
@@ -37,7 +36,7 @@ fun PhotoImage(
     val lowQualityPainter = rememberAsyncImagePainter(
         model = Builder(context)
             .data(urlLowQuality)
-            .transformations(BlurTransformation(context = context))
+            .transformations(BlurTransformation(context = context, radius = 2f))
             .size(height = height, width = width)
             .build()
     )

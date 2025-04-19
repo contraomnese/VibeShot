@@ -5,3 +5,6 @@ class RequestTokenInvalidResponseException(cause: Throwable): Throwable(cause = 
 class RequestTokenInitializeException(cause: Throwable): Throwable(cause = cause)
 class AccessTokenFetchException(cause: Throwable): Throwable(cause = cause)
 class AccessTokenInvalidResponseException(cause: Throwable): Throwable(cause = cause)
+
+
+class RequestInterestsPhotosFetchException(cause: Throwable): Throwable(cause = cause)

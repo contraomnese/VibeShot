@@ -1,9 +1,9 @@
 package com.arbuzerxxl.vibeshot.domain.repository
 
-import com.arbuzerxxl.vibeshot.domain.models.InterestsResourceItem
+import com.arbuzerxxl.vibeshot.domain.models.InterestsResources
 import kotlinx.coroutines.flow.Flow
 
-interface InterestsRepository {
+fun interface InterestsRepository {
 
-    suspend fun getPhotos(): Flow<List<InterestsResourceItem>>
+    suspend fun getPhotos(page: Int): Flow<InterestsResources>
 }
