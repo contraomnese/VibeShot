@@ -25,6 +25,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -57,6 +58,7 @@ class MainActivity : ComponentActivity() {
                     .onEach { themeSettings = it }
                     .map { it.darkTheme }
                     .distinctUntilChanged()
+                    .flowOn(Dispatchers.IO)
                     .collect { darkTheme ->
                         enableEdgeToEdge(
                             statusBarStyle = SystemBarStyle.auto(

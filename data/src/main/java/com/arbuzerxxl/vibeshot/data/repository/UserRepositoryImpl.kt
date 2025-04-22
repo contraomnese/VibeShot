@@ -7,16 +7,19 @@ import com.arbuzerxxl.vibeshot.domain.models.auth.AuthState
 import com.arbuzerxxl.vibeshot.domain.models.auth.User
 import com.arbuzerxxl.vibeshot.domain.repository.TokenRepository
 import com.arbuzerxxl.vibeshot.domain.repository.UserRepository
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 
 class UserRepositoryImpl(
     private val userStorage: UserStorage,
     private val tokenRepository: TokenRepository,
     private val mapper: AuthDataMapper,
+    private val dispatcher: CoroutineDispatcher,
 ) : UserRepository {
 
-    override fun observe(): Flow<AuthState> = userStorage.user.map { mapper.mapToDomain(it) }
+    override fun observe(): Flow<AuthState> = userStorage.user.flowOn(dispatcher).map { mapper.mapToDomain(it) }
 
     override suspend fun getBy(verifier: String): User = tokenRepository.getUserBy(verifier)
 

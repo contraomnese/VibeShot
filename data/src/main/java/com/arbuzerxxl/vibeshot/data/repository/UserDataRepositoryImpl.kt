@@ -5,12 +5,16 @@ import com.arbuzerxxl.vibeshot.domain.models.UserData
 import com.arbuzerxxl.vibeshot.domain.models.ui.DarkThemeConfig
 import com.arbuzerxxl.vibeshot.domain.repository.AuthRepository
 import com.arbuzerxxl.vibeshot.domain.repository.UserDataRepository
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.withContext
 
 class UserDataRepositoryImpl(
     val authRepository: AuthRepository,
     val settingsStorage: SettingsStorage,
+    private val dispatcher: CoroutineDispatcher,
 ) : UserDataRepository {
 
     override val userData: Flow<UserData> = combine(
@@ -20,9 +24,9 @@ class UserDataRepositoryImpl(
         UserData(
             user, settings.theme
         )
-    }
+    }.flowOn(dispatcher)
 
-    override suspend fun setTheme(darkTheme: Boolean) {
+    override suspend fun setTheme(darkTheme: Boolean) = withContext(dispatcher) {
         settingsStorage.setTheme(if (darkTheme) DarkThemeConfig.DARK else DarkThemeConfig.LIGHT)
     }
 

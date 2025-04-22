@@ -1,11 +1,11 @@
 package com.arbuzerxxl.vibeshot.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import androidx.compose.runtime.getValue
 import androidx.navigation.compose.rememberNavController
 import com.arbuzerxxl.vibeshot.MainActivityViewModel
 import com.arbuzerxxl.vibeshot.features.auth.navigation.authentication
@@ -21,7 +21,7 @@ fun VibeShotHost(
     viewModel: MainActivityViewModel = koinViewModel(),
 ) {
 
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val shouldSkipAuth = uiState.shouldSkipAuth()
 
     NavHost(

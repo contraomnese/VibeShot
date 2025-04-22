@@ -7,13 +7,14 @@ package com.kiparo.chargerapp.di
 
 import com.arbuzerxxl.vibeshot.BuildConfig
 import com.arbuzerxxl.vibeshot.MainActivityViewModel
-import com.arbuzerxxl.vibeshot.core.navigation.TopDestinationsCollection
 import com.arbuzerxxl.vibeshot.data.mappers.AuthDataMapper
 import com.arbuzerxxl.vibeshot.data.network.api.FlickrAuthApi
 import com.arbuzerxxl.vibeshot.data.network.api.FlickrInterestsApi
+import com.arbuzerxxl.vibeshot.data.network.api.FlickrPhotoSizesApi
 import com.arbuzerxxl.vibeshot.data.network.interceptors.ErrorInterceptor
 import com.arbuzerxxl.vibeshot.data.repository.AuthRepositoryImpl
 import com.arbuzerxxl.vibeshot.data.repository.InterestsRepositoryImpl
+import com.arbuzerxxl.vibeshot.data.repository.PhotoSizesRepositoryImpl
 import com.arbuzerxxl.vibeshot.data.repository.TokenRepositoryImpl
 import com.arbuzerxxl.vibeshot.data.repository.UserDataRepositoryImpl
 import com.arbuzerxxl.vibeshot.data.repository.UserRepositoryImpl
@@ -23,10 +24,10 @@ import com.arbuzerxxl.vibeshot.data.storage.memory.SettingsMemoryStorage
 import com.arbuzerxxl.vibeshot.data.storage.memory.UserMemoryStorage
 import com.arbuzerxxl.vibeshot.domain.repository.AuthRepository
 import com.arbuzerxxl.vibeshot.domain.repository.InterestsRepository
+import com.arbuzerxxl.vibeshot.domain.repository.PhotoSizesRepository
 import com.arbuzerxxl.vibeshot.domain.repository.TokenRepository
 import com.arbuzerxxl.vibeshot.domain.repository.UserDataRepository
 import com.arbuzerxxl.vibeshot.domain.repository.UserRepository
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.Dispatchers
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -70,6 +71,7 @@ val dataModule = module {
 
     single<FlickrAuthApi> { get<Retrofit>().create(FlickrAuthApi::class.java) }
     single<FlickrInterestsApi> { get<Retrofit>().create(FlickrInterestsApi::class.java) }
+    single<FlickrPhotoSizesApi> { get<Retrofit>().create(FlickrPhotoSizesApi::class.java) }
     // endregion
 
     // region Repositories
@@ -79,14 +81,16 @@ val dataModule = module {
             apiKey = BuildConfig.FLICKR_API_KEY,
             apiToken = BuildConfig.FLICKR_SECRET,
             apiBaseUrl = BuildConfig.FLICKR_API_BASE_URL,
-            apiCallback = BuildConfig.FLICKR_API_CALLBACK
+            apiCallback = BuildConfig.FLICKR_API_CALLBACK,
+            dispatcher = Dispatchers.IO
         )
     }
     factory<UserRepository> {
         UserRepositoryImpl(
             userStorage = get(),
             mapper = get(),
-            tokenRepository = get()
+            tokenRepository = get(),
+            dispatcher = Dispatchers.IO
         )
     }
     factory<AuthRepository> {
@@ -99,11 +103,19 @@ val dataModule = module {
     factory<UserDataRepository> {
         UserDataRepositoryImpl(
             authRepository = get(),
-            settingsStorage = get()
+            settingsStorage = get(),
+            dispatcher = Dispatchers.IO
         )
     }
     factory<InterestsRepository> {
         InterestsRepositoryImpl(
+            api = get(),
+            key = BuildConfig.FLICKR_API_KEY,
+            dispatcher = Dispatchers.IO
+        )
+    }
+    factory<PhotoSizesRepository> {
+        PhotoSizesRepositoryImpl(
             api = get(),
             key = BuildConfig.FLICKR_API_KEY,
             dispatcher = Dispatchers.IO

@@ -4,6 +4,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
+import com.arbuzerxxl.vibeshot.core.navigation.navigateSingleTopTo
 import com.arbuzerxxl.vibeshot.features.bottom_menu.di.bottomMenuModule
 import com.kiparo.pizzaapp.presentation.features.bottom_menu.BottomMenuRoute
 import kotlinx.serialization.Serializable
@@ -46,5 +47,5 @@ private fun NavGraphBuilder.bottomMenuInner(
 
 fun NavHostController.navigateToBottomMenu() {
     popBackStack()
-    navigate(BottomMenuGraph)
+    navigateSingleTopTo(BottomMenuGraph)
 }

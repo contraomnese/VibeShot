@@ -13,6 +13,8 @@ import com.arbuzerxxl.vibeshot.domain.models.auth.tokens.AccessToken
 import com.arbuzerxxl.vibeshot.domain.models.auth.tokens.RequestToken
 import com.arbuzerxxl.vibeshot.domain.repository.TokenRepository
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.withContext
 
 private const val FLICKR_PARAMS_ID = "user_nsid"
 private const val FLICKR_PARAMS_USERNAME = "username"
@@ -32,17 +34,19 @@ class TokenRepositoryImpl(
     private val apiToken: String,
     private val apiBaseUrl: String,
     private val apiCallback: String,
+    private val dispatcher: CoroutineDispatcher,
 ) : TokenRepository {
 
     private var requestToken: RequestToken? = null
 
-    override suspend fun getAuthorizeUrlAndSaveRequestToken(): String =
+    override suspend fun getAuthorizeUrlAndSaveRequestToken(): String = withContext(dispatcher) {
         try {
             requestToken = getRequestToken()
             "${apiBaseUrl}${OAuthFlow.AUTHORIZE.step}?oauth_token=${requestToken!!.token}"
         } catch (cause: Throwable) {
             throw RequestTokenInitializeException(cause)
         }
+    }
 
     private suspend fun getRequestToken(): RequestToken {
         val request = generateRequestTokenRequest()
@@ -74,11 +78,11 @@ class TokenRepositoryImpl(
             throw RequestTokenFetchException(cause)
         }
 
-    override suspend fun getUserBy(verifier: String): User {
+    override suspend fun getUserBy(verifier: String): User = withContext(dispatcher) {
 
         val request = generateAccessTokenRequest(verifier)
         val response = getAccessTokenResponse(request)
-        return parseAccessTokenResponse(response)
+        parseAccessTokenResponse(response)
     }
 
     private fun generateAccessTokenRequest(verifier: String): AccessTokenRequest =
