@@ -2,6 +2,7 @@ package com.arbuzerxxl.vibeshot.features.interests.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.arbuzerxxl.vibeshot.domain.models.InterestsPhotoResource
 import com.arbuzerxxl.vibeshot.domain.models.InterestsPhotoResources
 import com.arbuzerxxl.vibeshot.domain.usecases.photos.GetInterestsPhotosUseCase
 import kotlinx.collections.immutable.ImmutableList
@@ -16,7 +17,7 @@ internal sealed interface InterestsUiState {
 
     data object Loading : InterestsUiState
 
-    data class Success(val photos: ImmutableList<Photo>) : InterestsUiState
+    data class Success(val photos: ImmutableList<InterestsPhotoResource>) : InterestsUiState
 }
 
 internal class InterestsViewModel(
@@ -44,24 +45,15 @@ internal class InterestsViewModel(
     init {
         viewModelScope.launch {
             val photos = getInterestsPhotosUseCase.execute(currentPage)
-
-                initState(photos)
-                totalPages = photos.pages
-
+            initState(photos)
+            totalPages = photos.pages
         }
     }
 
     private fun initState(photos: InterestsPhotoResources) {
         _uiState.update {
             InterestsUiState.Success(
-                photos.resources.map {
-                    Photo(
-                        lowQualityUrl = it.sizes.lowQualityUrl,
-                        highQualityUrl = it.sizes.highQualityUrl,
-                        height = it.sizes.highQualityHeight,
-                        width = it.sizes.highQualityWidth
-                    )
-                }.toImmutableList()
+                photos.resources.toImmutableList()
             )
         }
     }
@@ -70,7 +62,7 @@ internal class InterestsViewModel(
         if (currentPage < totalPages) {
             viewModelScope.launch {
                 withLoading {
-                    val photos = getInterestsPhotosUseCase.execute(currentPage++)
+                    val photos = getInterestsPhotosUseCase.execute(++currentPage)
                     updateCurrentState(photos)
                 }
             }
@@ -80,17 +72,8 @@ internal class InterestsViewModel(
     private fun updateCurrentState(items: InterestsPhotoResources) {
         _uiState.update {
             (it as InterestsUiState.Success).copy(
-                photos = it.photos.plus(items.resources.map {
-                    Photo(
-                        lowQualityUrl = it.sizes.lowQualityUrl,
-                        highQualityUrl = it.sizes.highQualityUrl,
-                        height = it.sizes.highQualityHeight,
-                        width = it.sizes.highQualityWidth
-                    )
-                }).toImmutableList()
+                photos = it.photos.plus(items.resources).toImmutableList()
             )
         }
     }
 }
-
-data class Photo(val lowQualityUrl: String, val highQualityUrl: String, val height: Int, val width: Int)

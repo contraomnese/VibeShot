@@ -4,8 +4,8 @@ data class PhotoSizesResource(
     val originalWidth: Int,
     val originalHeight: Int,
     val originalUrl: String,
-    val highQualityWidth: Int,
-    val highQualityHeight: Int,
-    val highQualityUrl: String,
+    val width: Int,
+    val height: Int,
+    val url: String,
     val lowQualityUrl: String,
 )

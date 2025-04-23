@@ -1,6 +1,7 @@
 package com.arbuzerxxl.vibeshot.navigation
 
 import androidx.navigation.NavHostController
+import com.arbuzerxxl.vibeshot.featires.details.navigation.navigateToDetails
 import com.arbuzerxxl.vibeshot.features.auth.navigation.AuthNavigator
 import com.arbuzerxxl.vibeshot.features.auth.navigation.navigateToAuth
 import com.arbuzerxxl.vibeshot.features.bottom_menu.navigation.BottomMenuNavigator
@@ -19,7 +20,6 @@ fun NavHostController.authNavigator(): AuthNavigator = object : AuthNavigator {
         popBackStack()
         navigateToBottomMenu()
     }
-
 }
 
 fun NavHostController.bottomMenuNavigator(): BottomMenuNavigator = object : BottomMenuNavigator {
@@ -31,5 +31,9 @@ fun NavHostController.bottomMenuNavigator(): BottomMenuNavigator = object : Bott
 
     override fun onNavigateUp() {
         popBackStack()
+    }
+
+    override fun onNavigateToDetails(url: String) {
+        navigateToDetails(url=url)
     }
 }

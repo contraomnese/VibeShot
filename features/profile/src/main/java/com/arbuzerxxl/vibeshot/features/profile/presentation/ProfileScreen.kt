@@ -14,8 +14,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arbuzerxxl.vibeshot.core.design.theme.VibeShotTheme
-import com.arbuzerxxl.vibeshot.core.design.theme.padding_24
-import com.arbuzerxxl.vibeshot.core.design.theme.padding_40
+import com.arbuzerxxl.vibeshot.core.design.theme.padding24
+import com.arbuzerxxl.vibeshot.core.design.theme.padding40
 import com.arbuzerxxl.vibeshot.core.ui.DevicePreviews
 import com.arbuzerxxl.vibeshot.core.ui.widgets.BaseButton
 import com.arbuzerxxl.vibeshot.core.ui.widgets.LoadingIndicator
@@ -69,7 +69,7 @@ internal fun ProfileScreen(
         BaseButton(
             title = stringResource(id = R.string.logout_title_button),
             modifier = Modifier
-                .padding(bottom = padding_40, start = padding_24, end = padding_24)
+                .padding(bottom = padding40, start = padding24, end = padding24)
                 .align(Alignment.BottomCenter),
             contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
             containerColor = MaterialTheme.colorScheme.primaryContainer,

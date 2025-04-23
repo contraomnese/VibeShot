@@ -1,10 +1,8 @@
 package com.arbuzerxxl.vibeshot.features.start
 
-import android.R.attr.onClick
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
@@ -16,20 +14,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arbuzerxxl.vibeshot.core.design.icon.VibeShotIcons
 import com.arbuzerxxl.vibeshot.core.design.theme.VibeShotTheme
-import com.arbuzerxxl.vibeshot.core.design.theme.padding_24
-import com.arbuzerxxl.vibeshot.core.design.theme.padding_40
+import com.arbuzerxxl.vibeshot.core.design.theme.padding24
+import com.arbuzerxxl.vibeshot.core.design.theme.padding40
 import com.arbuzerxxl.vibeshot.core.ui.DevicePreviews
 import com.arbuzerxxl.vibeshot.core.ui.widgets.BaseButton
-import com.arbuzerxxl.vibeshot.core.ui.widgets.LoadingIndicator
+import com.arbuzerxxl.vibeshot.ui.R
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
-import com.arbuzerxxl.vibeshot.ui.R
 
 @OptIn(KoinExperimentalAPI::class)
 @Composable
@@ -67,7 +62,7 @@ internal fun StartScreen(
             is StartUiState.Success -> {
                 uiState.darkMode?.let {
                     IconButton(
-                        modifier = Modifier.padding(top = padding_24, end = padding_24).align(Alignment.TopEnd),
+                        modifier = Modifier.padding(top = padding24, end = padding24).align(Alignment.TopEnd),
                         onClick = { setTheme(!uiState.darkMode) }) {
                         if (!uiState.darkMode) Icon(
                             imageVector = VibeShotIcons.DarkMode,
@@ -82,7 +77,7 @@ internal fun StartScreen(
                     }
                 } ?: setTheme(isSystemInDarkTheme())
                 Text(
-                    modifier = Modifier.padding(start = padding_40, end = padding_40).align(Alignment.Center),
+                    modifier = Modifier.padding(start = padding40, end = padding40).align(Alignment.Center),
                     text = stringResource(id = R.string.start_warning),
                     style = MaterialTheme.typography.titleMedium.copy(
                         textAlign = TextAlign.Center
@@ -91,7 +86,7 @@ internal fun StartScreen(
                 )
                 BaseButton(
                     title = stringResource(id = R.string.get_started_title_button),
-                    modifier = Modifier.padding(bottom = padding_40, start = padding_24, end = padding_24).align(Alignment.BottomCenter),
+                    modifier = Modifier.padding(bottom = padding40, start = padding24, end = padding24).align(Alignment.BottomCenter),
                     contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     onClicked = onStartClicked

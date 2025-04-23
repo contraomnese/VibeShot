@@ -25,16 +25,21 @@ data class InterestsTopLevelDestination(
 
 ): TopLevelDestination
 
+interface InterestNavigator{
+    fun navigateToDetails(url: String)
+    fun onNavigateUp()
+}
+
 fun NavController.navigateToInterests(navOptions: NavOptions? = null) {
     navigate(InterestsDestination, navOptions)
 }
 
 @OptIn(KoinExperimentalAPI::class)
-fun NavGraphBuilder.interests() {
+fun NavGraphBuilder.interests(externalNavigator: InterestNavigator) {
 
     composable<InterestsDestination> {
         rememberKoinModules(unloadOnForgotten = true) { listOf(interestsModule) }
 
-        InterestsRoute()
+        InterestsRoute(onPhotoClicked = externalNavigator::navigateToDetails)
     }
 }

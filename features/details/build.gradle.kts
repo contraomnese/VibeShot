@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.arbuzerxxl.vibeshot.features.bottom_menu"
+    namespace = "com.arbuzerxxl.vibeshot.featires.details"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
@@ -42,12 +42,7 @@ dependencies {
     implementation(project(":core:ui"))
     implementation(project(":core:design"))
     implementation(project(":core:navigation"))
-
     implementation(project(":domain"))
-
-    implementation(project(":features:interests"))
-    implementation(project(":features:profile"))
-    implementation(project(":features:details"))
 
     // di
     implementation(libs.koin.core)

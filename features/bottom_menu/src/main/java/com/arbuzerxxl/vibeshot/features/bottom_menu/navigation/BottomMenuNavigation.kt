@@ -5,8 +5,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import com.arbuzerxxl.vibeshot.core.navigation.navigateSingleTopTo
+import com.arbuzerxxl.vibeshot.featires.details.navigation.details
 import com.arbuzerxxl.vibeshot.features.bottom_menu.di.bottomMenuModule
-import com.kiparo.pizzaapp.presentation.features.bottom_menu.BottomMenuRoute
+import com.arbuzerxxl.vibeshot.features.bottom_menu.presentation.BottomMenuRoute
 import kotlinx.serialization.Serializable
 import org.koin.compose.module.rememberKoinModules
 import org.koin.core.annotation.KoinExperimentalAPI
@@ -20,29 +21,29 @@ object BottomMenuDestination
 interface BottomMenuNavigator {
     fun onLogOut()
     fun onNavigateUp()
+    fun onNavigateToDetails(url: String)
 }
 
 fun NavGraphBuilder.bottomMenu(
     externalNavigator: BottomMenuNavigator
 ) {
     navigation<BottomMenuGraph>(startDestination = BottomMenuDestination) {
-        bottomMenuInner(
-            onLogOutClicked = externalNavigator::onLogOut
-        )
+        bottomMenuInner(externalNavigator)
     }
 }
 
 @OptIn(KoinExperimentalAPI::class)
 private fun NavGraphBuilder.bottomMenuInner(
-    onLogOutClicked: () -> Unit
+    externalNavigator: BottomMenuNavigator
 ) {
     composable<BottomMenuDestination> {
 
         rememberKoinModules(unloadOnForgotten = true) { listOf(bottomMenuModule) }
 
-        BottomMenuRoute(onLogOutClicked = onLogOutClicked)
+        BottomMenuRoute(externalNavigator = externalNavigator)
 
     }
+    details(onNavigateUp = externalNavigator::onNavigateUp)
 }
 
 fun NavHostController.navigateToBottomMenu() {

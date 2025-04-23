@@ -1,6 +1,7 @@
 package com.arbuzerxxl.vibeshot.features.interests.presentation
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -37,6 +38,7 @@ private const val LOAD_MORE_THRESHOLD = 5
 internal fun InterestsRoute(
     modifier: Modifier = Modifier,
     viewmodel: InterestsViewModel = koinViewModel(),
+    onPhotoClicked: (String) -> Unit,
 ) {
 
     val uiState by viewmodel.uiState.collectAsStateWithLifecycle()
@@ -46,7 +48,8 @@ internal fun InterestsRoute(
         modifier = modifier,
         uiState = uiState,
         loadMore = viewmodel::loadMore,
-        isLoadingState = loadingState
+        isLoadingState = loadingState,
+        onPhotoClicked = onPhotoClicked
     )
 }
 
@@ -56,6 +59,7 @@ internal fun InterestsScreen(
     uiState: InterestsUiState,
     loadMore: () -> Unit,
     isLoadingState: Boolean,
+    onPhotoClicked: (String) -> Unit,
 ) {
 
     val scrollState = rememberLazyStaggeredGridState()
@@ -102,12 +106,16 @@ internal fun InterestsScreen(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     contentPadding = PaddingValues(8.dp),
                 ) {
-                    items(uiState.photos, key = { it.highQualityUrl }) { photo ->
+                    items(uiState.photos, key = { it.sizes.url }) { photo ->
                         PhotoCard(
-                            urlLowQuality = photo.lowQualityUrl,
-                            urlHighQuality = photo.highQualityUrl,
-                            height = photo.height,
-                            width = photo.width,
+                            modifier = modifier
+                                .clickable(
+                                    onClick = { onPhotoClicked(photo.sizes.url) }
+                                ),
+                            urlLowQuality = photo.sizes.lowQualityUrl,
+                            urlHighQuality = photo.sizes.url,
+                            height = photo.sizes.height,
+                            width = photo.sizes.width,
                             isScrolling = isScrolling
                         )
                     }
@@ -116,7 +124,10 @@ internal fun InterestsScreen(
 
         }
         if (isLoadingState) {
-            LoadingIndicator(modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 20.dp).size(20.dp))
+            LoadingIndicator(modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 20.dp)
+                .size(20.dp))
         }
     }
 }

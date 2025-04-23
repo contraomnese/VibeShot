@@ -13,9 +13,9 @@ fun PhotoSizesNetwork.toDomain(): PhotoSizesResource {
         originalWidth = original.width,
         originalHeight = original.height,
         originalUrl = original.source,
-        highQualityWidth = highQuality.width,
-        highQualityHeight = highQuality.height,
-        highQualityUrl = highQuality.source,
+        width = highQuality.width,
+        height = highQuality.height,
+        url = highQuality.source,
         lowQualityUrl = lowQuality.source
     )
 }

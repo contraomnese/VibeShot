@@ -13,9 +13,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import com.arbuzerxxl.vibeshot.core.design.theme.VibeShotTheme
-import com.arbuzerxxl.vibeshot.core.design.theme.corner_size_16
-import com.arbuzerxxl.vibeshot.core.design.theme.height_base_button
-import com.arbuzerxxl.vibeshot.core.design.theme.padding_5
+import com.arbuzerxxl.vibeshot.core.design.theme.baseButtonHeight
+import com.arbuzerxxl.vibeshot.core.design.theme.cornerSize16
+import com.arbuzerxxl.vibeshot.core.design.theme.padding4
 import com.arbuzerxxl.vibeshot.core.ui.DevicePreviews
 import com.arbuzerxxl.vibeshot.ui.R
 
@@ -30,16 +30,16 @@ fun BaseButton(
     Button(
         modifier = modifier
             .fillMaxWidth()
-            .requiredHeight(height_base_button),
+            .requiredHeight(baseButtonHeight),
         onClick = onClicked,
-        contentPadding = PaddingValues(vertical = padding_5),
+        contentPadding = PaddingValues(vertical = padding4),
         colors = ButtonColors(
             contentColor = contentColor,
             containerColor = containerColor,
             disabledContentColor = MaterialTheme.colorScheme.background,
             disabledContainerColor = MaterialTheme.colorScheme.onSurface
         ),
-        shape = RoundedCornerShape(corner_size_16)
+        shape = RoundedCornerShape(cornerSize16)
     ) {
         Text(
             text = title,
