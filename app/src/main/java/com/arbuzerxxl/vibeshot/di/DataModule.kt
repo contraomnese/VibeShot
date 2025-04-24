@@ -18,6 +18,7 @@ import com.arbuzerxxl.vibeshot.data.repository.PhotoSizesRepositoryImpl
 import com.arbuzerxxl.vibeshot.data.repository.TokenRepositoryImpl
 import com.arbuzerxxl.vibeshot.data.repository.UserDataRepositoryImpl
 import com.arbuzerxxl.vibeshot.data.repository.UserRepositoryImpl
+import com.arbuzerxxl.vibeshot.data.sources.InterestsPagingSourceImpl
 import com.arbuzerxxl.vibeshot.data.storage.api.SettingsStorage
 import com.arbuzerxxl.vibeshot.data.storage.api.UserStorage
 import com.arbuzerxxl.vibeshot.data.storage.memory.SettingsMemoryStorage
@@ -28,6 +29,7 @@ import com.arbuzerxxl.vibeshot.domain.repository.PhotoSizesRepository
 import com.arbuzerxxl.vibeshot.domain.repository.TokenRepository
 import com.arbuzerxxl.vibeshot.domain.repository.UserDataRepository
 import com.arbuzerxxl.vibeshot.domain.repository.UserRepository
+import com.arbuzerxxl.vibeshot.domain.sources.InterestsPagingSource
 import kotlinx.coroutines.Dispatchers
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -132,6 +134,14 @@ val dataModule = module {
     single<SettingsStorage> {
         SettingsMemoryStorage(
             context = get()
+        )
+    }
+    // endregion
+
+    // region Sources
+    single<InterestsPagingSource> {
+        InterestsPagingSourceImpl(
+            interestsRepository = get(), photoSizesRepository = get(), dispatcher = Dispatchers.IO
         )
     }
     // endregion

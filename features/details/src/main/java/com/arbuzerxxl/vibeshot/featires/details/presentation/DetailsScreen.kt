@@ -32,7 +32,6 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.arbuzerxxl.vibeshot.core.design.theme.VibeShotTheme
 import com.arbuzerxxl.vibeshot.core.design.theme.bottomSheetHiddenOffset
 import com.arbuzerxxl.vibeshot.core.design.theme.cornerSize2
 import com.arbuzerxxl.vibeshot.core.design.theme.cornerSize28
@@ -41,7 +40,6 @@ import com.arbuzerxxl.vibeshot.core.design.theme.itemWidth40
 import com.arbuzerxxl.vibeshot.core.design.theme.padding16
 import com.arbuzerxxl.vibeshot.core.design.theme.padding24
 import com.arbuzerxxl.vibeshot.core.design.theme.padding4
-import com.arbuzerxxl.vibeshot.core.ui.DevicePreviews
 import com.arbuzerxxl.vibeshot.core.ui.widgets.LoadingIndicator
 import com.arbuzerxxl.vibeshot.core.ui.widgets.PhotoImage
 import org.koin.androidx.compose.koinViewModel
@@ -165,12 +163,12 @@ private const val LAYOUT_SHEET_ID = "sheet"
 private const val LAYOUT_BODY_ID = "body"
 private const val TWEEN_ANIMATION_DURATION = 800
 
-@DevicePreviews
-@Composable
-fun DetailsScreenPreview() {
-    VibeShotTheme {
-        DetailsScreen(
-            uiState = DetailsUiState.Success(photo = DetailsPhoto(""))
-        )
-    }
-}
+//@DevicePreviews
+//@Composable
+//fun DetailsScreenPreview() {
+//    VibeShotTheme {
+//        DetailsScreen(
+//            uiState = DetailsUiState.Success(photo = DetailsPhoto(""))
+//        )
+//    }
+//}

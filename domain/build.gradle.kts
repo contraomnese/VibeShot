@@ -32,4 +32,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.kotlinx.coroutines.android)
 
+    // pagging
+    implementation(libs.androidx.paging.runtime.ktx)
+
 }

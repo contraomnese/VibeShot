@@ -87,6 +87,10 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.core)
 
+    // pagging
+    implementation(libs.androidx.paging.runtime.ktx)
+    implementation(libs.androidx.paging.compose)
+
     // ui compose
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
