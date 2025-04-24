@@ -95,6 +95,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.runtime.android)
+    implementation(libs.androidx.ui.text.google.fonts)
 
     // navigation
     implementation(libs.navigation)

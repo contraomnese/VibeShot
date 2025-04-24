@@ -2,10 +2,10 @@ package com.arbuzerxxl.vibeshot.featires.details.presentation
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.exponentialDecay
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.AnchoredDraggableDefaults
 import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.foundation.gestures.DraggableAnchors
 import androidx.compose.foundation.gestures.Orientation
@@ -73,23 +73,20 @@ internal fun DetailsScreen(
 ) {
     val density = LocalDensity.current
 
-    val decayAnimationSpec = exponentialDecay<Float>(
-        frictionMultiplier = 3f
-    )
-
     val state = remember {
         AnchoredDraggableState<SheetValue>(
-            initialValue = SheetValue.Hidden,
-            positionalThreshold = { with(density) { 56.dp.toPx() } },
-            velocityThreshold = { with(density) { 125.dp.toPx() } },
-            snapAnimationSpec = tween(
-                durationMillis = TWEEN_ANIMATION_DURATION,
-                easing = LinearOutSlowInEasing
-            ),
-            decayAnimationSpec = decayAnimationSpec,
-            confirmValueChange = { true }
+            initialValue = SheetValue.Hidden
         )
     }
+
+    val flingBehavior = AnchoredDraggableDefaults.flingBehavior(
+        state = state,
+        positionalThreshold = { with(density) { 56.dp.toPx() } },
+        animationSpec = tween(
+            durationMillis = TWEEN_ANIMATION_DURATION,
+            easing = LinearOutSlowInEasing
+        )
+    )
 
     SubcomposeLayout { constraints ->
 
@@ -118,7 +115,7 @@ internal fun DetailsScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(padding16)
-                        .anchoredDraggable(state, orientation = Orientation.Vertical)
+                        .anchoredDraggable(state, orientation = Orientation.Vertical, flingBehavior = flingBehavior)
                 ) {
                     Box(
                         modifier = Modifier
