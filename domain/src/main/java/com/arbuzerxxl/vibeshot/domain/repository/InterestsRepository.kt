@@ -1,8 +1,10 @@
 package com.arbuzerxxl.vibeshot.domain.repository
 
-import com.arbuzerxxl.vibeshot.domain.models.InterestsResources
+import androidx.paging.PagingData
+import com.arbuzerxxl.vibeshot.domain.models.InterestsPhotoResource
+import kotlinx.coroutines.flow.Flow
 
-fun interface InterestsRepository {
+interface InterestsRepository {
 
-    suspend fun getPhotos(page: Int): InterestsResources
+    fun getPhotos(): Flow<PagingData<InterestsPhotoResource>>
 }

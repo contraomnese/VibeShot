@@ -15,9 +15,9 @@ val domainModule = module {
             repository = get()
         )
     }
-    factory<GetInterestsPhotosUseCase> {
+    single<GetInterestsPhotosUseCase> {
         GetInterestsPhotosUseCase(
-            source = get()
+            repository = get()
         )
     }
 }

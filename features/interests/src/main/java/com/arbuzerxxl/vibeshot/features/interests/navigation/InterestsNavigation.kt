@@ -26,7 +26,7 @@ data class InterestsTopLevelDestination(
 ): TopLevelDestination
 
 interface InterestNavigator{
-    fun navigateToDetails(url: String)
+    fun navigateToDetails(photoId: String)
     fun onNavigateUp()
 }
 

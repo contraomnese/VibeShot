@@ -6,17 +6,17 @@ import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.arbuzerxxl.vibeshot.featires.details.di.detailsModule
-import com.arbuzerxxl.vibeshot.featires.details.presentation.DetailsPhoto
+import com.arbuzerxxl.vibeshot.featires.details.presentation.DetailsPhotoId
 import com.arbuzerxxl.vibeshot.featires.details.presentation.DetailsRoute
 import kotlinx.serialization.Serializable
 import org.koin.compose.module.rememberKoinModules
 import org.koin.core.annotation.KoinExperimentalAPI
 
 @Serializable
-data class DetailsDestination(val url: String)
+data class DetailsDestination(val id: String)
 
-fun NavController.navigateToDetails(url: String, navOptions: NavOptions? = null) {
-    navigate(DetailsDestination(url), navOptions)
+fun NavController.navigateToDetails(photoId: String, navOptions: NavOptions? = null) {
+    navigate(DetailsDestination(photoId), navOptions)
 }
 
 @OptIn(KoinExperimentalAPI::class)
@@ -25,13 +25,12 @@ fun NavGraphBuilder.details(onNavigateUp: () -> Unit) {
     composable<DetailsDestination> { navBackStackEntry ->
 
         val detailsDestination = navBackStackEntry.toRoute<DetailsDestination>()
-        val photo = DetailsPhoto(
-            url = detailsDestination.url,
-        )
+        val id = DetailsPhotoId(id = detailsDestination.id)
+
 
         rememberKoinModules(unloadOnForgotten = true) { listOf(detailsModule) }
 
-        DetailsRoute(photo)
+        DetailsRoute(id)
     }
 
 }

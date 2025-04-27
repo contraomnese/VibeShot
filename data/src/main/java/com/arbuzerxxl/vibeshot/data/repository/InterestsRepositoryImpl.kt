@@ -1,36 +1,35 @@
 package com.arbuzerxxl.vibeshot.data.repository
 
-import com.arbuzerxxl.vibeshot.data.exceptions.RequestInterestsPhotosFetchException
+import androidx.paging.ExperimentalPagingApi
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.map
 import com.arbuzerxxl.vibeshot.data.mappers.toDomain
-import com.arbuzerxxl.vibeshot.data.network.api.FlickrInterestsApi
-import com.arbuzerxxl.vibeshot.domain.models.InterestsResources
+import com.arbuzerxxl.vibeshot.data.mediators.api.InterestsRemoteMediator
+import com.arbuzerxxl.vibeshot.data.storage.database.AppDatabase
+import com.arbuzerxxl.vibeshot.domain.models.InterestsPhotoResource
 import com.arbuzerxxl.vibeshot.domain.repository.InterestsRepository
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
-private const val DEFAULT_ITEMS_COUNT_PER_PAGE = 25
 
 class InterestsRepositoryImpl(
-    private val api: FlickrInterestsApi,
-    private val key: String,
-    private val dispatcher: CoroutineDispatcher,
+    private val database: AppDatabase,
+    private val mediator: InterestsRemoteMediator
 ) : InterestsRepository {
 
-    override suspend fun getPhotos(page: Int): InterestsResources = withContext(dispatcher) {
-        try {
-            api.getPhotos(
-                key = key,
-                page = page,
-                perPage = DEFAULT_ITEMS_COUNT_PER_PAGE
-            )
-                .response
-                .toDomain()
 
-        } catch (cause: Throwable) {
-            if (cause is CancellationException) throw cause
-            throw RequestInterestsPhotosFetchException(cause)
-        }
+    @OptIn(ExperimentalPagingApi::class)
+    override fun getPhotos(): Flow<PagingData<InterestsPhotoResource>> {
+
+        return Pager(
+            config = PagingConfig(pageSize = 25, initialLoadSize = 25, enablePlaceholders = false),
+            remoteMediator = mediator
+        ) {
+            database.interestsDao().pagingSource()
+        }.flow
+            .map { pagingData -> pagingData.map { it.toDomain() } }
     }
 }
 

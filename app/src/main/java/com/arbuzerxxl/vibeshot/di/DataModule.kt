@@ -8,6 +8,8 @@ package com.kiparo.chargerapp.di
 import com.arbuzerxxl.vibeshot.BuildConfig
 import com.arbuzerxxl.vibeshot.MainActivityViewModel
 import com.arbuzerxxl.vibeshot.data.mappers.AuthDataMapper
+import com.arbuzerxxl.vibeshot.data.mediators.InterestsRemoteMediatorImpl
+import com.arbuzerxxl.vibeshot.data.mediators.api.InterestsRemoteMediator
 import com.arbuzerxxl.vibeshot.data.network.api.FlickrAuthApi
 import com.arbuzerxxl.vibeshot.data.network.api.FlickrInterestsApi
 import com.arbuzerxxl.vibeshot.data.network.api.FlickrPhotoSizesApi
@@ -18,9 +20,9 @@ import com.arbuzerxxl.vibeshot.data.repository.PhotoSizesRepositoryImpl
 import com.arbuzerxxl.vibeshot.data.repository.TokenRepositoryImpl
 import com.arbuzerxxl.vibeshot.data.repository.UserDataRepositoryImpl
 import com.arbuzerxxl.vibeshot.data.repository.UserRepositoryImpl
-import com.arbuzerxxl.vibeshot.data.sources.InterestsPagingSourceImpl
 import com.arbuzerxxl.vibeshot.data.storage.api.SettingsStorage
 import com.arbuzerxxl.vibeshot.data.storage.api.UserStorage
+import com.arbuzerxxl.vibeshot.data.storage.database.AppDatabase
 import com.arbuzerxxl.vibeshot.data.storage.memory.SettingsMemoryStorage
 import com.arbuzerxxl.vibeshot.data.storage.memory.UserMemoryStorage
 import com.arbuzerxxl.vibeshot.domain.repository.AuthRepository
@@ -29,7 +31,6 @@ import com.arbuzerxxl.vibeshot.domain.repository.PhotoSizesRepository
 import com.arbuzerxxl.vibeshot.domain.repository.TokenRepository
 import com.arbuzerxxl.vibeshot.domain.repository.UserDataRepository
 import com.arbuzerxxl.vibeshot.domain.repository.UserRepository
-import com.arbuzerxxl.vibeshot.domain.sources.InterestsPagingSource
 import kotlinx.coroutines.Dispatchers
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -71,6 +72,8 @@ val dataModule = module {
         ErrorInterceptor()
     }
 
+    single<AppDatabase> { AppDatabase.create(context = get()) }
+
     single<FlickrAuthApi> { get<Retrofit>().create(FlickrAuthApi::class.java) }
     single<FlickrInterestsApi> { get<Retrofit>().create(FlickrInterestsApi::class.java) }
     single<FlickrPhotoSizesApi> { get<Retrofit>().create(FlickrPhotoSizesApi::class.java) }
@@ -109,13 +112,6 @@ val dataModule = module {
             dispatcher = Dispatchers.IO
         )
     }
-    factory<InterestsRepository> {
-        InterestsRepositoryImpl(
-            api = get(),
-            key = BuildConfig.FLICKR_API_KEY,
-            dispatcher = Dispatchers.IO
-        )
-    }
     factory<PhotoSizesRepository> {
         PhotoSizesRepositoryImpl(
             api = get(),
@@ -123,6 +119,23 @@ val dataModule = module {
             dispatcher = Dispatchers.IO
         )
     }
+    single<InterestsRemoteMediator> {
+        InterestsRemoteMediatorImpl(
+            database = get(),
+            api = get(),
+            key = BuildConfig.FLICKR_API_KEY,
+            photoSizesRepository = get(),
+            dispatcher = Dispatchers.IO
+        )
+    }
+
+    factory<InterestsRepository> {
+        InterestsRepositoryImpl(
+            mediator = get(),
+            database = get()
+        )
+    }
+
     // endregion
 
     // region Storages
@@ -138,13 +151,15 @@ val dataModule = module {
     }
     // endregion
 
+
     // region Sources
-    single<InterestsPagingSource> {
-        InterestsPagingSourceImpl(
-            interestsRepository = get(), photoSizesRepository = get(), dispatcher = Dispatchers.IO
-        )
-    }
+//    factory <InterestsPagingSource> {
+//        InterestsPagingSourceImpl(
+//            interestsRepository = get(), photoSizesRepository = get(), dispatcher = Dispatchers.IO
+//        )
+//    }
     // endregion
+
 
     // region Mappers
     single<AuthDataMapper> {

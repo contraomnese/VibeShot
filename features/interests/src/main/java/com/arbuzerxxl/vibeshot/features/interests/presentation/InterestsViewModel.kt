@@ -1,9 +1,7 @@
 package com.arbuzerxxl.vibeshot.features.interests.presentation
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
-import androidx.paging.cachedIn
 import com.arbuzerxxl.vibeshot.domain.models.InterestsPhotoResource
 import com.arbuzerxxl.vibeshot.domain.usecases.photos.GetInterestsPhotosUseCase
 import kotlinx.coroutines.flow.Flow
@@ -16,8 +14,7 @@ internal class InterestsViewModel(
 ) : ViewModel() {
 
 
-    val pagingDataFlow: Flow<PagingData<InterestsPhotoResource>> = getInterestsPhotosUseCase.execute()
-        .cachedIn(viewModelScope)
+    val uiState: Flow<PagingData<InterestsPhotoResource>> = getInterestsPhotosUseCase.execute()
 
 
     private val _errorState = MutableStateFlow<Throwable?>(null)

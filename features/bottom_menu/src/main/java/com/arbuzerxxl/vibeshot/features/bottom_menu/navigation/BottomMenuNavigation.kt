@@ -27,22 +27,27 @@ interface BottomMenuNavigator {
 fun NavGraphBuilder.bottomMenu(
     externalNavigator: BottomMenuNavigator
 ) {
+
     navigation<BottomMenuGraph>(startDestination = BottomMenuDestination) {
         bottomMenuInner(externalNavigator)
     }
 }
 
+
 @OptIn(KoinExperimentalAPI::class)
 private fun NavGraphBuilder.bottomMenuInner(
     externalNavigator: BottomMenuNavigator
 ) {
+
     composable<BottomMenuDestination> {
 
         rememberKoinModules(unloadOnForgotten = true) { listOf(bottomMenuModule) }
 
+
         BottomMenuRoute(externalNavigator = externalNavigator)
 
     }
+
     details(onNavigateUp = externalNavigator::onNavigateUp)
 }
 

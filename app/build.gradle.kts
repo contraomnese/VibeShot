@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.devtools.ksp)
 }
 
 val FLICKR_API_KEY: String = gradleLocalProperties(rootDir, providers).getProperty("FLICKR_API_KEY")
@@ -90,6 +91,7 @@ dependencies {
     // pagging
     implementation(libs.androidx.paging.runtime.ktx)
     implementation(libs.androidx.paging.compose)
+    implementation(libs.androidx.room.paging)
 
     // ui compose
     implementation(libs.androidx.activity.compose)
@@ -126,6 +128,9 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.datastore.preferences.core)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
 
     // auth
     implementation(libs.androidx.browser)

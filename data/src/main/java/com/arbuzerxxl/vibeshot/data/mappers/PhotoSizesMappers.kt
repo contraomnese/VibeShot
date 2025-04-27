@@ -10,12 +10,10 @@ fun PhotoSizesNetwork.toDomain(): PhotoSizesResource {
     val lowQuality = sizes.first { it.label == "Small 400" || it.label == "Small 320" || it.label == "Small" }
 
     return PhotoSizesResource(
-        originalWidth = original.width,
-        originalHeight = original.height,
         originalUrl = original.source,
         width = highQuality.width,
         height = highQuality.height,
-        url = highQuality.source,
+        highQualityUrl = highQuality.source,
         lowQualityUrl = lowQuality.source
     )
 }

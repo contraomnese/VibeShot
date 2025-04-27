@@ -40,7 +40,7 @@ internal fun InterestsRoute(
     viewmodel: InterestsViewModel = koinViewModel(),
     onPhotoClicked: (String) -> Unit,
 ) {
-    val uiState = viewmodel.pagingDataFlow.collectAsLazyPagingItems()
+    val uiState = viewmodel.uiState.collectAsLazyPagingItems()
 
     InterestsScreen(
         modifier = modifier,
@@ -84,7 +84,7 @@ internal fun InterestsScreen(
         ) {
             items(
                 count = uiState.itemCount,
-                key = uiState.itemKey { it.sizes.url },
+                key = uiState.itemKey { it.sizes.highQualityUrl },
                 contentType = uiState.itemContentType { "Interests photo" }
             ) { index ->
                 val photo = uiState[index]
@@ -92,10 +92,10 @@ internal fun InterestsScreen(
                     PhotoCard(
                         modifier = modifier
                             .clickable(
-                                onClick = { onPhotoClicked(photo.sizes.url) }
+                                onClick = { onPhotoClicked(photo.id) }
                             ),
                         urlLowQuality = photo.sizes.lowQualityUrl,
-                        urlHighQuality = photo.sizes.url,
+                        urlHighQuality = photo.sizes.highQualityUrl,
                         height = photo.sizes.height,
                         width = photo.sizes.width,
                         isScrolling = isScrolling
