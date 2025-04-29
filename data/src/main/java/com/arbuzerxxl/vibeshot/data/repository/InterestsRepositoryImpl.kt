@@ -7,29 +7,41 @@ import androidx.paging.PagingData
 import androidx.paging.map
 import com.arbuzerxxl.vibeshot.data.mappers.toDomain
 import com.arbuzerxxl.vibeshot.data.mediators.api.InterestsRemoteMediator
-import com.arbuzerxxl.vibeshot.data.storage.database.AppDatabase
+import com.arbuzerxxl.vibeshot.data.storage.db.AppDatabase
 import com.arbuzerxxl.vibeshot.domain.models.InterestsPhotoResource
 import com.arbuzerxxl.vibeshot.domain.repository.InterestsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+import org.koin.core.parameter.parametersOf
 
 
+@OptIn(ExperimentalPagingApi::class)
 class InterestsRepositoryImpl(
     private val database: AppDatabase,
-    private val mediator: InterestsRemoteMediator
-) : InterestsRepository {
-
+) : InterestsRepository, KoinComponent {
 
     @OptIn(ExperimentalPagingApi::class)
-    override fun getPhotos(): Flow<PagingData<InterestsPhotoResource>> {
+    override fun getPhotos(perPage: Int, index: Int?): Flow<PagingData<InterestsPhotoResource>> {
 
-        return Pager(
-            config = PagingConfig(pageSize = 25, initialLoadSize = 25, enablePlaceholders = false),
+        val mediator: InterestsRemoteMediator by inject(parameters = { parametersOf(perPage) })
+        val pager = index?.let {
+            Pager(
+                config = PagingConfig(pageSize = 25, enablePlaceholders = false, initialLoadSize = index + 25),
+                remoteMediator = mediator
+            ) {
+                database.interestsDao().getAll()
+            }.flow
+                .map { pagingData -> pagingData.map { it.toDomain() } }
+        } ?: Pager(
+            config = PagingConfig(pageSize = 25, enablePlaceholders = false),
             remoteMediator = mediator
         ) {
-            database.interestsDao().pagingSource()
+            database.interestsDao().getAll()
         }.flow
             .map { pagingData -> pagingData.map { it.toDomain() } }
+        return pager
     }
 }
 

@@ -1,4 +1,4 @@
-package com.arbuzerxxl.vibeshot.data.storage.memory
+package com.arbuzerxxl.vibeshot.data.storage.datastore.memory
 
 import android.content.Context
 import androidx.datastore.core.DataStore
@@ -7,9 +7,9 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import com.arbuzerxxl.vibeshot.data.storage.api.UserStorage
-import com.arbuzerxxl.vibeshot.data.storage.models.UserEntity
-import com.arbuzerxxl.vibeshot.data.storage.models.UserType
+import com.arbuzerxxl.vibeshot.data.storage.datastore.api.UserStorage
+import com.arbuzerxxl.vibeshot.data.storage.datastore.models.UserEntity
+import com.arbuzerxxl.vibeshot.data.storage.datastore.models.UserType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.util.UUID

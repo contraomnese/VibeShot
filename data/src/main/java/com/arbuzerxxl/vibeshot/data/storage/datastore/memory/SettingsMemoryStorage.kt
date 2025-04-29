@@ -1,11 +1,11 @@
-package com.arbuzerxxl.vibeshot.data.storage.memory
+package com.arbuzerxxl.vibeshot.data.storage.datastore.memory
 
 import android.content.Context
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import com.arbuzerxxl.vibeshot.data.storage.api.SettingsStorage
-import com.arbuzerxxl.vibeshot.data.storage.models.SettingsEntity
+import com.arbuzerxxl.vibeshot.data.storage.datastore.api.SettingsStorage
+import com.arbuzerxxl.vibeshot.data.storage.datastore.models.SettingsEntity
 import com.arbuzerxxl.vibeshot.domain.models.ui.DarkThemeConfig
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

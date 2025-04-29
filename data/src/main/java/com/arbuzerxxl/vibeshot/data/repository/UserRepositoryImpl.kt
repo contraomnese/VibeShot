@@ -2,7 +2,7 @@ package com.arbuzerxxl.vibeshot.data.repository
 
 import com.arbuzerxxl.vibeshot.data.mappers.AuthDataMapper
 import com.arbuzerxxl.vibeshot.data.mappers.toStorage
-import com.arbuzerxxl.vibeshot.data.storage.api.UserStorage
+import com.arbuzerxxl.vibeshot.data.storage.datastore.api.UserStorage
 import com.arbuzerxxl.vibeshot.domain.models.auth.AuthState
 import com.arbuzerxxl.vibeshot.domain.models.auth.User
 import com.arbuzerxxl.vibeshot.domain.repository.TokenRepository

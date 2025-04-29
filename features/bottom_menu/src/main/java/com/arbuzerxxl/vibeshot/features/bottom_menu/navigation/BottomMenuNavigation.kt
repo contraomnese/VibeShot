@@ -21,7 +21,7 @@ object BottomMenuDestination
 interface BottomMenuNavigator {
     fun onLogOut()
     fun onNavigateUp()
-    fun onNavigateToDetails(url: String)
+    fun onNavigateToDetails(initialIndex: Int)
 }
 
 fun NavGraphBuilder.bottomMenu(

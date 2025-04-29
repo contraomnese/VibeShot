@@ -1,6 +1,6 @@
-package com.arbuzerxxl.vibeshot.data.storage.api
+package com.arbuzerxxl.vibeshot.data.storage.datastore.api
 
-import com.arbuzerxxl.vibeshot.data.storage.models.UserEntity
+import com.arbuzerxxl.vibeshot.data.storage.datastore.models.UserEntity
 import kotlinx.coroutines.flow.Flow
 
 interface UserStorage {

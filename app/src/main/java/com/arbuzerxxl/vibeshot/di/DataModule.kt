@@ -20,11 +20,11 @@ import com.arbuzerxxl.vibeshot.data.repository.PhotoSizesRepositoryImpl
 import com.arbuzerxxl.vibeshot.data.repository.TokenRepositoryImpl
 import com.arbuzerxxl.vibeshot.data.repository.UserDataRepositoryImpl
 import com.arbuzerxxl.vibeshot.data.repository.UserRepositoryImpl
-import com.arbuzerxxl.vibeshot.data.storage.api.SettingsStorage
-import com.arbuzerxxl.vibeshot.data.storage.api.UserStorage
-import com.arbuzerxxl.vibeshot.data.storage.database.AppDatabase
-import com.arbuzerxxl.vibeshot.data.storage.memory.SettingsMemoryStorage
-import com.arbuzerxxl.vibeshot.data.storage.memory.UserMemoryStorage
+import com.arbuzerxxl.vibeshot.data.storage.datastore.api.SettingsStorage
+import com.arbuzerxxl.vibeshot.data.storage.datastore.api.UserStorage
+import com.arbuzerxxl.vibeshot.data.storage.datastore.memory.SettingsMemoryStorage
+import com.arbuzerxxl.vibeshot.data.storage.datastore.memory.UserMemoryStorage
+import com.arbuzerxxl.vibeshot.data.storage.db.AppDatabase
 import com.arbuzerxxl.vibeshot.domain.repository.AuthRepository
 import com.arbuzerxxl.vibeshot.domain.repository.InterestsRepository
 import com.arbuzerxxl.vibeshot.domain.repository.PhotoSizesRepository
@@ -119,23 +119,25 @@ val dataModule = module {
             dispatcher = Dispatchers.IO
         )
     }
-    single<InterestsRemoteMediator> {
+    factory<InterestsRepository> {
+        InterestsRepositoryImpl(
+            database = get()
+        )
+    }
+    // endregion
+
+    // region mediators
+    single<InterestsRemoteMediator> { params ->
+        val perPage = params.get<Int>()
         InterestsRemoteMediatorImpl(
             database = get(),
             api = get(),
             key = BuildConfig.FLICKR_API_KEY,
             photoSizesRepository = get(),
+            perPage = perPage,
             dispatcher = Dispatchers.IO
         )
     }
-
-    factory<InterestsRepository> {
-        InterestsRepositoryImpl(
-            mediator = get(),
-            database = get()
-        )
-    }
-
     // endregion
 
     // region Storages
@@ -150,16 +152,6 @@ val dataModule = module {
         )
     }
     // endregion
-
-
-    // region Sources
-//    factory <InterestsPagingSource> {
-//        InterestsPagingSourceImpl(
-//            interestsRepository = get(), photoSizesRepository = get(), dispatcher = Dispatchers.IO
-//        )
-//    }
-    // endregion
-
 
     // region Mappers
     single<AuthDataMapper> {

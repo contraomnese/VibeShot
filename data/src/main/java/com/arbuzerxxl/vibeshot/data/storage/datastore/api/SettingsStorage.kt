@@ -1,7 +1,7 @@
-package com.arbuzerxxl.vibeshot.data.storage.api
+package com.arbuzerxxl.vibeshot.data.storage.datastore.api
 
 
-import com.arbuzerxxl.vibeshot.data.storage.models.SettingsEntity
+import com.arbuzerxxl.vibeshot.data.storage.datastore.models.SettingsEntity
 import com.arbuzerxxl.vibeshot.domain.models.ui.DarkThemeConfig
 import kotlinx.coroutines.flow.Flow
 

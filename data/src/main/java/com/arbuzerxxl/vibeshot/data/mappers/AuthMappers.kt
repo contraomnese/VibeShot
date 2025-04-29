@@ -1,7 +1,7 @@
 package com.arbuzerxxl.vibeshot.data.mappers
 
-import com.arbuzerxxl.vibeshot.data.storage.models.UserEntity
-import com.arbuzerxxl.vibeshot.data.storage.models.UserType
+import com.arbuzerxxl.vibeshot.data.storage.datastore.models.UserEntity
+import com.arbuzerxxl.vibeshot.data.storage.datastore.models.UserType
 import com.arbuzerxxl.vibeshot.domain.models.auth.AuthState
 import com.arbuzerxxl.vibeshot.domain.models.auth.User
 import com.arbuzerxxl.vibeshot.domain.models.auth.tokens.AccessToken

@@ -38,13 +38,13 @@ import org.koin.core.annotation.KoinExperimentalAPI
 internal fun InterestsRoute(
     modifier: Modifier = Modifier,
     viewmodel: InterestsViewModel = koinViewModel(),
-    onPhotoClicked: (String) -> Unit,
+    onPhotoClicked: (Int) -> Unit,
 ) {
-    val uiState = viewmodel.uiState.collectAsLazyPagingItems()
+    val items = viewmodel.uiState.collectAsLazyPagingItems()
 
     InterestsScreen(
         modifier = modifier,
-        uiState = uiState,
+        items = items,
         onPhotoClicked = onPhotoClicked
     )
 }
@@ -52,8 +52,8 @@ internal fun InterestsRoute(
 @Composable
 internal fun InterestsScreen(
     modifier: Modifier = Modifier,
-    uiState: LazyPagingItems<InterestsPhotoResource>,
-    onPhotoClicked: (String) -> Unit,
+    items: LazyPagingItems<InterestsPhotoResource>,
+    onPhotoClicked: (Int) -> Unit,
 ) {
 
     val scrollState = rememberLazyStaggeredGridState()
@@ -70,10 +70,6 @@ internal fun InterestsScreen(
         contentAlignment = Alignment.Center
     ) {
 
-        if (uiState.loadState.refresh == LoadState.Loading) {
-            LoadingIndicator()
-        }
-
         LazyVerticalStaggeredGrid(
             modifier = Modifier,
             state = scrollState,
@@ -82,17 +78,30 @@ internal fun InterestsScreen(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             contentPadding = PaddingValues(8.dp),
         ) {
+            if (items.loadState.refresh == LoadState.Loading) {
+                item { LoadingIndicator() }
+            }
+            if (items.loadState.append == LoadState.Loading) {
+                item {
+                    LoadingIndicator(
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(bottom = 20.dp)
+                            .size(20.dp)
+                    )
+                }
+            }
             items(
-                count = uiState.itemCount,
-                key = uiState.itemKey { it.sizes.highQualityUrl },
-                contentType = uiState.itemContentType { "Interests photo" }
+                count = items.itemCount,
+                key = items.itemKey { it.sizes.highQualityUrl },
+                contentType = items.itemContentType { "Interests photo" }
             ) { index ->
-                val photo = uiState[index]
+                val photo = items[index]
                 photo?.let {
                     PhotoCard(
                         modifier = modifier
                             .clickable(
-                                onClick = { onPhotoClicked(photo.id) }
+                                onClick = { onPhotoClicked(index) }
                             ),
                         urlLowQuality = photo.sizes.lowQualityUrl,
                         urlHighQuality = photo.sizes.highQualityUrl,
@@ -102,14 +111,6 @@ internal fun InterestsScreen(
                     )
                 }
             }
-        }
-        if (uiState.loadState.append == LoadState.Loading) {
-            LoadingIndicator(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = 20.dp)
-                    .size(20.dp)
-            )
         }
     }
 }

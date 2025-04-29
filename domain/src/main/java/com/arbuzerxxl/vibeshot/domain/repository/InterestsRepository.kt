@@ -6,5 +6,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface InterestsRepository {
 
-    fun getPhotos(): Flow<PagingData<InterestsPhotoResource>>
+    fun getPhotos(perPage: Int, index: Int?): Flow<PagingData<InterestsPhotoResource>>
 }

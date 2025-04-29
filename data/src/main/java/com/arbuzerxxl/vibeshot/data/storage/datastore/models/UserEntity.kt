@@ -1,4 +1,4 @@
-package com.arbuzerxxl.vibeshot.data.storage.models
+package com.arbuzerxxl.vibeshot.data.storage.datastore.models
 
 enum class UserType {
     GUEST,

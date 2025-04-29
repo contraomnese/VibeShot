@@ -8,9 +8,9 @@ import com.arbuzerxxl.vibeshot.data.exceptions.RequestInterestsPhotosFetchExcept
 import com.arbuzerxxl.vibeshot.data.mappers.toDomain
 import com.arbuzerxxl.vibeshot.data.mediators.api.InterestsRemoteMediator
 import com.arbuzerxxl.vibeshot.data.network.api.FlickrInterestsApi
-import com.arbuzerxxl.vibeshot.data.storage.database.AppDatabase
-import com.arbuzerxxl.vibeshot.data.storage.dto.interests.InterestsPhotoDto
-import com.arbuzerxxl.vibeshot.data.storage.entities.InterestsEntity
+import com.arbuzerxxl.vibeshot.data.storage.db.AppDatabase
+import com.arbuzerxxl.vibeshot.data.storage.db.interests.dto.InterestsPhotoDto
+import com.arbuzerxxl.vibeshot.data.storage.db.interests.entities.InterestsEntity
 import com.arbuzerxxl.vibeshot.domain.models.InterestsResources
 import com.arbuzerxxl.vibeshot.domain.repository.PhotoSizesRepository
 import kotlinx.coroutines.CancellationException
@@ -56,15 +56,14 @@ class InterestsRemoteMediatorImpl(
             val resources = coroutineScope {
                 photos.resources.map { resource ->
                     async(dispatcher) {
-                        val sizes = photoSizesRepository.getSizes(resource.id)
+                        val resourceSizes = photoSizesRepository.getSizes(resource.id)
                         InterestsEntity(
                             photoId = resource.id,
                             title = resource.title,
-                            originalUrl = sizes.originalUrl,
-                            highQualityUrl = sizes.highQualityUrl,
-                            lowQualityUrl = sizes.lowQualityUrl,
-                            width = sizes.width,
-                            height = sizes.height,
+                            highQualityUrl = resourceSizes.highQualityUrl,
+                            lowQualityUrl = resourceSizes.lowQualityUrl,
+                            width = resourceSizes.width,
+                            height = resourceSizes.height,
                             page = loadKey,
                             lastUpdated = System.currentTimeMillis()
                         )

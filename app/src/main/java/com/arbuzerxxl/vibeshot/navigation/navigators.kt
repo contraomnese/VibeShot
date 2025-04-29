@@ -33,7 +33,7 @@ fun NavHostController.bottomMenuNavigator(): BottomMenuNavigator = object : Bott
         popBackStack()
     }
 
-    override fun onNavigateToDetails(photoId: String) {
-        navigateToDetails(photoId=photoId)
+    override fun onNavigateToDetails(initialIndex: Int) {
+        navigateToDetails(initialIndex)
     }
 }

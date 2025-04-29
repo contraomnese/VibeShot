@@ -1,4 +1,4 @@
-package com.arbuzerxxl.vibeshot.data.storage.dto.interests
+package com.arbuzerxxl.vibeshot.data.storage.db.interests.dto
 
 import androidx.room.ColumnInfo
 
@@ -6,7 +6,6 @@ import androidx.room.ColumnInfo
 data class InterestsPhotoDto(
     @ColumnInfo(name = PHOTO_ID) val photoId: String,
     @ColumnInfo(name = TITLE) val title: String,
-    @ColumnInfo(name = ORIGINAL_SIZE_URL) val originalUrl: String,
     @ColumnInfo(name = HIGH_QUALITY_SIZE_URL) val highQualityUrl: String,
     @ColumnInfo(name = LOW_QUALITY_SIZE_URL) val lowQualityUrl: String,
     @ColumnInfo(name = WIDTH) val width: Int,
@@ -16,7 +15,6 @@ data class InterestsPhotoDto(
     companion object {
         const val PHOTO_ID = "alias_interests_photo_id"
         const val TITLE = "alias_interests_title"
-        const val ORIGINAL_SIZE_URL = "alias_interests_original_size_url"
         const val HIGH_QUALITY_SIZE_URL = "alias_interests_high_quality_size_url"
         const val LOW_QUALITY_SIZE_URL = "alias_interests_low_quality_size_url"
         const val WIDTH = "alias_interests_width"

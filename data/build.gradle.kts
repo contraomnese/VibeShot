@@ -58,6 +58,10 @@ dependencies {
     implementation(libs.androidx.room.paging)
     ksp(libs.androidx.room.compiler)
 
+    // di
+    implementation(libs.koin.core)
+    implementation(libs.koin.android)
+
     // tests
     testImplementation(libs.junit)
     testImplementation(libs.mockk)

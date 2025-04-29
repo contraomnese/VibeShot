@@ -1,4 +1,4 @@
-package com.arbuzerxxl.vibeshot.data.storage.entities
+package com.arbuzerxxl.vibeshot.data.storage.db.interests.entities
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -9,7 +9,6 @@ data class InterestsEntity(
     @PrimaryKey
     @ColumnInfo(name = PHOTO_ID) val photoId: String,
     @ColumnInfo(name = TITLE) val title: String,
-    @ColumnInfo(name = ORIGINAL_SIZE_URL) val originalUrl: String,
     @ColumnInfo(name = HIGH_QUALITY_SIZE_URL) val highQualityUrl: String,
     @ColumnInfo(name = LOW_QUALITY_SIZE_URL) val lowQualityUrl: String,
     @ColumnInfo(name = WIDTH) val width: Int,
@@ -21,7 +20,6 @@ data class InterestsEntity(
         const val TABLE_NAME = "interests"
         const val PHOTO_ID = "photo_id"
         const val TITLE = "title"
-        const val ORIGINAL_SIZE_URL = "original_size_url"
         const val HIGH_QUALITY_SIZE_URL = "high_quality_size_url"
         const val LOW_QUALITY_SIZE_URL = "low_quality_size_url"
         const val WIDTH = "width"
