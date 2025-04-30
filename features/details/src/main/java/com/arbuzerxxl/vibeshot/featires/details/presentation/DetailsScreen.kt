@@ -1,6 +1,5 @@
 package com.arbuzerxxl.vibeshot.featires.details.presentation
 
-import android.util.Log
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -42,21 +41,23 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import com.arbuzerxxl.vibeshot.core.design.theme.bottomSheetHiddenOffset
 import com.arbuzerxxl.vibeshot.core.design.theme.cornerSize2
 import com.arbuzerxxl.vibeshot.core.design.theme.cornerSize28
+import com.arbuzerxxl.vibeshot.core.design.theme.itemHeight24
 import com.arbuzerxxl.vibeshot.core.design.theme.itemHeight4
 import com.arbuzerxxl.vibeshot.core.design.theme.itemWidth40
 import com.arbuzerxxl.vibeshot.core.design.theme.padding16
+import com.arbuzerxxl.vibeshot.core.design.theme.padding20
 import com.arbuzerxxl.vibeshot.core.design.theme.padding24
 import com.arbuzerxxl.vibeshot.core.design.theme.padding4
 import com.arbuzerxxl.vibeshot.core.design.theme.zero
 import com.arbuzerxxl.vibeshot.core.ui.widgets.LoadingIndicator
 import com.arbuzerxxl.vibeshot.core.ui.widgets.PhotoImage
+import com.arbuzerxxl.vibeshot.core.ui.widgets.PhotoImagePlaceholder
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
 import kotlin.math.roundToInt
@@ -68,12 +69,10 @@ private const val TWEEN_ANIMATION_DURATION = 800
 @OptIn(KoinExperimentalAPI::class)
 @Composable
 internal fun DetailsRoute(
-    initialPhotoIndex: DetailsPhotoIndex,
+    photoPosition: DetailsPhotoIndex,
     modifier: Modifier = Modifier,
     viewmodel: DetailsViewModel = koinViewModel(),
 ) {
-
-    viewmodel.initialize(initialPhotoIndex.index)
 
     val uiState: DetailsUiState by viewmodel.uiState.collectAsStateWithLifecycle()
 
@@ -84,7 +83,7 @@ internal fun DetailsRoute(
             DetailsScreen(
                 modifier = modifier,
                 items = items,
-                initialPhotoIndex = initialPhotoIndex.index
+                photoPosition = photoPosition.index
             )
         }
     }
@@ -93,15 +92,15 @@ internal fun DetailsRoute(
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 internal fun DetailsScreen(
-    initialPhotoIndex: Int,
+    photoPosition: Int,
     modifier: Modifier = Modifier,
     items: LazyPagingItems<DetailsPhoto>,
 ) {
 
-    val listState = rememberLazyListState(initialFirstVisibleItemIndex = initialPhotoIndex)
+    val listState = rememberLazyListState(initialFirstVisibleItemIndex = photoPosition)
 
     LaunchedEffect(Unit) {
-        listState.scrollToItem(initialPhotoIndex)
+        listState.scrollToItem(photoPosition)
     }
 
     Box(
@@ -110,31 +109,28 @@ internal fun DetailsScreen(
             .background(MaterialTheme.colorScheme.background),
         contentAlignment = Alignment.Center
     ) {
-        if (items.itemSnapshotList.isNotEmpty()) {
 
-            if (items.loadState.refresh != LoadState.Loading && items.loadState.append != LoadState.Loading) {
-
-                val currentPhoto by remember(listState) {
-                    derivedStateOf {
+        val currentPhoto by remember(listState) {
+                derivedStateOf {
+                    if (items.itemSnapshotList.isNotEmpty()) {
                         items[listState.firstVisibleItemIndex]
-                    }
+                    } else null
                 }
-
-                ScreenContent(
-                    uiState = items,
-                    currentPhoto = currentPhoto,
-                    initialIndex = initialPhotoIndex,
-                    listState = listState
-                )
-
-                Log.d(
-                    "Status",
-                    "Photos count: ${items.itemCount} Initial index: $initialPhotoIndex"
-                )
             }
-            else {
-                LoadingIndicator()
-            }
+
+        ScreenContent(
+            uiState = items,
+            currentPhoto = currentPhoto,
+            listState = listState
+        )
+
+        if (!items.loadState.isIdle) {
+            LoadingIndicator(
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(top = padding20)
+                    .size(itemHeight24)
+            )
         }
     }
 }
@@ -145,8 +141,7 @@ private fun ScreenContent(
     modifier: Modifier = Modifier,
     uiState: LazyPagingItems<DetailsPhoto>,
     currentPhoto: DetailsPhoto?,
-    initialIndex: Int,
-    listState: LazyListState
+    listState: LazyListState,
 ) {
 
     val density = LocalDensity.current
@@ -174,7 +169,6 @@ private fun ScreenContent(
         val bodyPlaceable = subcompose(slotId = LAYOUT_BODY_ID) {
             BodyContent(
                 items = uiState,
-                initialIndex = initialIndex,
                 itemWidth = layoutWidth.dp,
                 listState = listState
             )
@@ -267,8 +261,7 @@ fun BodyContent(
     modifier: Modifier = Modifier,
     items: LazyPagingItems<DetailsPhoto>,
     itemWidth: Dp,
-    initialIndex: Int,
-    listState: LazyListState
+    listState: LazyListState,
 ) {
 
     Box(
@@ -284,19 +277,6 @@ fun BodyContent(
             flingBehavior = rememberSnapFlingBehavior(lazyListState = listState)
         ) {
 
-            if (items.loadState.refresh == LoadState.Loading) {
-                item { LoadingIndicator() }
-            }
-            if (items.loadState.append == LoadState.Loading) {
-                item {
-                    LoadingIndicator(
-                        modifier = Modifier
-                            .align(Alignment.BottomCenter)
-                            .padding(bottom = 20.dp)
-                            .size(20.dp)
-                    )
-                }
-            }
             items(
                 count = items.itemCount,
                 key = items.itemKey { it.id }
@@ -308,14 +288,8 @@ fun BodyContent(
                 ) {
                     val photo = items[item]
                     photo?.let {
-                        Surface(
-                            modifier = modifier
-                                .fillMaxSize()
-                                .animateContentSize()
-                        ) {
-                            PhotoImage(modifier = modifier, url = photo.url)
-                        }
-                    }
+                        PhotoImage(modifier = modifier, url = photo.url)
+                    } ?: PhotoImagePlaceholder()
                 }
             }
         }

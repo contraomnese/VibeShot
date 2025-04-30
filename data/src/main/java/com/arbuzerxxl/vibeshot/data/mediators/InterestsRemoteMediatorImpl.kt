@@ -30,7 +30,6 @@ class InterestsRemoteMediatorImpl(
     private val key: String,
     private val photoSizesRepository: PhotoSizesRepository,
     private val dispatcher: CoroutineDispatcher,
-    private val perPage: Int = 25
 ): InterestsRemoteMediator() {
 
     override suspend fun load(
@@ -51,7 +50,7 @@ class InterestsRemoteMediatorImpl(
                 }
             }
 
-            val photos = loadPhotos(page = loadKey, perPage = perPage)
+            val photos = loadPhotos(page = loadKey, pageSize = state.config.pageSize)
 
             val resources = coroutineScope {
                 photos.resources.map { resource ->
@@ -101,12 +100,12 @@ class InterestsRemoteMediatorImpl(
         }
     }
 
-    private suspend fun loadPhotos(page: Int, perPage: Int): InterestsResources = withContext(dispatcher) {
+    private suspend fun loadPhotos(page: Int, pageSize: Int): InterestsResources = withContext(dispatcher) {
         try {
             api.getPhotos(
                 key = key,
                 page = page,
-                perPage = perPage
+                pageSize = pageSize
             )
                 .response
                 .toDomain()

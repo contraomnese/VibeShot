@@ -2,9 +2,9 @@ package com.arbuzerxxl.vibeshot.domain.repository
 
 import androidx.paging.PagingData
 import com.arbuzerxxl.vibeshot.domain.models.InterestsPhotoResource
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharedFlow
 
 interface InterestsRepository {
 
-    fun getPhotos(perPage: Int, index: Int?): Flow<PagingData<InterestsPhotoResource>>
+    val data: SharedFlow<PagingData<InterestsPhotoResource>>
 }

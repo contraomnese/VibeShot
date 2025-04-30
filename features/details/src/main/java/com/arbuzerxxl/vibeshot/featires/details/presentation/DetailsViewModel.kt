@@ -4,15 +4,15 @@ import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import androidx.paging.map
-import com.arbuzerxxl.vibeshot.domain.usecases.photos.GetInterestsPhotosUseCaseSuspend
+import com.arbuzerxxl.vibeshot.domain.repository.InterestsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
 internal sealed interface DetailsUiState {
 
@@ -23,26 +23,25 @@ internal sealed interface DetailsUiState {
 }
 
 internal class DetailsViewModel(
-    private val getInterestsPhotosUseCase: GetInterestsPhotosUseCaseSuspend,
+    private val interestsRepository: InterestsRepository
 ) : ViewModel() {
 
 
     private val _uiState = MutableStateFlow<DetailsUiState>(DetailsUiState.Loading)
     val uiState = _uiState.asStateFlow()
 
-    fun initialize(index: Int) {
-        viewModelScope.launch {
-            val photos = getInterestsPhotosUseCase.execute(index = index)
-                .map { data ->
-                    data.map { photo ->
-                        DetailsPhoto(
-                            url = photo.sizes.highQualityUrl, id = photo.id, title = photo.title
-                        )
-                    }
+    init {
+        val photos = interestsRepository.data
+            .map { data ->
+                data.map { photo ->
+                    DetailsPhoto(
+                        url = photo.sizes.highQualityUrl, id = photo.id, title = photo.title
+                    )
                 }
-            _uiState.update {
-                DetailsUiState.Success(photos)
             }
+            .cachedIn(viewModelScope)
+        _uiState.update {
+            DetailsUiState.Success(photos)
         }
     }
 

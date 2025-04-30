@@ -21,13 +21,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
+import com.arbuzerxxl.vibeshot.core.design.theme.itemHeight24
+import com.arbuzerxxl.vibeshot.core.design.theme.padding20
 import com.arbuzerxxl.vibeshot.core.ui.widgets.LoadingIndicator
 import com.arbuzerxxl.vibeshot.core.ui.widgets.PhotoCard
+import com.arbuzerxxl.vibeshot.core.ui.widgets.PhotoCardPlaceHolder
 import com.arbuzerxxl.vibeshot.domain.models.InterestsPhotoResource
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
@@ -69,7 +71,6 @@ internal fun InterestsScreen(
             .background(MaterialTheme.colorScheme.background),
         contentAlignment = Alignment.Center
     ) {
-
         LazyVerticalStaggeredGrid(
             modifier = Modifier,
             state = scrollState,
@@ -78,19 +79,6 @@ internal fun InterestsScreen(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             contentPadding = PaddingValues(8.dp),
         ) {
-            if (items.loadState.refresh == LoadState.Loading) {
-                item { LoadingIndicator() }
-            }
-            if (items.loadState.append == LoadState.Loading) {
-                item {
-                    LoadingIndicator(
-                        modifier = Modifier
-                            .align(Alignment.BottomCenter)
-                            .padding(bottom = 20.dp)
-                            .size(20.dp)
-                    )
-                }
-            }
             items(
                 count = items.itemCount,
                 key = items.itemKey { it.sizes.highQualityUrl },
@@ -109,8 +97,16 @@ internal fun InterestsScreen(
                         width = photo.sizes.width,
                         isScrolling = isScrolling
                     )
-                }
+                } ?: PhotoCardPlaceHolder()
             }
+        }
+        if (!items.loadState.isIdle) {
+            LoadingIndicator(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = padding20)
+                    .size(itemHeight24)
+            )
         }
     }
 }

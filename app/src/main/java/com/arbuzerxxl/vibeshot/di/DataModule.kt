@@ -121,20 +121,19 @@ val dataModule = module {
     }
     factory<InterestsRepository> {
         InterestsRepositoryImpl(
-            database = get()
+            database = get(),
+            dispatcher = Dispatchers.IO
         )
     }
     // endregion
 
     // region mediators
-    single<InterestsRemoteMediator> { params ->
-        val perPage = params.get<Int>()
+    single<InterestsRemoteMediator> {
         InterestsRemoteMediatorImpl(
             database = get(),
             api = get(),
             key = BuildConfig.FLICKR_API_KEY,
             photoSizesRepository = get(),
-            perPage = perPage,
             dispatcher = Dispatchers.IO
         )
     }

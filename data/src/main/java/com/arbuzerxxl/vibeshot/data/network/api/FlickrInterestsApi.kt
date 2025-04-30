@@ -13,7 +13,7 @@ interface FlickrInterestsApi {
         @Query("nojsoncallback") noJsonCallback: String = "1",
         @Query("date") date: String? = null,
         @Query("extras") extras: String? = null,
-        @Query("per_page") perPage: Int? = null,
+        @Query("per_page") pageSize: Int? = null,
         @Query("page") page: Int? = null,
     ): InterestsNetworkResponse
 }

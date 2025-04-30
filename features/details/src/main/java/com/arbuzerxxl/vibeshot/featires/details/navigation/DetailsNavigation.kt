@@ -29,7 +29,7 @@ fun NavGraphBuilder.details(onNavigateUp: () -> Unit) {
 
         rememberKoinModules(unloadOnForgotten = true) { listOf(detailsModule) }
 
-        DetailsRoute(initialPhotoIndex = index)
+        DetailsRoute(photoPosition = index)
     }
 
 }
