@@ -30,6 +30,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
+import org.koin.androidx.compose.KoinAndroidContext
 
 class MainActivity : ComponentActivity() {
 
@@ -78,6 +79,7 @@ class MainActivity : ComponentActivity() {
             viewModel.uiState.value.shouldKeepSplashScreen()
         }
         handleFlickrAuthIntent(intent)
+
         setContent {
 
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -85,7 +87,9 @@ class MainActivity : ComponentActivity() {
             VibeShotTheme(
                 darkTheme = themeSettings.darkTheme
             ) {
-                VibeShotApp(uiState)
+                KoinAndroidContext {
+                    VibeShotApp(uiState)
+                }
             }
         }
     }

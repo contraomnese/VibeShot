@@ -31,6 +31,7 @@ import com.arbuzerxxl.vibeshot.core.ui.widgets.LoadingIndicator
 import com.arbuzerxxl.vibeshot.core.ui.widgets.PhotoCard
 import com.arbuzerxxl.vibeshot.core.ui.widgets.PhotoCardPlaceHolder
 import com.arbuzerxxl.vibeshot.domain.models.InterestsPhotoResource
+import com.arbuzerxxl.vibeshot.features.interests.navigation.InterestsDestination
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
 
@@ -40,7 +41,7 @@ import org.koin.core.annotation.KoinExperimentalAPI
 internal fun InterestsRoute(
     modifier: Modifier = Modifier,
     viewmodel: InterestsViewModel = koinViewModel(),
-    onPhotoClicked: (Int) -> Unit,
+    onPhotoClicked: (Int, String) -> Unit,
 ) {
     val items = viewmodel.uiState.collectAsLazyPagingItems()
 
@@ -55,7 +56,7 @@ internal fun InterestsRoute(
 internal fun InterestsScreen(
     modifier: Modifier = Modifier,
     items: LazyPagingItems<InterestsPhotoResource>,
-    onPhotoClicked: (Int) -> Unit,
+    onPhotoClicked: (Int, String) -> Unit,
 ) {
 
     val scrollState = rememberLazyStaggeredGridState()
@@ -89,7 +90,7 @@ internal fun InterestsScreen(
                     PhotoCard(
                         modifier = modifier
                             .clickable(
-                                onClick = { onPhotoClicked(index) }
+                                onClick = { onPhotoClicked(index, InterestsDestination::class.java.name) }
                             ),
                         urlLowQuality = photo.sizes.lowQualityUrl,
                         urlHighQuality = photo.sizes.highQualityUrl,

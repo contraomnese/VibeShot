@@ -5,8 +5,8 @@ import com.arbuzerxxl.vibeshot.features.interests.navigation.InterestNavigator
 
 fun NavHostController.interestsNavigator(externalNavigator: BottomMenuNavigator): InterestNavigator = object: InterestNavigator{
 
-    override fun navigateToDetails(initialIndex: Int) {
-        externalNavigator.onNavigateToDetails(initialIndex)
+    override fun navigateToDetails(initialPhotoPosition: Int, parentDestination: String) {
+        externalNavigator.onNavigateToDetails(initialPhotoPosition, parentDestination)
     }
 
     override fun onNavigateUp() {

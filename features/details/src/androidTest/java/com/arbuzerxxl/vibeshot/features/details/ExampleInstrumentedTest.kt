@@ -1,4 +1,4 @@
-package com.arbuzerxxl.vibeshot.featires.details
+package com.arbuzerxxl.vibeshot.features.details
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
@@ -17,6 +17,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.arbuzerxxl.vibeshot.featires.details.test", appContext.packageName)
+        assertEquals("com.arbuzerxxl.vibeshot.features.details.test", appContext.packageName)
     }
 }

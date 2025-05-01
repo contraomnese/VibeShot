@@ -90,7 +90,7 @@ class InterestsRemoteMediatorImpl(
 
     override suspend fun initialize(): InitializeAction {
         val lastUpdate = database.interestsDao().getLastUpdateTime() ?: 0L
-        val cacheTimeout = TimeUnit.MILLISECONDS.convert(1, TimeUnit.HOURS)
+        val cacheTimeout = TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS)
 
         return if (System.currentTimeMillis() - lastUpdate <= cacheTimeout)
         {

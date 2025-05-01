@@ -1,4 +1,4 @@
-package com.arbuzerxxl.vibeshot.featires.details
+package com.arbuzerxxl.vibeshot.features.details
 
 import org.junit.Assert.assertEquals
 import org.junit.Test

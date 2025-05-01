@@ -5,9 +5,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import com.arbuzerxxl.vibeshot.core.navigation.navigateSingleTopTo
-import com.arbuzerxxl.vibeshot.featires.details.navigation.details
 import com.arbuzerxxl.vibeshot.features.bottom_menu.di.bottomMenuModule
 import com.arbuzerxxl.vibeshot.features.bottom_menu.presentation.BottomMenuRoute
+import com.arbuzerxxl.vibeshot.features.details.navigation.details
 import kotlinx.serialization.Serializable
 import org.koin.compose.module.rememberKoinModules
 import org.koin.core.annotation.KoinExperimentalAPI
@@ -21,7 +21,7 @@ object BottomMenuDestination
 interface BottomMenuNavigator {
     fun onLogOut()
     fun onNavigateUp()
-    fun onNavigateToDetails(initialIndex: Int)
+    fun onNavigateToDetails(initialPhotoPosition: Int, parentDestination: String)
 }
 
 fun NavGraphBuilder.bottomMenu(
@@ -33,7 +33,6 @@ fun NavGraphBuilder.bottomMenu(
     }
 }
 
-
 @OptIn(KoinExperimentalAPI::class)
 private fun NavGraphBuilder.bottomMenuInner(
     externalNavigator: BottomMenuNavigator
@@ -43,12 +42,10 @@ private fun NavGraphBuilder.bottomMenuInner(
 
         rememberKoinModules(unloadOnForgotten = true) { listOf(bottomMenuModule) }
 
-
         BottomMenuRoute(externalNavigator = externalNavigator)
 
     }
-
-    details(onNavigateUp = externalNavigator::onNavigateUp)
+    details()
 }
 
 fun NavHostController.navigateToBottomMenu() {
