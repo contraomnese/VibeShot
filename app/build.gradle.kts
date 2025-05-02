@@ -74,6 +74,8 @@ dependencies {
     implementation(project(":features:start"))
     implementation(project(":features:auth"))
     implementation(project(":features:bottom_menu"))
+    implementation(project(":features:interests"))
+    implementation(project(":features:profile"))
     implementation(project(":features:details"))
 
     // di

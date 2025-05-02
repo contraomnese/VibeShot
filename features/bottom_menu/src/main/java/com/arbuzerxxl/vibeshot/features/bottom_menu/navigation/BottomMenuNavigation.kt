@@ -30,6 +30,7 @@ fun NavGraphBuilder.bottomMenu(
 
     navigation<BottomMenuGraph>(startDestination = BottomMenuDestination) {
         bottomMenuInner(externalNavigator)
+        details(externalNavigator::onNavigateUp)
     }
 }
 
@@ -45,7 +46,6 @@ private fun NavGraphBuilder.bottomMenuInner(
         BottomMenuRoute(externalNavigator = externalNavigator)
 
     }
-    details()
 }
 
 fun NavHostController.navigateToBottomMenu() {

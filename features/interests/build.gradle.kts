@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.arbuzerxxl.vibeshot.features.interestingness"
+    namespace = "com.arbuzerxxl.vibeshot.features.interests"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {

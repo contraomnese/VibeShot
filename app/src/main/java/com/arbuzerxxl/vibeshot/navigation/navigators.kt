@@ -5,7 +5,9 @@ import com.arbuzerxxl.vibeshot.features.auth.navigation.AuthNavigator
 import com.arbuzerxxl.vibeshot.features.auth.navigation.navigateToAuth
 import com.arbuzerxxl.vibeshot.features.bottom_menu.navigation.BottomMenuNavigator
 import com.arbuzerxxl.vibeshot.features.bottom_menu.navigation.navigateToBottomMenu
+import com.arbuzerxxl.vibeshot.features.details.navigation.ParentDestination
 import com.arbuzerxxl.vibeshot.features.details.navigation.navigateToDetails
+import com.arbuzerxxl.vibeshot.features.interests.navigation.InterestsDestination
 import com.arbuzerxxl.vibeshot.features.start.navigation.StartNavigator
 
 fun NavHostController.startNavigator(shouldSkipAuth: Boolean): StartNavigator = object : StartNavigator {
@@ -35,6 +37,11 @@ fun NavHostController.bottomMenuNavigator(): BottomMenuNavigator = object : Bott
 
     override fun onNavigateToDetails(initialPhotoPosition: Int, parentDestination: String) {
 
-        navigateToDetails(initialPhotoPosition, parentDestination)
+        val parentRoute = when (parentDestination) {
+            InterestsDestination::class.java.name -> ParentDestination.Interests
+            else -> throw IllegalArgumentException("Current parent destination doesn't exist")
+        }
+
+        navigateToDetails(initialPhotoPosition, parentRoute)
     }
 }

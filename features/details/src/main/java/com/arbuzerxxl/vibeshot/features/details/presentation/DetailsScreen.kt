@@ -1,6 +1,6 @@
 package com.arbuzerxxl.vibeshot.features.details.presentation
 
-import androidx.compose.animation.animateContentSize
+
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -58,6 +58,7 @@ import com.arbuzerxxl.vibeshot.core.design.theme.zero
 import com.arbuzerxxl.vibeshot.core.ui.widgets.LoadingIndicator
 import com.arbuzerxxl.vibeshot.core.ui.widgets.PhotoImage
 import com.arbuzerxxl.vibeshot.core.ui.widgets.PhotoImagePlaceholder
+import com.arbuzerxxl.vibeshot.features.details.navigation.ParentDestination
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
 import org.koin.core.parameter.parametersOf
@@ -71,8 +72,9 @@ private const val TWEEN_ANIMATION_DURATION = 800
 @OptIn(KoinExperimentalAPI::class)
 @Composable
 fun DetailsRoute(
-    photoPosition: Int,
-    parentDestination: String,
+    onNavigateUp: () -> Unit,
+    photoPosition: Int = 0,
+    parentDestination: ParentDestination,
     modifier: Modifier = Modifier,
     viewmodel: DetailsViewModel = koinViewModel(parameters = { parametersOf(parentDestination) }),
 ) {
@@ -227,8 +229,7 @@ fun SheetContent(
                     }
                 }
                 state.updateAnchors(newAnchors, state.targetValue)
-            }
-            .animateContentSize(),
+            },
     ) {
         Box(
             modifier = Modifier

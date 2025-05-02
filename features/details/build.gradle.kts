@@ -44,8 +44,6 @@ dependencies {
     implementation(project(":core:navigation"))
     implementation(project(":domain"))
 
-    implementation(project(":features:interests"))
-
     // di
     implementation(libs.koin.core)
     implementation(libs.koin.android)

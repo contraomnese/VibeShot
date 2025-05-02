@@ -7,14 +7,14 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
 import com.arbuzerxxl.vibeshot.domain.repository.InterestsRepository
-import com.arbuzerxxl.vibeshot.features.interests.navigation.InterestsDestination
+import com.arbuzerxxl.vibeshot.features.details.navigation.ParentDestination
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
+
 
 sealed interface DetailsUiState {
 
@@ -26,7 +26,7 @@ sealed interface DetailsUiState {
 
 class DetailsViewModel(
     private val interestsRepository: InterestsRepository,
-    private val parentDestination: String,
+    private val parentDestination: ParentDestination,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<DetailsUiState>(DetailsUiState.Loading)
@@ -39,12 +39,9 @@ class DetailsViewModel(
         }
     }
 
-    private val _errorState = MutableStateFlow<Throwable?>(null)
-    val errorState: StateFlow<Throwable?> = _errorState
-
-    private fun provideFlowByDestination(parentDestination: String): Flow<PagingData<DetailsPhoto>> {
+    private fun provideFlowByDestination(parentDestination: ParentDestination): Flow<PagingData<DetailsPhoto>> {
         return when (parentDestination) {
-            InterestsDestination::class.java.name -> {
+            is ParentDestination.Interests -> {
                 interestsRepository.data
                     .map { data ->
                         data.map { photo ->
@@ -55,7 +52,7 @@ class DetailsViewModel(
                     }
                     .cachedIn(viewModelScope)
             }
-            else -> emptyFlow()
+            is ParentDestination.Search -> emptyFlow()
         }
     }
 }
