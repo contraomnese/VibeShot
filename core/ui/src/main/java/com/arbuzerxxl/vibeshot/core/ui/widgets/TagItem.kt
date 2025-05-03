@@ -1,0 +1,47 @@
+package com.arbuzerxxl.vibeshot.core.ui.widgets
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.arbuzerxxl.vibeshot.core.design.theme.VibeShotTheme
+import com.arbuzerxxl.vibeshot.core.design.theme.cornerRadius8
+import com.arbuzerxxl.vibeshot.core.design.theme.itemWidth0_5
+import com.arbuzerxxl.vibeshot.core.ui.DevicePreviews
+
+@Composable
+fun TagItem(tag: String) {
+    Box(
+        modifier = Modifier
+            .border(
+                width = itemWidth0_5,
+                color = MaterialTheme.colorScheme.primary,
+                shape = RoundedCornerShape(cornerRadius8)
+            )
+            .background(
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                shape = RoundedCornerShape(cornerRadius8)
+            )
+    ) {
+        Text(
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+            text = tag,
+            color = MaterialTheme.colorScheme.primary,
+            style = MaterialTheme.typography.labelMedium
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+fun TagItemPreview(modifier: Modifier = Modifier) {
+    VibeShotTheme {
+        TagItem(tag="lion")
+    }
+}

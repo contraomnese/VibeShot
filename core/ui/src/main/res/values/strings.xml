@@ -11,4 +11,14 @@
     !--    Bottom menu-->
     <string name="interests">interests</string>
     <string name="profile">profile</string>
+
+    !--    Camera-->
+    <string name="camera">Camera</string>
+    <string name="lens">Lens</string>
+    <string name="focal">Focal length</string>
+    <string name="aperture">Aperture</string>
+    <string name="iso">Iso/Film</string>
+    <string name="shutter_speed">Shutter Speed</string>
+    <string name="wb">White Balance</string>
+    <string name="flash">Flash</string>
 </resources>

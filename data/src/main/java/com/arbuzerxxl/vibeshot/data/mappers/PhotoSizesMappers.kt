@@ -5,8 +5,7 @@ import com.arbuzerxxl.vibeshot.domain.models.PhotoSizesResource
 
 fun PhotoSizesNetwork.toDomain(): PhotoSizesResource {
 
-    val original = sizes.first { it.label == "Original" }
-    val highQuality = sizes.firstOrNull { it.label == "Large 2048" || it.label == "Large 1600" || it.label == "Large" } ?: original
+    val highQuality = sizes.first { it.label == "Large 2048" || it.label == "Large 1600" || it.label == "Large" }
     val lowQuality = sizes.first { it.label == "Small 400" || it.label == "Small 320" || it.label == "Small" }
 
     return PhotoSizesResource(

@@ -12,6 +12,8 @@ import com.arbuzerxxl.vibeshot.core.design.R
 
 private val montserrat = GoogleFont("Montserrat")
 private val openSans = GoogleFont("Open Sans")
+private val anton = GoogleFont("Anton")
+private val ramabhadra = GoogleFont("Ramabhadra")
 
 private val provider = GoogleFont.Provider(
     providerAuthority = "com.google.android.gms.fonts",
@@ -20,24 +22,29 @@ private val provider = GoogleFont.Provider(
 )
 
 val vibeTypography = Typography(
-    displayLarge = TextStyle(
+    displayMedium = TextStyle(
         fontFamily = FontFamily(Font(googleFont=montserrat, fontProvider = provider)),
         fontWeight = FontWeight.Bold,
         fontSize = 57.sp
     ),
-    headlineLarge = TextStyle(
-        fontFamily = FontFamily(Font(googleFont=montserrat, fontProvider = provider)),
+    headlineMedium = TextStyle(
+        fontFamily = FontFamily(Font(googleFont=ramabhadra, fontProvider = provider)),
         fontWeight = FontWeight.SemiBold,
-        fontSize = 32.sp
-    ),
-    bodyLarge = TextStyle(
-        fontFamily = FontFamily(Font(googleFont=openSans, fontProvider = provider)),
-        fontWeight = FontWeight.Normal,
         fontSize = 16.sp
     ),
-    labelLarge = TextStyle(
+    titleMedium = TextStyle(
+        fontFamily = FontFamily(Font(googleFont=anton, fontProvider = provider)),
+        fontWeight = FontWeight.Normal,
+        fontSize = 14.sp
+    ),
+    bodyMedium = TextStyle(
+        fontFamily = FontFamily(Font(googleFont=ramabhadra, fontProvider = provider)),
+        fontWeight = FontWeight.Normal,
+        fontSize = 12.sp
+    ),
+    labelMedium = TextStyle(
         fontFamily = FontFamily(Font(googleFont=montserrat, fontProvider = provider)),
         fontWeight = FontWeight.Medium,
-        fontSize = 14.sp
-    )
+        fontSize = 12.sp
+    ),
 )

@@ -21,14 +21,22 @@ val padding28 = 28.dp
 val padding32 = 32.dp
 val padding36 = 36.dp
 val padding40 = 40.dp
+val padding80 = 80.dp
+val padding160 = 160.dp
 
-val bottomSheetHiddenOffset = 108.dp
+val bottomSheetHiddenOffset = 120.dp
 
+val itemWidth0_5 = 0.5.dp
+val itemWidth1 = 1.dp
+
+val itemHeight2 = 2.dp
 val itemHeight4 = 4.dp
 val itemWidth40 = 40.dp
 
 val itemHeight24 = 24.dp
 val itemWidth24 = 24.dp
+
+val itemHeight30 = 30.dp
 
 val itemHeight40 = 40.dp
 val itemWidth216 = 216.dp

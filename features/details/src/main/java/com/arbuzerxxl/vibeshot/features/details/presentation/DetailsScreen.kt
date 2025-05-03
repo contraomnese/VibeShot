@@ -9,18 +9,26 @@ import androidx.compose.foundation.gestures.AnchoredDraggableDefaults
 import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.foundation.gestures.DraggableAnchors
 import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.TargetedFlingBehavior
 import androidx.compose.foundation.gestures.anchoredDraggable
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -38,12 +46,18 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
+import com.arbuzerxxl.vibeshot.core.design.icon.VibeShotIcons
+import com.arbuzerxxl.vibeshot.core.design.theme.VibeShotTheme
 import com.arbuzerxxl.vibeshot.core.design.theme.bottomSheetHiddenOffset
 import com.arbuzerxxl.vibeshot.core.design.theme.cornerSize2
 import com.arbuzerxxl.vibeshot.core.design.theme.cornerSize28
@@ -51,13 +65,19 @@ import com.arbuzerxxl.vibeshot.core.design.theme.itemHeight24
 import com.arbuzerxxl.vibeshot.core.design.theme.itemHeight4
 import com.arbuzerxxl.vibeshot.core.design.theme.itemWidth40
 import com.arbuzerxxl.vibeshot.core.design.theme.padding16
+import com.arbuzerxxl.vibeshot.core.design.theme.padding160
 import com.arbuzerxxl.vibeshot.core.design.theme.padding20
 import com.arbuzerxxl.vibeshot.core.design.theme.padding24
 import com.arbuzerxxl.vibeshot.core.design.theme.padding4
+import com.arbuzerxxl.vibeshot.core.design.theme.padding8
 import com.arbuzerxxl.vibeshot.core.design.theme.zero
+import com.arbuzerxxl.vibeshot.core.ui.DevicePreviews
+import com.arbuzerxxl.vibeshot.core.ui.widgets.CameraCard
 import com.arbuzerxxl.vibeshot.core.ui.widgets.LoadingIndicator
+import com.arbuzerxxl.vibeshot.core.ui.widgets.PhotoDetailsItem
 import com.arbuzerxxl.vibeshot.core.ui.widgets.PhotoImage
 import com.arbuzerxxl.vibeshot.core.ui.widgets.PhotoImagePlaceholder
+import com.arbuzerxxl.vibeshot.core.ui.widgets.TagItem
 import com.arbuzerxxl.vibeshot.features.details.navigation.ParentDestination
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
@@ -71,7 +91,7 @@ private const val TWEEN_ANIMATION_DURATION = 800
 
 @OptIn(KoinExperimentalAPI::class)
 @Composable
-fun DetailsRoute(
+internal fun DetailsRoute(
     onNavigateUp: () -> Unit,
     photoPosition: Int = 0,
     parentDestination: ParentDestination,
@@ -96,7 +116,7 @@ fun DetailsRoute(
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-internal fun DetailsScreen(
+private fun DetailsScreen(
     photoPosition: Int,
     modifier: Modifier = Modifier,
     items: LazyPagingItems<DetailsPhoto>,
@@ -116,12 +136,12 @@ internal fun DetailsScreen(
     ) {
 
         val currentPhoto by remember(listState) {
-                derivedStateOf {
-                    if (items.itemSnapshotList.isNotEmpty()) {
-                        items[listState.firstVisibleItemIndex]
-                    } else null
-                }
+            derivedStateOf {
+                if (items.itemSnapshotList.isNotEmpty()) {
+                    items[listState.firstVisibleItemIndex]
+                } else null
             }
+        }
 
         ScreenContent(
             uiState = items,
@@ -162,8 +182,8 @@ private fun ScreenContent(
         val layoutWidth = constraints.maxWidth
         val layoutHeight = constraints.maxHeight
 
-        val sheetPlaceable = subcompose(slotId = LAYOUT_SHEET_ID) {
-            SheetContent(
+        val sheetLayout = subcompose(slotId = LAYOUT_SHEET_ID) {
+            SheetLayout(
                 layoutHeight = layoutHeight,
                 state = anchoredDraggableState,
                 currentPhoto = currentPhoto
@@ -171,8 +191,8 @@ private fun ScreenContent(
         }.first().measure(constraints)
 
 
-        val bodyPlaceable = subcompose(slotId = LAYOUT_BODY_ID) {
-            BodyContent(
+        val bodyLayout = subcompose(slotId = LAYOUT_BODY_ID) {
+            BodyLayout(
                 items = uiState,
                 itemWidth = layoutWidth.dp,
                 listState = listState
@@ -189,15 +209,15 @@ private fun ScreenContent(
             val sheetOffsetY = anchoredDraggableState.requireOffset().roundToInt()
             val sheetOffsetX = 0
 
-            bodyPlaceable.place(x = 0, y = 0)
-            sheetPlaceable.place(sheetOffsetX, sheetOffsetY)
+            bodyLayout.place(x = 0, y = 0)
+            sheetLayout.place(sheetOffsetX, sheetOffsetY)
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SheetContent(
+private fun SheetLayout(
     modifier: Modifier = Modifier,
     state: AnchoredDraggableState<SheetValue>,
     layoutHeight: Int,
@@ -224,44 +244,216 @@ fun SheetContent(
                 val newAnchors = DraggableAnchors {
                     with(density) {
                         SheetValue.Hidden at (layoutHeight - bottomSheetHiddenOffset.toPx())
-                        SheetValue.PartiallyExpanded at (layoutHeight * 0.4f)
-                        SheetValue.Expanded at maxOf(layoutHeight * 0.2f, 0f)
+                        SheetValue.PartiallyExpanded at (layoutHeight * 0.6f)
+                        SheetValue.Expanded at maxOf(layoutHeight * 0.15f, 0f)
                     }
                 }
                 state.updateAnchors(newAnchors, state.targetValue)
             },
     ) {
+        SheetContent(state = state, flingBehavior = flingBehavior, photo = currentPhoto)
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SheetContent(
+    modifier: Modifier = Modifier,
+    state: AnchoredDraggableState<SheetValue>,
+    flingBehavior: TargetedFlingBehavior,
+    photo: DetailsPhoto?,
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(padding16)
+            .anchoredDraggable(state, orientation = Orientation.Vertical, flingBehavior = flingBehavior)
+    ) {
         Box(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(padding16)
-                .anchoredDraggable(state, orientation = Orientation.Vertical, flingBehavior = flingBehavior)
+                .padding(vertical = padding4)
+                .clip(RoundedCornerShape(cornerSize2))
+                .width(itemWidth40)
+                .height(itemHeight4)
+                .align(Alignment.TopCenter)
+                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.5f))
+        )
+        Column(
+            modifier = Modifier.padding(top = padding16),
+            verticalArrangement = Arrangement.spacedBy(padding24)
         ) {
-            Box(
-                modifier = Modifier
-                    .padding(vertical = padding4)
-                    .clip(RoundedCornerShape(cornerSize2))
-                    .width(itemWidth40)
-                    .height(itemHeight4)
+            photo?.let {
+                OwnerBlock(
+                    owner = it.owner
+                )
+                TitleBlock(
+                    title = it.title,
+                    description = it.description
+                )
+                MetaBlock(
+                    dateUpload = it.dateUpload,
+                    dateTaken = it.dateTaken,
+                    views = it.views,
+                    comments = it.comments
+                )
+                CameraBlock(camera = it.camera)
+                TagsBlock(tags = it.tags)
+                MoreBlock(license = it.license)
+            }
+        }
+    }
+}
 
-                    .align(Alignment.TopCenter)
-                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.5f))
+@Composable
+private fun Divider() {
+    Box(
+        modifier = Modifier
+            .padding(horizontal = padding8)
+            .fillMaxWidth()
+            .height(0.5.dp)
+            .background(MaterialTheme.colorScheme.onSurfaceVariant)
+    )
+}
+
+@Composable
+private fun OwnerBlock(
+    modifier: Modifier = Modifier,
+    owner: String,
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            modifier = Modifier
+                .size(itemHeight24)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.primary)
+        )
+        Text(
+            modifier = Modifier.padding(start = padding8),
+            text = owner,
+            style = MaterialTheme.typography.headlineMedium.copy(
+                fontWeight = FontWeight.Light
+            ),
+            color = MaterialTheme.colorScheme.onSurface,
+        )
+    }
+}
+
+@Composable
+private fun TitleBlock(
+    modifier: Modifier = Modifier,
+    title: String,
+    description: String,
+) {
+    Column(
+        modifier = modifier,
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
+        Text(
+            modifier = Modifier.padding(top = padding8),
+            text = description,
+            style = MaterialTheme.typography.bodyMedium.copy(
+                fontStyle = FontStyle.Italic
+            ),
+            color = MaterialTheme.colorScheme.onSurface,
+            textAlign = TextAlign.Justify,
+            maxLines = 3,
+            softWrap = true,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
+}
+
+@Composable
+private fun MetaBlock(
+    modifier: Modifier = Modifier,
+    dateUpload: String,
+    dateTaken: String,
+    views: Int,
+    comments: Int,
+) {
+    Divider()
+    Box(
+        modifier = modifier
+            .wrapContentWidth()
+    ) {
+        Column(verticalArrangement = Arrangement.spacedBy(padding16)) {
+            PhotoDetailsItem(
+                icon = VibeShotIcons.Upload,
+                text = dateUpload
             )
-            Text(
-                text = currentPhoto?.title ?: "",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier
-                    .padding(top = padding24)
-                    .align(Alignment.TopCenter)
+            PhotoDetailsItem(
+                icon = VibeShotIcons.Calendar,
+                text = dateTaken
+            )
+        }
+        Column(
+            modifier = Modifier.padding(start = padding160),
+            verticalArrangement = Arrangement.spacedBy(padding16)) {
+            PhotoDetailsItem(
+                icon = VibeShotIcons.Views,
+                text = "$views Views"
+            )
+            PhotoDetailsItem(
+                icon = VibeShotIcons.Comments,
+                text = "$comments Comments"
             )
         }
     }
 }
 
+@Composable
+private fun CameraBlock(
+    modifier: Modifier = Modifier,
+    camera: Camera?,
+) {
+    camera?.let {
+        Divider()
+        CameraCard(
+            modifier = modifier,
+            cameraModel = it.model,
+            lensModel = it.lens,
+            aperture = it.aperture,
+            focalLength = it.focalLength,
+            iso = it.iso,
+            flash = it.flash,
+            shutterSpeed = it.shutterSpeed,
+            whiteBalance = it.whiteBalance
+        )
+    }
+}
 
 @Composable
-fun BodyContent(
+private fun TagsBlock(
+    modifier: Modifier = Modifier,
+    tags: List<String>,
+) {
+    if (tags.isNotEmpty()) {
+        val scrollState = rememberScrollState()
+
+        Row(
+            modifier = modifier
+                .horizontalScroll(scrollState)
+                .padding(vertical = padding8),
+            horizontalArrangement = Arrangement.spacedBy(padding8)
+        ) {
+            tags.forEach { tag ->
+                TagItem(tag = tag)
+            }
+        }
+    }
+
+}
+
+
+@Composable
+private fun BodyLayout(
     modifier: Modifier = Modifier,
     items: LazyPagingItems<DetailsPhoto>,
     itemWidth: Dp,
@@ -297,5 +489,36 @@ fun BodyContent(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun MoreBlock(
+    modifier: Modifier = Modifier,
+    license: String,
+) {
+    Box(
+        modifier = modifier
+            .wrapContentWidth()
+    ) {
+        Column(verticalArrangement = Arrangement.spacedBy(padding16)) {
+            PhotoDetailsItem(
+                icon = VibeShotIcons.Copyright,
+                text = license
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@DevicePreviews
+@Composable
+private fun SheetContentPreview(modifier: Modifier = Modifier) {
+    VibeShotTheme {
+        SheetLayout(
+            state = AnchoredDraggableState<SheetValue>(initialValue = SheetValue.Hidden),
+            layoutHeight = 2400,
+            currentPhoto = DetailsPhoto.preview(),
+        )
     }
 }
