@@ -57,7 +57,6 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import com.arbuzerxxl.vibeshot.core.design.icon.VibeShotIcons
-import com.arbuzerxxl.vibeshot.core.design.theme.VibeShotTheme
 import com.arbuzerxxl.vibeshot.core.design.theme.bottomSheetHiddenOffset
 import com.arbuzerxxl.vibeshot.core.design.theme.cornerSize2
 import com.arbuzerxxl.vibeshot.core.design.theme.cornerSize28
@@ -71,13 +70,14 @@ import com.arbuzerxxl.vibeshot.core.design.theme.padding24
 import com.arbuzerxxl.vibeshot.core.design.theme.padding4
 import com.arbuzerxxl.vibeshot.core.design.theme.padding8
 import com.arbuzerxxl.vibeshot.core.design.theme.zero
-import com.arbuzerxxl.vibeshot.core.ui.DevicePreviews
 import com.arbuzerxxl.vibeshot.core.ui.widgets.CameraCard
 import com.arbuzerxxl.vibeshot.core.ui.widgets.LoadingIndicator
 import com.arbuzerxxl.vibeshot.core.ui.widgets.PhotoDetailsItem
 import com.arbuzerxxl.vibeshot.core.ui.widgets.PhotoImage
 import com.arbuzerxxl.vibeshot.core.ui.widgets.PhotoImagePlaceholder
 import com.arbuzerxxl.vibeshot.core.ui.widgets.TagItem
+import com.arbuzerxxl.vibeshot.domain.models.photo.CameraResource
+import com.arbuzerxxl.vibeshot.domain.models.photo.PhotoResource
 import com.arbuzerxxl.vibeshot.features.details.navigation.ParentDestination
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
@@ -105,10 +105,13 @@ internal fun DetailsRoute(
         DetailsUiState.Loading -> LoadingIndicator()
         is DetailsUiState.Success -> {
             val items = (uiState as DetailsUiState.Success).photos.collectAsLazyPagingItems()
+            val currentPhoto = (uiState as DetailsUiState.Success).currentPhoto
             DetailsScreen(
                 modifier = modifier,
                 items = items,
-                photoPosition = photoPosition
+                photo = currentPhoto,
+                photoPosition = photoPosition,
+                onSelectPhoto = viewmodel::setPhoto
             )
         }
     }
@@ -118,8 +121,10 @@ internal fun DetailsRoute(
 @Composable
 private fun DetailsScreen(
     photoPosition: Int,
+    photo: PhotoResource?,
     modifier: Modifier = Modifier,
     items: LazyPagingItems<DetailsPhoto>,
+    onSelectPhoto: (String, String) -> Unit
 ) {
 
     val listState = rememberLazyListState(initialFirstVisibleItemIndex = photoPosition)
@@ -139,13 +144,20 @@ private fun DetailsScreen(
             derivedStateOf {
                 if (items.itemSnapshotList.isNotEmpty()) {
                     items[listState.firstVisibleItemIndex]
+
                 } else null
             }
         }
 
+        LaunchedEffect(currentPhoto) {
+            currentPhoto?.let {
+                onSelectPhoto(it.id, it.url)
+            }
+        }
+
         ScreenContent(
-            uiState = items,
-            currentPhoto = currentPhoto,
+            items = items,
+            currentPhoto = photo,
             listState = listState
         )
 
@@ -164,8 +176,8 @@ private fun DetailsScreen(
 @Composable
 private fun ScreenContent(
     modifier: Modifier = Modifier,
-    uiState: LazyPagingItems<DetailsPhoto>,
-    currentPhoto: DetailsPhoto?,
+    items: LazyPagingItems<DetailsPhoto>,
+    currentPhoto: PhotoResource?,
     listState: LazyListState,
 ) {
 
@@ -193,7 +205,7 @@ private fun ScreenContent(
 
         val bodyLayout = subcompose(slotId = LAYOUT_BODY_ID) {
             BodyLayout(
-                items = uiState,
+                items = items,
                 itemWidth = layoutWidth.dp,
                 listState = listState
             )
@@ -221,7 +233,7 @@ private fun SheetLayout(
     modifier: Modifier = Modifier,
     state: AnchoredDraggableState<SheetValue>,
     layoutHeight: Int,
-    currentPhoto: DetailsPhoto?,
+    currentPhoto: PhotoResource?,
 ) {
 
     val density = LocalDensity.current
@@ -261,7 +273,7 @@ private fun SheetContent(
     modifier: Modifier = Modifier,
     state: AnchoredDraggableState<SheetValue>,
     flingBehavior: TargetedFlingBehavior,
-    photo: DetailsPhoto?,
+    photo: PhotoResource?,
 ) {
     Box(
         modifier = Modifier
@@ -296,7 +308,7 @@ private fun SheetContent(
                     views = it.views,
                     comments = it.comments
                 )
-                CameraBlock(camera = it.camera)
+                CameraBlock(camera = it.cameraResource)
                 TagsBlock(tags = it.tags)
                 MoreBlock(license = it.license)
             }
@@ -375,8 +387,8 @@ private fun MetaBlock(
     modifier: Modifier = Modifier,
     dateUpload: String,
     dateTaken: String,
-    views: Int,
-    comments: Int,
+    views: String,
+    comments: String,
 ) {
     Divider()
     Box(
@@ -411,7 +423,7 @@ private fun MetaBlock(
 @Composable
 private fun CameraBlock(
     modifier: Modifier = Modifier,
-    camera: Camera?,
+    camera: CameraResource?,
 ) {
     camera?.let {
         Divider()
@@ -423,7 +435,7 @@ private fun CameraBlock(
             focalLength = it.focalLength,
             iso = it.iso,
             flash = it.flash,
-            shutterSpeed = it.shutterSpeed,
+            exposureTime = it.exposureTime,
             whiteBalance = it.whiteBalance
         )
     }
@@ -510,15 +522,15 @@ private fun MoreBlock(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@DevicePreviews
-@Composable
-private fun SheetContentPreview(modifier: Modifier = Modifier) {
-    VibeShotTheme {
-        SheetLayout(
-            state = AnchoredDraggableState<SheetValue>(initialValue = SheetValue.Hidden),
-            layoutHeight = 2400,
-            currentPhoto = DetailsPhoto.preview(),
-        )
-    }
-}
+//@OptIn(ExperimentalMaterial3Api::class)
+//@DevicePreviews
+//@Composable
+//private fun SheetContentPreview(modifier: Modifier = Modifier) {
+//    VibeShotTheme {
+//        SheetLayout(
+//            state = AnchoredDraggableState<SheetValue>(initialValue = SheetValue.Hidden),
+//            layoutHeight = 2400,
+//            currentPhoto = DetailsPhoto.preview(),
+//        )
+//    }
+//}

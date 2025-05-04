@@ -8,4 +8,7 @@ class AccessTokenInvalidResponseException(cause: Throwable): Throwable(cause = c
 
 class RequestInterestsPhotosFetchException(cause: Throwable): Throwable(cause = cause)
 
+class RequestPhotosFetchException(cause: Throwable): Throwable(cause = cause)
 class RequestPhotoSizesFetchException(cause: Throwable): Throwable(cause = cause)
+class RequestPhotoInfoFetchException(cause: Throwable): Throwable(cause = cause)
+class RequestPhotoExifFetchException(cause: Throwable): Throwable(cause = cause)

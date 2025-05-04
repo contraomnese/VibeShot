@@ -42,7 +42,7 @@ fun CameraCard(
     focalLength: String,
     iso: String,
     flash: String,
-    shutterSpeed: String,
+    exposureTime: String,
     whiteBalance: String,
 ) {
     Column(
@@ -99,7 +99,7 @@ fun CameraCard(
                 verticalArrangement = Arrangement.spacedBy(padding16)
             ) {
                 CameraData(
-                    icon = VibeShotIcons.ShutterSpeed, title = R.string.shutter_speed, body = shutterSpeed
+                    icon = VibeShotIcons.ExposureTime, title = R.string.shutter_speed, body = exposureTime
                 )
                 CameraData(
                     icon = VibeShotIcons.WhiteBalance, title = R.string.wb, body = whiteBalance
@@ -180,7 +180,7 @@ private fun CameraCardPreview() {
             focalLength = "50.0 mm",
             iso = "",
             flash = "Off, Did not fire",
-            shutterSpeed = "1/320",
+            exposureTime = "1/320",
             whiteBalance = "Auto",
         )
     }

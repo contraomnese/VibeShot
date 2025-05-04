@@ -35,7 +35,7 @@ object VibeShotIcons {
     val FocalLength = Icons.Rounded.Straighten
     val ISO = Icons.Rounded.Exposure
     val Flash = Icons.Rounded.Bolt
-    val ShutterSpeed = Icons.Rounded.ShutterSpeed
+    val ExposureTime = Icons.Rounded.ShutterSpeed
     val WhiteBalance = Icons.Rounded.Contrast
     val Copyright = Icons.Rounded.Copyright
 }
