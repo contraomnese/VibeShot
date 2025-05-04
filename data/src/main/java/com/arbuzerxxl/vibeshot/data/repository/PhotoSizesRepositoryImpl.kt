@@ -3,7 +3,7 @@ package com.arbuzerxxl.vibeshot.data.repository
 import com.arbuzerxxl.vibeshot.data.exceptions.RequestPhotoSizesFetchException
 import com.arbuzerxxl.vibeshot.data.mappers.toDomain
 import com.arbuzerxxl.vibeshot.data.network.api.FlickrPhotoSizesApi
-import com.arbuzerxxl.vibeshot.domain.models.PhotoSizesResource
+import com.arbuzerxxl.vibeshot.domain.models.photo.PhotoSizesResource
 import com.arbuzerxxl.vibeshot.domain.repository.PhotoSizesRepository
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher

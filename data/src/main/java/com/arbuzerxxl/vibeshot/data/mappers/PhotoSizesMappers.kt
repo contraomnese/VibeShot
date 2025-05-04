@@ -1,7 +1,7 @@
 package com.arbuzerxxl.vibeshot.data.mappers
 
 import com.arbuzerxxl.vibeshot.data.network.model.photos.PhotoSizesNetwork
-import com.arbuzerxxl.vibeshot.domain.models.PhotoSizesResource
+import com.arbuzerxxl.vibeshot.domain.models.photo.PhotoSizesResource
 
 fun PhotoSizesNetwork.toDomain(): PhotoSizesResource {
 

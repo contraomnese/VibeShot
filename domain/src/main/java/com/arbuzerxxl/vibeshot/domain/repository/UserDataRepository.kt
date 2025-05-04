@@ -1,7 +1,6 @@
 package com.arbuzerxxl.vibeshot.domain.repository
 
-import com.arbuzerxxl.vibeshot.domain.models.UserData
-import com.arbuzerxxl.vibeshot.domain.models.ui.DarkThemeConfig
+import com.arbuzerxxl.vibeshot.domain.models.user.UserData
 import kotlinx.coroutines.flow.Flow
 
 interface UserDataRepository {

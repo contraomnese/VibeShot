@@ -1,6 +1,0 @@
-package com.arbuzerxxl.vibeshot.domain.models
-
-data class InterestsResource(
-    val id: String,
-    val title: String,
-)

@@ -4,9 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arbuzerxxl.vibeshot.MainActivityUiState.Loading
 import com.arbuzerxxl.vibeshot.MainActivityUiState.Success
-import com.arbuzerxxl.vibeshot.domain.models.UserData
 import com.arbuzerxxl.vibeshot.domain.models.auth.AuthState
 import com.arbuzerxxl.vibeshot.domain.models.ui.DarkThemeConfig
+import com.arbuzerxxl.vibeshot.domain.models.user.UserData
 import com.arbuzerxxl.vibeshot.domain.repository.UserDataRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

@@ -5,13 +5,12 @@ import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.room.withTransaction
 import com.arbuzerxxl.vibeshot.data.exceptions.RequestInterestsPhotosFetchException
-import com.arbuzerxxl.vibeshot.data.mappers.toDomain
 import com.arbuzerxxl.vibeshot.data.mediators.api.InterestsRemoteMediator
 import com.arbuzerxxl.vibeshot.data.network.api.FlickrInterestsApi
+import com.arbuzerxxl.vibeshot.data.network.model.interestingness.InterestsPhotosNetwork
 import com.arbuzerxxl.vibeshot.data.storage.db.AppDatabase
 import com.arbuzerxxl.vibeshot.data.storage.db.interests.dto.InterestsPhotoDto
 import com.arbuzerxxl.vibeshot.data.storage.db.interests.entities.InterestsEntity
-import com.arbuzerxxl.vibeshot.domain.models.InterestsResources
 import com.arbuzerxxl.vibeshot.domain.repository.PhotoSizesRepository
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
@@ -50,15 +49,15 @@ class InterestsRemoteMediatorImpl(
                 }
             }
 
-            val photos = loadPhotos(page = loadKey, pageSize = state.config.pageSize)
+            val response = loadPhotos(page = loadKey, pageSize = state.config.pageSize)
 
             val resources = coroutineScope {
-                photos.resources.map { resource ->
+                response.photos.map { photo ->
                     async(dispatcher) {
-                        val resourceSizes = photoSizesRepository.getSizes(resource.id)
+                        val resourceSizes = photoSizesRepository.getSizes(photo.id)
                         InterestsEntity(
-                            photoId = resource.id,
-                            title = resource.title,
+                            photoId = photo.id,
+                            title = photo.title,
                             highQualityUrl = resourceSizes.highQualityUrl,
                             lowQualityUrl = resourceSizes.lowQualityUrl,
                             width = resourceSizes.width,
@@ -79,7 +78,7 @@ class InterestsRemoteMediatorImpl(
             }
 
             MediatorResult.Success(
-                endOfPaginationReached = photos.pages == loadKey
+                endOfPaginationReached = response.pages == loadKey
             )
         } catch (e: IOException) {
             MediatorResult.Error(e)
@@ -100,7 +99,7 @@ class InterestsRemoteMediatorImpl(
         }
     }
 
-    private suspend fun loadPhotos(page: Int, pageSize: Int): InterestsResources = withContext(dispatcher) {
+    private suspend fun loadPhotos(page: Int, pageSize: Int): InterestsPhotosNetwork = withContext(dispatcher) {
         try {
             api.getPhotos(
                 key = key,
@@ -108,8 +107,6 @@ class InterestsRemoteMediatorImpl(
                 pageSize = pageSize
             )
                 .response
-                .toDomain()
-
         } catch (cause: Throwable) {
             if (cause is CancellationException) throw cause
             throw RequestInterestsPhotosFetchException(cause)

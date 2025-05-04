@@ -1,4 +1,4 @@
-package com.arbuzerxxl.vibeshot.domain.models
+package com.arbuzerxxl.vibeshot.domain.models.photo
 
 data class PhotoSizesResource(
     val width: Int,

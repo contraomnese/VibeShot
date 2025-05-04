@@ -1,8 +1,8 @@
 package com.arbuzerxxl.vibeshot.data.repository
 
 import com.arbuzerxxl.vibeshot.data.storage.datastore.api.SettingsStorage
-import com.arbuzerxxl.vibeshot.domain.models.UserData
 import com.arbuzerxxl.vibeshot.domain.models.ui.DarkThemeConfig
+import com.arbuzerxxl.vibeshot.domain.models.user.UserData
 import com.arbuzerxxl.vibeshot.domain.repository.AuthRepository
 import com.arbuzerxxl.vibeshot.domain.repository.UserDataRepository
 import kotlinx.coroutines.CoroutineDispatcher

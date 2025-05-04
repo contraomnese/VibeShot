@@ -9,7 +9,7 @@ import androidx.paging.map
 import com.arbuzerxxl.vibeshot.data.mappers.toDomain
 import com.arbuzerxxl.vibeshot.data.mediators.api.InterestsRemoteMediator
 import com.arbuzerxxl.vibeshot.data.storage.db.AppDatabase
-import com.arbuzerxxl.vibeshot.domain.models.InterestsPhotoResource
+import com.arbuzerxxl.vibeshot.domain.models.interest.InterestsResource
 import com.arbuzerxxl.vibeshot.domain.repository.InterestsRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -31,8 +31,8 @@ class InterestsRepositoryImpl(
 
     private val mediator: InterestsRemoteMediator by inject(parameters = { parametersOf(INTERESTS_PAGE_SIZE) })
 
-    private val _data = MutableSharedFlow<PagingData<InterestsPhotoResource>>(replay = 1)
-    override val data: SharedFlow<PagingData<InterestsPhotoResource>> = _data
+    private val _data = MutableSharedFlow<PagingData<InterestsResource>>(replay = 1)
+    override val data: SharedFlow<PagingData<InterestsResource>> = _data
 
     init {
         load()

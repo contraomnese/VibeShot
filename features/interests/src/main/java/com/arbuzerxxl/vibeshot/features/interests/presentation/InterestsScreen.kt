@@ -30,7 +30,7 @@ import com.arbuzerxxl.vibeshot.core.design.theme.padding20
 import com.arbuzerxxl.vibeshot.core.ui.widgets.LoadingIndicator
 import com.arbuzerxxl.vibeshot.core.ui.widgets.PhotoCard
 import com.arbuzerxxl.vibeshot.core.ui.widgets.PhotoCardPlaceHolder
-import com.arbuzerxxl.vibeshot.domain.models.InterestsPhotoResource
+import com.arbuzerxxl.vibeshot.domain.models.interest.InterestsResource
 import com.arbuzerxxl.vibeshot.features.interests.navigation.InterestsDestination
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
@@ -55,7 +55,7 @@ internal fun InterestsRoute(
 @Composable
 internal fun InterestsScreen(
     modifier: Modifier = Modifier,
-    items: LazyPagingItems<InterestsPhotoResource>,
+    items: LazyPagingItems<InterestsResource>,
     onPhotoClicked: (Int, String) -> Unit,
 ) {
 
