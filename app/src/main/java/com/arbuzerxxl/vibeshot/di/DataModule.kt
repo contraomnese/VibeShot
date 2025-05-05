@@ -22,7 +22,6 @@ import com.arbuzerxxl.vibeshot.data.network.model.photos.PhotoInfoResponse
 import com.arbuzerxxl.vibeshot.data.network.model.photos.PhotoSizesResponse
 import com.arbuzerxxl.vibeshot.data.repository.AuthRepositoryImpl
 import com.arbuzerxxl.vibeshot.data.repository.InterestsRepositoryImpl
-import com.arbuzerxxl.vibeshot.data.repository.PhotoSizesRepositoryImpl
 import com.arbuzerxxl.vibeshot.data.repository.PhotosRepositoryImpl
 import com.arbuzerxxl.vibeshot.data.repository.TokenRepositoryImpl
 import com.arbuzerxxl.vibeshot.data.repository.UserDataRepositoryImpl
@@ -34,7 +33,6 @@ import com.arbuzerxxl.vibeshot.data.storage.datastore.memory.UserMemoryStorage
 import com.arbuzerxxl.vibeshot.data.storage.db.AppDatabase
 import com.arbuzerxxl.vibeshot.domain.repository.AuthRepository
 import com.arbuzerxxl.vibeshot.domain.repository.InterestsRepository
-import com.arbuzerxxl.vibeshot.domain.repository.PhotoSizesRepository
 import com.arbuzerxxl.vibeshot.domain.repository.PhotosRepository
 import com.arbuzerxxl.vibeshot.domain.repository.TokenRepository
 import com.arbuzerxxl.vibeshot.domain.repository.UserDataRepository
@@ -130,13 +128,6 @@ val dataModule = module {
             dispatcher = Dispatchers.IO
         )
     }
-    factory<PhotoSizesRepository> {
-        PhotoSizesRepositoryImpl(
-            api = get(),
-            key = BuildConfig.FLICKR_API_KEY,
-            dispatcher = Dispatchers.IO
-        )
-    }
     factory<InterestsRepository> {
         InterestsRepositoryImpl(
             database = get(),
@@ -158,7 +149,7 @@ val dataModule = module {
             database = get(),
             api = get(),
             key = BuildConfig.FLICKR_API_KEY,
-            photoSizesRepository = get(),
+            photosRepository = get(),
             dispatcher = Dispatchers.IO
         )
     }

@@ -59,9 +59,14 @@ internal class DetailsViewModel(
         }
     }
 
-    fun setPhoto(id: String, url: String) {
+    fun setPhoto(photo: DetailsPhoto) {
         viewModelScope.launch {
-            val photo = photosRepository.getPhoto(id).copy(url = url)
+            _uiState.update { currentState ->
+                (currentState as DetailsUiState.Success).copy(
+                    currentPhoto = null
+                )
+            }
+            val photo = photosRepository.getPhoto(photo.id).copy(url = photo.url)
             _uiState.update { currentState ->
                 (currentState as DetailsUiState.Success).copy(
                     currentPhoto = photo

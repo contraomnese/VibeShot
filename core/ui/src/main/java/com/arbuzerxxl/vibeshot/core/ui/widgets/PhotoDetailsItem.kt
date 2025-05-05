@@ -29,7 +29,7 @@ fun PhotoDetailsItem(
         Icon(
             imageVector = icon,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary
+            tint = MaterialTheme.colorScheme.onSurface
         )
         Text(
             modifier = Modifier.padding(start = padding8),

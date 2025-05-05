@@ -28,7 +28,6 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -46,8 +45,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -57,7 +54,9 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import com.arbuzerxxl.vibeshot.core.design.icon.VibeShotIcons
+import com.arbuzerxxl.vibeshot.core.design.theme.VibeShotThemePreview
 import com.arbuzerxxl.vibeshot.core.design.theme.bottomSheetHiddenOffset
+import com.arbuzerxxl.vibeshot.core.design.theme.cornerRadius8
 import com.arbuzerxxl.vibeshot.core.design.theme.cornerSize2
 import com.arbuzerxxl.vibeshot.core.design.theme.cornerSize28
 import com.arbuzerxxl.vibeshot.core.design.theme.itemHeight24
@@ -70,14 +69,18 @@ import com.arbuzerxxl.vibeshot.core.design.theme.padding24
 import com.arbuzerxxl.vibeshot.core.design.theme.padding4
 import com.arbuzerxxl.vibeshot.core.design.theme.padding8
 import com.arbuzerxxl.vibeshot.core.design.theme.zero
+import com.arbuzerxxl.vibeshot.core.ui.DevicePreviews
 import com.arbuzerxxl.vibeshot.core.ui.widgets.CameraCard
 import com.arbuzerxxl.vibeshot.core.ui.widgets.LoadingIndicator
+import com.arbuzerxxl.vibeshot.core.ui.widgets.OwnerItem
 import com.arbuzerxxl.vibeshot.core.ui.widgets.PhotoDetailsItem
 import com.arbuzerxxl.vibeshot.core.ui.widgets.PhotoImage
 import com.arbuzerxxl.vibeshot.core.ui.widgets.PhotoImagePlaceholder
 import com.arbuzerxxl.vibeshot.core.ui.widgets.TagItem
 import com.arbuzerxxl.vibeshot.domain.models.photo.CameraResource
 import com.arbuzerxxl.vibeshot.domain.models.photo.PhotoResource
+import com.arbuzerxxl.vibeshot.domain.utils.formatDateTimeWithLocale
+import com.arbuzerxxl.vibeshot.domain.utils.formatUnixTimeWithSystemLocale
 import com.arbuzerxxl.vibeshot.features.details.navigation.ParentDestination
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
@@ -124,7 +127,7 @@ private fun DetailsScreen(
     photo: PhotoResource?,
     modifier: Modifier = Modifier,
     items: LazyPagingItems<DetailsPhoto>,
-    onSelectPhoto: (String, String) -> Unit
+    onSelectPhoto: (DetailsPhoto) -> Unit
 ) {
 
     val listState = rememberLazyListState(initialFirstVisibleItemIndex = photoPosition)
@@ -151,7 +154,7 @@ private fun DetailsScreen(
 
         LaunchedEffect(currentPhoto) {
             currentPhoto?.let {
-                onSelectPhoto(it.id, it.url)
+                onSelectPhoto(it)
             }
         }
 
@@ -296,7 +299,8 @@ private fun SheetContent(
         ) {
             photo?.let {
                 OwnerBlock(
-                    owner = it.owner
+                    owner = it.owner,
+                    iconUrl = it.iconUrl
                 )
                 TitleBlock(
                     title = it.title,
@@ -317,38 +321,17 @@ private fun SheetContent(
 }
 
 @Composable
-private fun Divider() {
-    Box(
-        modifier = Modifier
-            .padding(horizontal = padding8)
-            .fillMaxWidth()
-            .height(0.5.dp)
-            .background(MaterialTheme.colorScheme.onSurfaceVariant)
-    )
-}
-
-@Composable
 private fun OwnerBlock(
     modifier: Modifier = Modifier,
     owner: String,
+    iconUrl: String
 ) {
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Box(
-            modifier = Modifier
-                .size(itemHeight24)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.primary)
-        )
-        Text(
-            modifier = Modifier.padding(start = padding8),
-            text = owner,
-            style = MaterialTheme.typography.headlineMedium.copy(
-                fontWeight = FontWeight.Light
-            ),
-            color = MaterialTheme.colorScheme.onSurface,
+        OwnerItem(
+            owner = owner, url = iconUrl
         )
     }
 }
@@ -367,18 +350,18 @@ private fun TitleBlock(
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onSurface,
         )
-        Text(
-            modifier = Modifier.padding(top = padding8),
-            text = description,
-            style = MaterialTheme.typography.bodyMedium.copy(
-                fontStyle = FontStyle.Italic
-            ),
-            color = MaterialTheme.colorScheme.onSurface,
-            textAlign = TextAlign.Justify,
-            maxLines = 3,
-            softWrap = true,
-            overflow = TextOverflow.Ellipsis
-        )
+        if (description.isNotEmpty()) {
+            Text(
+                modifier = Modifier.padding(top = padding8),
+                text = description,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+                textAlign = TextAlign.Justify,
+                minLines = 1,
+                maxLines = 6,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
     }
 }
 
@@ -390,12 +373,15 @@ private fun MetaBlock(
     views: String,
     comments: String,
 ) {
-    Divider()
     Box(
         modifier = modifier
-            .wrapContentWidth()
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(cornerRadius8))
+            .background(MaterialTheme.colorScheme.surfaceVariant)
     ) {
-        Column(verticalArrangement = Arrangement.spacedBy(padding16)) {
+        Column(
+            modifier = Modifier.padding(padding8),
+            verticalArrangement = Arrangement.spacedBy(padding16)) {
             PhotoDetailsItem(
                 icon = VibeShotIcons.Upload,
                 text = dateUpload
@@ -406,7 +392,7 @@ private fun MetaBlock(
             )
         }
         Column(
-            modifier = Modifier.padding(start = padding160),
+            modifier = Modifier.padding(start = padding160, top = padding8, end = padding8, bottom = padding8),
             verticalArrangement = Arrangement.spacedBy(padding16)) {
             PhotoDetailsItem(
                 icon = VibeShotIcons.Views,
@@ -426,7 +412,6 @@ private fun CameraBlock(
     camera: CameraResource?,
 ) {
     camera?.let {
-        Divider()
         CameraCard(
             modifier = modifier,
             cameraModel = it.model,
@@ -522,15 +507,48 @@ private fun MoreBlock(
     }
 }
 
-//@OptIn(ExperimentalMaterial3Api::class)
-//@DevicePreviews
-//@Composable
-//private fun SheetContentPreview(modifier: Modifier = Modifier) {
-//    VibeShotTheme {
-//        SheetLayout(
-//            state = AnchoredDraggableState<SheetValue>(initialValue = SheetValue.Hidden),
-//            layoutHeight = 2400,
-//            currentPhoto = DetailsPhoto.preview(),
-//        )
-//    }
-//}
+@OptIn(ExperimentalMaterial3Api::class)
+@DevicePreviews
+@Composable
+private fun SheetContentPreview(modifier: Modifier = Modifier) {
+    VibeShotThemePreview {
+        SheetLayout(
+            state = AnchoredDraggableState<SheetValue>(initialValue = SheetValue.Hidden),
+            layoutHeight = 2400,
+            currentPhoto = PhotoResource(
+                id = "1234",
+                url = "www.ww.com",
+                owner = "Gerd Michael Kozik",
+                title = "L.A.K.E.",
+                iconUrl = "",
+                description = " as websites, print, commercial or private use. Do not use my photos without my permission !\nThank you all for your ryyrtyrtyrtyrtyvisits, faves and comments!\n".trim(),
+                dateUpload = "1746355286".formatUnixTimeWithSystemLocale(),
+                dateTaken = "2025-04-28 22:01:58".formatDateTimeWithLocale(),
+                views = "1345",
+                comments = "64",
+                cameraResource = CameraResource(
+                    model = "Sony ILCE-7RM5",
+                    lens = "50mm f/1.2",
+                    aperture = "f/16.0",
+                    focalLength = "50.0 mm",
+                    iso = "",
+                    flash = "Off, Did not fire",
+                    exposureTime = "1/320",
+                    whiteBalance = "Auto",
+                ),
+                tags = listOf<String>(
+                    "lion1",
+                    "twins1",
+                    "Sister1",
+                    "lion2",
+                    "twins2",
+                    "Sister2",
+                    "lion3",
+                    "twins3",
+                    "Sister3",
+                ),
+                license = "All Rights Reserved"
+            ),
+        )
+    }
+}

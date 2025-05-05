@@ -22,7 +22,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.arbuzerxxl.vibeshot.core.design.icon.VibeShotIcons
-import com.arbuzerxxl.vibeshot.core.design.theme.VibeShotTheme
+import com.arbuzerxxl.vibeshot.core.design.theme.VibeShotThemePreview
 import com.arbuzerxxl.vibeshot.core.design.theme.itemHeight30
 import com.arbuzerxxl.vibeshot.core.design.theme.itemHeight64
 import com.arbuzerxxl.vibeshot.core.design.theme.padding16
@@ -120,7 +120,8 @@ private fun Title(
         text = stringResource(text).uppercase(),
         style = MaterialTheme.typography.titleMedium.copy(
             fontWeight = FontWeight.Light,
-            fontSize = 10.sp
+            fontSize = 10.sp,
+            letterSpacing = 1.sp
         ),
         color = MaterialTheme.colorScheme.onSurface,
     )
@@ -172,7 +173,7 @@ private fun String.checkEmpty(): String = if (this.isNotEmpty()) this else EMPTY
 @DevicePreviews
 @Composable
 private fun CameraCardPreview() {
-    VibeShotTheme {
+    VibeShotThemePreview {
         CameraCard(
             cameraModel = "Sony ILCE-7RM5",
             lensModel = "50mm f/1.2",

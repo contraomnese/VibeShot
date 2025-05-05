@@ -4,6 +4,7 @@ data class PhotoResource(
     val id: String,
     val url: String,
     val owner: String,
+    val iconUrl: String,
     val title: String,
     val description: String,
     val dateUpload: String,
@@ -13,24 +14,7 @@ data class PhotoResource(
     val cameraResource: CameraResource?,
     val tags: List<String>,
     val license: String,
-) {
-    companion object {
-        val empty: PhotoResource = PhotoResource(
-            id = "",
-            url = "",
-            owner = "",
-            title = "",
-            description = "",
-            dateUpload = "",
-            dateTaken = "",
-            views = "",
-            comments = "",
-            cameraResource = null,
-            tags = listOf(),
-            license = ""
-        )
-    }
-}
+)
 
 data class CameraResource(
     val model: String,

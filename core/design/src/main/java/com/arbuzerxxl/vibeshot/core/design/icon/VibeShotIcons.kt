@@ -1,41 +1,43 @@
 package com.arbuzerxxl.vibeshot.core.design.icon
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Bolt
+import androidx.compose.material.icons.outlined.Bolt
+import androidx.compose.material.icons.outlined.CalendarMonth
+import androidx.compose.material.icons.outlined.Camera
+import androidx.compose.material.icons.outlined.ChatBubbleOutline
+import androidx.compose.material.icons.outlined.Contrast
+import androidx.compose.material.icons.outlined.Copyright
+import androidx.compose.material.icons.outlined.Exposure
+import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material.icons.outlined.FileUpload
+import androidx.compose.material.icons.outlined.Interests
+import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.PhotoCamera
+import androidx.compose.material.icons.outlined.ShutterSpeed
+import androidx.compose.material.icons.outlined.Straighten
+import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.rounded.CalendarMonth
-import androidx.compose.material.icons.rounded.Camera
-import androidx.compose.material.icons.rounded.CameraAlt
-import androidx.compose.material.icons.rounded.ChatBubbleOutline
-import androidx.compose.material.icons.rounded.Contrast
-import androidx.compose.material.icons.rounded.Copyright
 import androidx.compose.material.icons.rounded.DarkMode
-import androidx.compose.material.icons.rounded.Exposure
-import androidx.compose.material.icons.rounded.FavoriteBorder
-import androidx.compose.material.icons.rounded.Interests
 import androidx.compose.material.icons.rounded.LightMode
-import androidx.compose.material.icons.rounded.Person
-import androidx.compose.material.icons.rounded.ShutterSpeed
-import androidx.compose.material.icons.rounded.Straighten
-import androidx.compose.material.icons.rounded.Upload
-import androidx.compose.material.icons.rounded.Visibility
 
 
 object VibeShotIcons {
     val LightMode = Icons.Rounded.LightMode
     val DarkMode = Icons.Rounded.DarkMode
-    val Interests = Icons.Rounded.Interests
-    val Profile = Icons.Rounded.Person
-    val Likes = Icons.Rounded.FavoriteBorder
-    val Comments = Icons.Rounded.ChatBubbleOutline
-    val Upload = Icons.Rounded.Upload
-    val Calendar = Icons.Rounded.CalendarMonth
-    val Views = Icons.Rounded.Visibility
-    val Camera = Icons.Rounded.CameraAlt
-    val Aperture = Icons.Rounded.Camera
-    val FocalLength = Icons.Rounded.Straighten
-    val ISO = Icons.Rounded.Exposure
-    val Flash = Icons.Rounded.Bolt
-    val ExposureTime = Icons.Rounded.ShutterSpeed
-    val WhiteBalance = Icons.Rounded.Contrast
-    val Copyright = Icons.Rounded.Copyright
+    val Interests = Icons.Outlined.Interests
+    val Profile = Icons.Outlined.Person
+    val Likes = Icons.Outlined.FavoriteBorder
+    val Comments = Icons.Outlined.ChatBubbleOutline
+    val Upload = Icons.Outlined.FileUpload
+    val Calendar1 = Icons.Rounded.CalendarMonth
+    val Calendar = Icons.Outlined.CalendarMonth
+    val Views = Icons.Outlined.Visibility
+    val Camera = Icons.Outlined.PhotoCamera
+    val Aperture = Icons.Outlined.Camera
+    val FocalLength = Icons.Outlined.Straighten
+    val ISO = Icons.Outlined.Exposure
+    val Flash = Icons.Outlined.Bolt
+    val ExposureTime = Icons.Outlined.ShutterSpeed
+    val WhiteBalance = Icons.Outlined.Contrast
+    val Copyright = Icons.Outlined.Copyright
 }

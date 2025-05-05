@@ -9,6 +9,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.arbuzerxxl.vibeshot.core.design.theme.VibeShotTheme
 import com.arbuzerxxl.vibeshot.core.design.theme.cornerRadius8
@@ -21,19 +22,21 @@ fun TagItem(tag: String) {
         modifier = Modifier
             .border(
                 width = itemWidth0_5,
-                color = MaterialTheme.colorScheme.primary,
+                color = MaterialTheme.colorScheme.surfaceVariant,
                 shape = RoundedCornerShape(cornerRadius8)
             )
             .background(
-                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.1f),
                 shape = RoundedCornerShape(cornerRadius8)
             )
     ) {
         Text(
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
             text = tag,
-            color = MaterialTheme.colorScheme.primary,
-            style = MaterialTheme.typography.labelMedium
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = MaterialTheme.typography.labelMedium.copy(
+                fontWeight = FontWeight.Light
+            )
         )
     }
 }

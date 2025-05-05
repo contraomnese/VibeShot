@@ -11,7 +11,7 @@ import com.arbuzerxxl.vibeshot.data.network.model.interestingness.InterestsPhoto
 import com.arbuzerxxl.vibeshot.data.storage.db.AppDatabase
 import com.arbuzerxxl.vibeshot.data.storage.db.interests.dto.InterestsPhotoDto
 import com.arbuzerxxl.vibeshot.data.storage.db.interests.entities.InterestsEntity
-import com.arbuzerxxl.vibeshot.domain.repository.PhotoSizesRepository
+import com.arbuzerxxl.vibeshot.domain.repository.PhotosRepository
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.async
@@ -27,7 +27,7 @@ class InterestsRemoteMediatorImpl(
     private val database: AppDatabase,
     private val api: FlickrInterestsApi,
     private val key: String,
-    private val photoSizesRepository: PhotoSizesRepository,
+    private val photosRepository: PhotosRepository,
     private val dispatcher: CoroutineDispatcher,
 ): InterestsRemoteMediator() {
 
@@ -54,7 +54,7 @@ class InterestsRemoteMediatorImpl(
             val resources = coroutineScope {
                 response.photos.map { photo ->
                     async(dispatcher) {
-                        val resourceSizes = photoSizesRepository.getSizes(photo.id)
+                        val resourceSizes = photosRepository.getSizes(photo.id)
                         InterestsEntity(
                             photoId = photo.id,
                             title = photo.title,
