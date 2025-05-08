@@ -16,7 +16,7 @@ data class PhotoExif(
     @SerializedName("server") val server: String,
     @SerializedName("farm") val farm: Int,
     @SerializedName("camera") val camera: String,
-    @SerializedName("exif") val exif: List<ExifData> = emptyList()
+    @SerializedName("exif") val exif: List<ExifData>
 )
 
 data class ExifData(

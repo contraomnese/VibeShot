@@ -138,7 +138,8 @@ val dataModule = module {
         PhotosRepositoryImpl(
             api = get(),
             key = BuildConfig.FLICKR_API_KEY,
-            dispatcher = Dispatchers.IO
+            dispatcher = Dispatchers.IO,
+            database = get()
         )
     }
     // endregion

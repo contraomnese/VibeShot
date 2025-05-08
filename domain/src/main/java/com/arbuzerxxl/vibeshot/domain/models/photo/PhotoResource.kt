@@ -4,7 +4,7 @@ data class PhotoResource(
     val id: String,
     val url: String,
     val owner: String,
-    val iconUrl: String,
+    val ownerIconUrl: String,
     val title: String,
     val description: String,
     val dateUpload: String,

@@ -35,7 +35,7 @@ data class Owner(
     @SerializedName("location") val location: String,
     @SerializedName("iconserver") val iconServer: String,
     @SerializedName("iconfarm") val iconFarm: Int,
-    @SerializedName("path_alias") val pathAlias: String?,
+    @SerializedName("path_alias") val pathAlias: String,
 )
 
 data class Content(

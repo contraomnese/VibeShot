@@ -61,6 +61,7 @@ import com.arbuzerxxl.vibeshot.core.design.theme.cornerSize2
 import com.arbuzerxxl.vibeshot.core.design.theme.cornerSize28
 import com.arbuzerxxl.vibeshot.core.design.theme.itemHeight24
 import com.arbuzerxxl.vibeshot.core.design.theme.itemHeight4
+import com.arbuzerxxl.vibeshot.core.design.theme.itemHeight40
 import com.arbuzerxxl.vibeshot.core.design.theme.itemWidth40
 import com.arbuzerxxl.vibeshot.core.design.theme.padding16
 import com.arbuzerxxl.vibeshot.core.design.theme.padding160
@@ -68,6 +69,7 @@ import com.arbuzerxxl.vibeshot.core.design.theme.padding20
 import com.arbuzerxxl.vibeshot.core.design.theme.padding24
 import com.arbuzerxxl.vibeshot.core.design.theme.padding4
 import com.arbuzerxxl.vibeshot.core.design.theme.padding8
+import com.arbuzerxxl.vibeshot.core.design.theme.padding80
 import com.arbuzerxxl.vibeshot.core.design.theme.zero
 import com.arbuzerxxl.vibeshot.core.ui.DevicePreviews
 import com.arbuzerxxl.vibeshot.core.ui.widgets.CameraCard
@@ -127,7 +129,7 @@ private fun DetailsScreen(
     photo: PhotoResource?,
     modifier: Modifier = Modifier,
     items: LazyPagingItems<DetailsPhoto>,
-    onSelectPhoto: (DetailsPhoto) -> Unit
+    onSelectPhoto: (DetailsPhoto) -> Unit,
 ) {
 
     val listState = rememberLazyListState(initialFirstVisibleItemIndex = photoPosition)
@@ -293,14 +295,15 @@ private fun SheetContent(
                 .align(Alignment.TopCenter)
                 .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.5f))
         )
-        Column(
-            modifier = Modifier.padding(top = padding16),
-            verticalArrangement = Arrangement.spacedBy(padding24)
-        ) {
-            photo?.let {
+
+        photo?.let {
+            Column(
+                modifier = Modifier.padding(top = padding16),
+                verticalArrangement = Arrangement.spacedBy(padding24)
+            ) {
                 OwnerBlock(
                     owner = it.owner,
-                    iconUrl = it.iconUrl
+                    iconUrl = it.ownerIconUrl
                 )
                 TitleBlock(
                     title = it.title,
@@ -316,6 +319,15 @@ private fun SheetContent(
                 TagsBlock(tags = it.tags)
                 MoreBlock(license = it.license)
             }
+        } ?: Box(Modifier.fillMaxSize()) {
+            LoadingIndicator(
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(top = padding80)
+                    .height(
+                        itemHeight40
+                    )
+            )
         }
     }
 }
@@ -324,7 +336,7 @@ private fun SheetContent(
 private fun OwnerBlock(
     modifier: Modifier = Modifier,
     owner: String,
-    iconUrl: String
+    iconUrl: String,
 ) {
     Row(
         modifier = modifier,
@@ -381,7 +393,8 @@ private fun MetaBlock(
     ) {
         Column(
             modifier = Modifier.padding(padding8),
-            verticalArrangement = Arrangement.spacedBy(padding16)) {
+            verticalArrangement = Arrangement.spacedBy(padding16)
+        ) {
             PhotoDetailsItem(
                 icon = VibeShotIcons.Upload,
                 text = dateUpload
@@ -393,7 +406,8 @@ private fun MetaBlock(
         }
         Column(
             modifier = Modifier.padding(start = padding160, top = padding8, end = padding8, bottom = padding8),
-            verticalArrangement = Arrangement.spacedBy(padding16)) {
+            verticalArrangement = Arrangement.spacedBy(padding16)
+        ) {
             PhotoDetailsItem(
                 icon = VibeShotIcons.Views,
                 text = "$views Views"
@@ -520,7 +534,7 @@ private fun SheetContentPreview(modifier: Modifier = Modifier) {
                 url = "www.ww.com",
                 owner = "Gerd Michael Kozik",
                 title = "L.A.K.E.",
-                iconUrl = "",
+                ownerIconUrl = "",
                 description = " as websites, print, commercial or private use. Do not use my photos without my permission !\nThank you all for your ryyrtyrtyrtyrtyvisits, faves and comments!\n".trim(),
                 dateUpload = "1746355286".formatUnixTimeWithSystemLocale(),
                 dateTaken = "2025-04-28 22:01:58".formatDateTimeWithLocale(),
@@ -549,6 +563,19 @@ private fun SheetContentPreview(modifier: Modifier = Modifier) {
                 ),
                 license = "All Rights Reserved"
             ),
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@DevicePreviews
+@Composable
+private fun SheetContentEmptyPreview(modifier: Modifier = Modifier) {
+    VibeShotThemePreview {
+        SheetLayout(
+            state = AnchoredDraggableState<SheetValue>(initialValue = SheetValue.Hidden),
+            layoutHeight = 2400,
+            currentPhoto = null,
         )
     }
 }
