@@ -16,6 +16,7 @@ import com.arbuzerxxl.vibeshot.data.mediators.api.InterestsRemoteMediator
 import com.arbuzerxxl.vibeshot.data.network.api.FlickrAuthApi
 import com.arbuzerxxl.vibeshot.data.network.api.FlickrInterestsApi
 import com.arbuzerxxl.vibeshot.data.network.api.FlickrPhotoApi
+import com.arbuzerxxl.vibeshot.data.network.api.FlickrSearchApi
 import com.arbuzerxxl.vibeshot.data.network.interceptors.ErrorInterceptor
 import com.arbuzerxxl.vibeshot.data.network.model.photos.PhotoExifResponse
 import com.arbuzerxxl.vibeshot.data.network.model.photos.PhotoInfoResponse
@@ -23,6 +24,7 @@ import com.arbuzerxxl.vibeshot.data.network.model.photos.PhotoSizesResponse
 import com.arbuzerxxl.vibeshot.data.repository.AuthRepositoryImpl
 import com.arbuzerxxl.vibeshot.data.repository.InterestsRepositoryImpl
 import com.arbuzerxxl.vibeshot.data.repository.PhotosRepositoryImpl
+import com.arbuzerxxl.vibeshot.data.repository.SearchRepositoryImpl
 import com.arbuzerxxl.vibeshot.data.repository.TokenRepositoryImpl
 import com.arbuzerxxl.vibeshot.data.repository.UserDataRepositoryImpl
 import com.arbuzerxxl.vibeshot.data.repository.UserRepositoryImpl
@@ -34,6 +36,7 @@ import com.arbuzerxxl.vibeshot.data.storage.db.AppDatabase
 import com.arbuzerxxl.vibeshot.domain.repository.AuthRepository
 import com.arbuzerxxl.vibeshot.domain.repository.InterestsRepository
 import com.arbuzerxxl.vibeshot.domain.repository.PhotosRepository
+import com.arbuzerxxl.vibeshot.domain.repository.SearchRepository
 import com.arbuzerxxl.vibeshot.domain.repository.TokenRepository
 import com.arbuzerxxl.vibeshot.domain.repository.UserDataRepository
 import com.arbuzerxxl.vibeshot.domain.repository.UserRepository
@@ -93,6 +96,7 @@ val dataModule = module {
     single<FlickrAuthApi> { get<Retrofit>().create(FlickrAuthApi::class.java) }
     single<FlickrInterestsApi> { get<Retrofit>().create(FlickrInterestsApi::class.java) }
     single<FlickrPhotoApi> { get<Retrofit>().create(FlickrPhotoApi::class.java) }
+    single<FlickrSearchApi> { get<Retrofit>().create(FlickrSearchApi::class.java) }
     // endregion
 
     // region Repositories
@@ -140,6 +144,14 @@ val dataModule = module {
             key = BuildConfig.FLICKR_API_KEY,
             dispatcher = Dispatchers.IO,
             storage = get()
+        )
+    }
+    factory<SearchRepository> {
+        SearchRepositoryImpl(
+            key = BuildConfig.FLICKR_API_KEY,
+            searchApi = get(),
+            photosRepository = get(),
+            dispatcher = Dispatchers.IO
         )
     }
     // endregion

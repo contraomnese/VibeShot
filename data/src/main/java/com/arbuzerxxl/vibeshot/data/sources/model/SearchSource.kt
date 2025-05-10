@@ -1,8 +1,8 @@
-package com.arbuzerxxl.vibeshot.data.network.model.interestingness
+package com.arbuzerxxl.vibeshot.data.sources.model
 
 import com.google.gson.annotations.SerializedName
 
-data class InterestsPhotoNetwork(
+data class SearchSource(
     val id: String,
     val owner: String,
     val secret: String,

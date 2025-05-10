@@ -13,6 +13,7 @@ import androidx.compose.material.icons.outlined.FileUpload
 import androidx.compose.material.icons.outlined.Interests
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.PhotoCamera
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.ShutterSpeed
 import androidx.compose.material.icons.outlined.Straighten
 import androidx.compose.material.icons.outlined.Visibility
@@ -25,6 +26,7 @@ object VibeShotIcons {
     val LightMode = Icons.Rounded.LightMode
     val DarkMode = Icons.Rounded.DarkMode
     val Interests = Icons.Outlined.Interests
+    val Search = Icons.Outlined.Search
     val Profile = Icons.Outlined.Person
     val Likes = Icons.Outlined.FavoriteBorder
     val Comments = Icons.Outlined.ChatBubbleOutline

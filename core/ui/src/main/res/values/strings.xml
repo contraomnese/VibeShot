@@ -13,6 +13,7 @@
     !--    Bottom menu-->
     <string name="interests">interests</string>
     <string name="profile">profile</string>
+    <string name="search">search</string>
 
     !--    Camera-->
     <string name="camera">Camera</string>
