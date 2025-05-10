@@ -40,6 +40,7 @@ dependencies {
 
     implementation(project(":core:design"))
     implementation(project(":core:navigation"))
+    implementation(project(":domain"))
 
     // core
     implementation(libs.androidx.core.ktx)
@@ -63,6 +64,10 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.coil.transformations)
     implementation(libs.coil.network.okhttp)
+
+    // pagging
+    implementation(libs.androidx.paging.runtime.ktx)
+    implementation(libs.androidx.paging.compose)
 
     // tests
     testImplementation(libs.junit)
