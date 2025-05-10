@@ -12,7 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import com.arbuzerxxl.vibeshot.core.design.theme.VibeShotTheme
+import com.arbuzerxxl.vibeshot.core.design.theme.VibeShotThemePreview
 import com.arbuzerxxl.vibeshot.core.design.theme.baseButtonHeight
 import com.arbuzerxxl.vibeshot.core.design.theme.cornerSize16
 import com.arbuzerxxl.vibeshot.core.design.theme.padding4
@@ -51,7 +51,7 @@ fun BaseButton(
 @DevicePreviews
 @Composable
 private fun BaseButtonPreview() {
-    VibeShotTheme {
+    VibeShotThemePreview {
         BaseButton(
             title = stringResource(id = R.string.get_started_title_button),
             contentColor = MaterialTheme.colorScheme.onPrimaryContainer,

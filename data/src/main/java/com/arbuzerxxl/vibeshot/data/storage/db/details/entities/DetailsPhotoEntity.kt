@@ -4,7 +4,6 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.arbuzerxxl.vibeshot.data.network.model.photos.ExifData
-import com.arbuzerxxl.vibeshot.data.network.model.photos.Size
 import com.arbuzerxxl.vibeshot.data.network.model.photos.Tag
 
 @Entity(tableName = DetailsPhotoEntity.TABLE_NAME)
@@ -12,6 +11,7 @@ data class DetailsPhotoEntity(
     @PrimaryKey
     @ColumnInfo(name = PHOTO_ID) val photoId: String,
 
+    @ColumnInfo(name = PHOTO_URL) val photoUrl: String,
     @ColumnInfo(name = SECRET) val secret: String,
     @ColumnInfo(name = SERVER) val server: String,
     @ColumnInfo(name = FARM) val farm: Int,
@@ -42,14 +42,13 @@ data class DetailsPhotoEntity(
     @ColumnInfo(name = CAMERA) val camera: String? = null,
     @ColumnInfo(name = EXIF_JSON) val exifJson: List<ExifData>? = null,
 
-    @ColumnInfo(name = SIZES_JSON) val sizesJson: List<Size>? = null,
-
     @ColumnInfo(name = LAST_UPDATED) val lastUpdated: Long = System.currentTimeMillis()
 ) {
     companion object {
         const val TABLE_NAME = "photo_details"
 
         const val PHOTO_ID = "photo_id"
+        const val PHOTO_URL = "photo_url"
         const val SECRET = "secret"
         const val SERVER = "server"
         const val FARM = "farm"

@@ -139,7 +139,7 @@ val dataModule = module {
             api = get(),
             key = BuildConfig.FLICKR_API_KEY,
             dispatcher = Dispatchers.IO,
-            database = get()
+            storage = get()
         )
     }
     // endregion

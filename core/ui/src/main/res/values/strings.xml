@@ -5,7 +5,9 @@
 
     <!--    Buttons-->
     <string name="get_started_title_button">Get Started</string>
-    <string name="sign_up_title_button">Signup</string>
+    <string name="log_in_button">Log In</string>
+    <string name="skip_now_button">Skip for now</string>
+    <string name="have_account">Have an account?</string>
     <string name="logout_title_button">Logout</string>
 
     !--    Bottom menu-->

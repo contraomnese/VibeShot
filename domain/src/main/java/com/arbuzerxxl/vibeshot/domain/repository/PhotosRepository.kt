@@ -5,7 +5,7 @@ import com.arbuzerxxl.vibeshot.domain.models.photo.PhotoSizesResource
 
 interface PhotosRepository {
 
-    suspend fun getPhoto(photoId: String): PhotoResource
+    suspend fun getPhoto(photoId: String, photoUrl: String): PhotoResource
 
     suspend fun getSizes(photoId: String): PhotoSizesResource
 

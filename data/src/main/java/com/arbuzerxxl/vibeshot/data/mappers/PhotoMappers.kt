@@ -1,12 +1,16 @@
 package com.arbuzerxxl.vibeshot.data.mappers
 
+import com.arbuzerxxl.vibeshot.data.network.model.photos.PhotoExif
+import com.arbuzerxxl.vibeshot.data.network.model.photos.PhotoInfo
 import com.arbuzerxxl.vibeshot.data.network.model.photos.PhotoSizes
 import com.arbuzerxxl.vibeshot.data.storage.db.details.dto.DetailsPhotoDto
+import com.arbuzerxxl.vibeshot.data.storage.db.details.entities.DetailsPhotoEntity
 import com.arbuzerxxl.vibeshot.domain.models.photo.CameraResource
 import com.arbuzerxxl.vibeshot.domain.models.photo.PhotoResource
 import com.arbuzerxxl.vibeshot.domain.models.photo.PhotoSizesResource
 import com.arbuzerxxl.vibeshot.domain.utils.formatDateTimeWithLocale
 import com.arbuzerxxl.vibeshot.domain.utils.formatUnixTimeWithSystemLocale
+import com.arbuzerxxl.vibeshot.domain.utils.stripHtmlTags
 
 private const val EMPTY_DATA = ""
 
@@ -32,9 +36,8 @@ internal object LicenseMapper {
 
 internal fun PhotoSizes.toDomain(): PhotoSizesResource {
 
-    val highQuality =
-        sizes.first { it.label == "Large 2048" || it.label == "Large 1600" || it.label == "Large" || it.label == "Medium 800" || it.label == "Medium 640" || it.label == "Medium" }
-    val lowQuality = sizes.first { it.label == "Small 400" || it.label == "Small 320" || it.label == "Small" }
+    val highQuality = sizes.filter { it.label.startsWith("Large") || it.label.startsWith("Medium") }.maxBy { it.width * it.height }
+    val lowQuality = sizes.filter { it.label.startsWith("Small") || it.label.startsWith("Medium") }.minBy { it.width * it.height }
 
     return PhotoSizesResource(
         width = highQuality.width,
@@ -47,9 +50,8 @@ internal fun PhotoSizes.toDomain(): PhotoSizesResource {
 internal fun DetailsPhotoDto.toDomain(): PhotoResource {
     return PhotoResource(
         id = photoId,
-        url = sizesJson?.first { it.label == "Large 2048" || it.label == "Large 1600" || it.label == "Large" || it.label == "Medium 800" || it.label == "Medium 640" || it.label == "Medium" }?.sourceUrl
-            ?: EMPTY_DATA,
-        owner = ownerRealName,
+        url = photoUrl,
+        owner = if (ownerRealName.isNotEmpty()) ownerRealName else ownerUserName,
         ownerIconUrl = "https://farm${ownerIconFarm}.staticflickr.com/${ownerIconServer}/buddyicons/${ownerNsid}_r.jpg",
         title = title.trim(),
         description = description.trim(),
@@ -73,3 +75,33 @@ internal fun DetailsPhotoDto.toDomain(): PhotoResource {
     )
 }
 
+internal fun PhotoInfo.toEntity(exif: PhotoExif?, url: String): DetailsPhotoEntity =
+    DetailsPhotoEntity(
+        photoId = id,
+        photoUrl = url,
+        secret = secret,
+        server = server,
+        farm = farm,
+        dateUploaded = dateUploaded,
+        isFavorite = isFavorite,
+        license = license,
+        safetyLevel = safetyLevel,
+        views = views,
+        ownerNsid = owner.nsid,
+        ownerUsername = owner.username,
+        ownerRealName = owner.realName,
+        ownerLocation = owner.location,
+        ownerIconServer = owner.iconServer,
+        ownerIconFarm = owner.iconFarm,
+        ownerPathAlias = owner.pathAlias,
+        title = title.content,
+        description = description.content.stripHtmlTags(),
+        comments = comments.content,
+        datePosted = dates.posted,
+        dateTaken = dates.taken,
+        dateLastUpdate = dates.lastUpdate,
+        tagsJson = tags.tag,
+        camera = if (exif?.camera?.isNotEmpty() == true) exif.camera else null,
+        exifJson = exif?.exif,
+        lastUpdated = System.currentTimeMillis()
+    )

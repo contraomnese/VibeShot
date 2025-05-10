@@ -14,6 +14,7 @@ interface DetailsDao {
     suspend fun insert(photo: DetailsPhotoEntity)
 
     @Query("SELECT photo_id as ${DetailsPhotoDto.PHOTO_ID}," +
+            " photo_url as ${DetailsPhotoDto.PHOTO_URL}," +
             " title as ${DetailsPhotoDto.TITLE}," +
             " description as ${DetailsPhotoDto.DESCRIPTION}," +
             " comments as ${DetailsPhotoDto.COMMENTS}," +
@@ -21,14 +22,14 @@ interface DetailsDao {
             " license as ${DetailsPhotoDto.LICENSE}," +
             " owner_nsid as ${DetailsPhotoDto.OWNER_NSID}," +
             " owner_realname as ${DetailsPhotoDto.OWNER_REALNAME}," +
+            " owner_username as ${DetailsPhotoDto.OWNER_USERNAME}," +
             " owner_icon_server as ${DetailsPhotoDto.OWNER_ICON_SERVER}," +
             " owner_icon_farm as ${DetailsPhotoDto.OWNER_ICON_FARM}," +
             " date_taken as ${DetailsPhotoDto.DATE_TAKEN}," +
             " date_uploaded as ${DetailsPhotoDto.DATE_UPLOADED}," +
             " tags_json as ${DetailsPhotoDto.TAGS_JSON}," +
             " camera as ${DetailsPhotoDto.CAMERA}," +
-            " exif_json as ${DetailsPhotoDto.EXIF_JSON}," +
-            " sizes_json as ${DetailsPhotoDto.SIZES_JSON}" +
+            " exif_json as ${DetailsPhotoDto.EXIF_JSON}" +
             " FROM photo_details" +
             " WHERE photo_id LIKE :photoId")
     fun getPhoto(photoId: String): DetailsPhotoDto?

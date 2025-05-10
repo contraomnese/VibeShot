@@ -45,7 +45,7 @@ internal class AuthViewModel(
         }
     }
 
-    fun onSignIn() {
+    fun onLogIn() {
         viewModelScope.launch {
             val authUrl = authRepository.getAuthUrl()
             _uiState.update {
@@ -54,7 +54,7 @@ internal class AuthViewModel(
         }
     }
 
-    fun onSignInAsGuest() {
+    fun onSkipAuth() {
         viewModelScope.launch {
             authRepository.signInAsGuest()
             _uiState.update {

@@ -31,3 +31,7 @@ fun String.formatDateTimeWithLocale(): String {
 
     return dateTime.format(outputFormatter)
 }
+
+fun String.stripHtmlTags(): String {
+    return this.replace(Regex("<[^>]*>"), "")
+}

@@ -15,10 +15,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arbuzerxxl.vibeshot.core.design.icon.VibeShotIcons
-import com.arbuzerxxl.vibeshot.core.design.theme.VibeShotTheme
+import com.arbuzerxxl.vibeshot.core.design.theme.VibeShotThemePreview
 import com.arbuzerxxl.vibeshot.core.design.theme.padding24
+import com.arbuzerxxl.vibeshot.core.design.theme.padding32
 import com.arbuzerxxl.vibeshot.core.design.theme.padding40
 import com.arbuzerxxl.vibeshot.core.ui.DevicePreviews
 import com.arbuzerxxl.vibeshot.core.ui.widgets.BaseButton
@@ -62,7 +64,7 @@ internal fun StartScreen(
             is StartUiState.Success -> {
                 uiState.darkMode?.let {
                     IconButton(
-                        modifier = Modifier.padding(top = padding24, end = padding24).align(Alignment.TopEnd),
+                        modifier = Modifier.padding(top = padding32, end = padding32).align(Alignment.TopEnd),
                         onClick = { setTheme(!uiState.darkMode) }) {
                         if (!uiState.darkMode) Icon(
                             imageVector = VibeShotIcons.DarkMode,
@@ -79,8 +81,9 @@ internal fun StartScreen(
                 Text(
                     modifier = Modifier.padding(start = padding40, end = padding40).align(Alignment.Center),
                     text = stringResource(id = R.string.start_warning),
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        textAlign = TextAlign.Center
+                    style = MaterialTheme.typography.labelMedium.copy(
+                        textAlign = TextAlign.Center,
+                        fontSize = 16.sp
                     ),
                     color = MaterialTheme.colorScheme.onBackground
                 )
@@ -101,7 +104,7 @@ internal fun StartScreen(
 @DevicePreviews
 @Composable
 private fun AuthScreenPreview() {
-    VibeShotTheme {
+    VibeShotThemePreview {
         StartScreen(
             uiState = StartUiState.Success(darkMode = true),
             setTheme = { true },

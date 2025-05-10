@@ -16,8 +16,8 @@ interface InterestsDao {
 
     @Query("SELECT photo_id as ${InterestsPhotoDto.PHOTO_ID}," +
             " title as ${InterestsPhotoDto.TITLE}," +
-            " high_quality_size_url as ${InterestsPhotoDto.HIGH_QUALITY_SIZE_URL}," +
-            " low_quality_size_url as ${InterestsPhotoDto.LOW_QUALITY_SIZE_URL}," +
+            " high_quality_url as ${InterestsPhotoDto.HIGH_QUALITY_URL}," +
+            " low_quality_url as ${InterestsPhotoDto.LOW_QUALITY_URL}," +
             " width as ${InterestsPhotoDto.WIDTH}," +
             " height as ${InterestsPhotoDto.HEIGHT}," +
             " page as ${InterestsPhotoDto.PAGE}" +

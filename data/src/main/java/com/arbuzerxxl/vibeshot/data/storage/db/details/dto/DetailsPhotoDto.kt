@@ -2,11 +2,12 @@ package com.arbuzerxxl.vibeshot.data.storage.db.details.dto
 
 import androidx.room.ColumnInfo
 import com.arbuzerxxl.vibeshot.data.network.model.photos.ExifData
-import com.arbuzerxxl.vibeshot.data.network.model.photos.Size
 import com.arbuzerxxl.vibeshot.data.network.model.photos.Tag
 
 data class DetailsPhotoDto(
     @ColumnInfo(name = PHOTO_ID) val photoId: String,
+    @ColumnInfo(name = PHOTO_URL) val photoUrl: String,
+
     // Основная информация о фото
     @ColumnInfo(name = TITLE) val title: String,
     @ColumnInfo(name = DESCRIPTION) val description: String,
@@ -17,6 +18,7 @@ data class DetailsPhotoDto(
     // Информация о владельце
     @ColumnInfo(name = OWNER_NSID) val ownerNsid: String,
     @ColumnInfo(name = OWNER_REALNAME) val ownerRealName: String,
+    @ColumnInfo(name = OWNER_USERNAME) val ownerUserName: String,
     @ColumnInfo(name = OWNER_ICON_SERVER) val ownerIconServer: String,
     @ColumnInfo(name = OWNER_ICON_FARM) val ownerIconFarm: Int,
 
@@ -30,16 +32,16 @@ data class DetailsPhotoDto(
     @ColumnInfo(name = CAMERA) val camera: String?,
     @ColumnInfo(name = EXIF_JSON) val exifJson: List<ExifData>?,
 
-    // Размеры фото
-    @ColumnInfo(name = SIZES_JSON) val sizesJson: List<Size>?,
 ) {
     companion object {
 
         const val PHOTO_ID = "alias_details_photo_id"
+        const val PHOTO_URL = "alias_details_photo_url"
         const val LICENSE = "alias_details_license"
         const val VIEWS = "alias_details_views"
         const val OWNER_NSID = "alias_details_owner_nsid"
-        const val OWNER_REALNAME = "oalias_details_wner_realname"
+        const val OWNER_REALNAME = "alias_details_owner_realname"
+        const val OWNER_USERNAME = "alias_details_owner_username"
         const val OWNER_ICON_SERVER = "alias_details_owner_icon_server"
         const val OWNER_ICON_FARM = "alias_details_owner_icon_farm"
         const val TITLE = "alias_details_title"
@@ -50,6 +52,5 @@ data class DetailsPhotoDto(
         const val TAGS_JSON = "alias_details_tags_json"
         const val CAMERA = "alias_details_camera"
         const val EXIF_JSON = "alias_details_exif_json"
-        const val SIZES_JSON = "alias_details_sizes_json"
     }
 }

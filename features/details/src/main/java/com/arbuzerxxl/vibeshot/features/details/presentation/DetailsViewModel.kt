@@ -66,7 +66,7 @@ internal class DetailsViewModel(
                     currentPhoto = null
                 )
             }
-            val photo = photosRepository.getPhoto(photo.id).copy(url = photo.url)
+            val photo = photosRepository.getPhoto(photoId = photo.id, photoUrl = photo.url)
             _uiState.update { currentState ->
                 (currentState as DetailsUiState.Success).copy(
                     currentPhoto = photo
