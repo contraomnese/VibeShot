@@ -9,11 +9,11 @@ import androidx.paging.map
 import com.arbuzerxxl.vibeshot.domain.models.photo.PhotoResource
 import com.arbuzerxxl.vibeshot.domain.repository.InterestsRepository
 import com.arbuzerxxl.vibeshot.domain.repository.PhotosRepository
+import com.arbuzerxxl.vibeshot.domain.repository.SearchRepository
 import com.arbuzerxxl.vibeshot.features.details.navigation.ParentDestination
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -30,6 +30,7 @@ internal sealed interface DetailsUiState {
 internal class DetailsViewModel(
     private val interestsRepository: InterestsRepository,
     private val photosRepository: PhotosRepository,
+    private val searchRepository: SearchRepository,
     private val parentDestination: ParentDestination,
 ) : ViewModel() {
 
@@ -55,7 +56,15 @@ internal class DetailsViewModel(
                     .cachedIn(viewModelScope)
             }
 
-            is ParentDestination.Search -> emptyFlow()
+            is ParentDestination.Search -> {
+                searchRepository.data
+                    .map { data ->
+                        data.map { photo ->
+                            DetailsPhoto(id = photo.id, url = photo.sizes.highQualityUrl)
+                        }
+                    }
+                    .cachedIn(viewModelScope)
+            }
         }
     }
 

@@ -18,7 +18,6 @@ import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemContentType
-import androidx.paging.compose.itemKey
 import com.arbuzerxxl.vibeshot.core.design.theme.VibeShotThemePreview
 import com.arbuzerxxl.vibeshot.core.ui.DevicePreviews
 import com.arbuzerxxl.vibeshot.domain.models.photo.PhotoItem
@@ -49,7 +48,6 @@ fun <T : PhotoItem> PhotoGrid(
     ) {
         items(
             count = items.itemCount,
-            key = items.itemKey { it.sizes.highQualityUrl },
             contentType = items.itemContentType { "Interests photo" }
         ) { index ->
             val photo = items[index]

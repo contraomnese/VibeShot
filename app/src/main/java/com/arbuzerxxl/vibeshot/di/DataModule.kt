@@ -11,6 +11,7 @@ import com.arbuzerxxl.vibeshot.data.adapters.InterestsResponseTypeAdapter
 import com.arbuzerxxl.vibeshot.data.adapters.PhotoExifResponseTypeAdapter
 import com.arbuzerxxl.vibeshot.data.adapters.PhotoInfoResponseTypeAdapter
 import com.arbuzerxxl.vibeshot.data.adapters.PhotoSizesResponseTypeAdapter
+import com.arbuzerxxl.vibeshot.data.adapters.SearchResponseTypeAdapter
 import com.arbuzerxxl.vibeshot.data.mappers.AuthDataMapper
 import com.arbuzerxxl.vibeshot.data.mediators.InterestsRemoteMediatorImpl
 import com.arbuzerxxl.vibeshot.data.mediators.api.InterestsRemoteMediator
@@ -23,6 +24,7 @@ import com.arbuzerxxl.vibeshot.data.network.model.interests.InterestsResponse
 import com.arbuzerxxl.vibeshot.data.network.model.photos.PhotoExifResponse
 import com.arbuzerxxl.vibeshot.data.network.model.photos.PhotoInfoResponse
 import com.arbuzerxxl.vibeshot.data.network.model.photos.PhotoSizesResponse
+import com.arbuzerxxl.vibeshot.data.network.model.search.SearchResponse
 import com.arbuzerxxl.vibeshot.data.repository.AuthRepositoryImpl
 import com.arbuzerxxl.vibeshot.data.repository.InterestsRepositoryImpl
 import com.arbuzerxxl.vibeshot.data.repository.PhotosRepositoryImpl
@@ -60,6 +62,7 @@ val dataModule = module {
             .registerTypeAdapter(PhotoInfoResponse::class.java, PhotoInfoResponseTypeAdapter())
             .registerTypeAdapter(PhotoSizesResponse::class.java, PhotoSizesResponseTypeAdapter())
             .registerTypeAdapter(InterestsResponse::class.java, InterestsResponseTypeAdapter())
+            .registerTypeAdapter(SearchResponse::class.java, SearchResponseTypeAdapter())
             .create()
     }
 
@@ -149,11 +152,10 @@ val dataModule = module {
             storage = get()
         )
     }
-    factory<SearchRepository> {
+    single<SearchRepository> {
         SearchRepositoryImpl(
             key = BuildConfig.FLICKR_API_KEY,
             searchApi = get(),
-            photosRepository = get(),
             dispatcher = Dispatchers.IO
         )
     }

@@ -1,8 +1,10 @@
 package com.arbuzerxxl.vibeshot.data.network.api
 
-import com.arbuzerxxl.vibeshot.data.sources.model.SearchNetworkResponse
+import com.arbuzerxxl.vibeshot.data.network.model.search.SearchResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
+
+private val EXTRAS = listOf<String>("url_s", "url_m", "url_l")
 
 interface FlickrSearchApi {
 
@@ -12,8 +14,8 @@ interface FlickrSearchApi {
         @Query("format") format: String = "json",
         @Query("nojsoncallback") noJsonCallback: String = "1",
         @Query("text") query: String,
-        @Query("extras") extras: String? = null,
+        @Query("extras") extras: String? = EXTRAS.joinToString(),
         @Query("per_page") pageSize: Int? = null,
         @Query("page") page: Int? = null,
-    ): SearchNetworkResponse
+    ): SearchResponse
 }

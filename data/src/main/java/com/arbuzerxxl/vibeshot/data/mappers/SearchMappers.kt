@@ -1,11 +1,17 @@
 package com.arbuzerxxl.vibeshot.data.mappers
 
-import com.arbuzerxxl.vibeshot.data.sources.model.SearchSource
+import com.arbuzerxxl.vibeshot.data.network.model.search.SearchPhoto
 import com.arbuzerxxl.vibeshot.domain.models.interest.SearchResource
 import com.arbuzerxxl.vibeshot.domain.models.photo.PhotoSizesResource
 
-internal fun SearchSource.toDomain(sizes: PhotoSizesResource): SearchResource = SearchResource(
+
+internal fun SearchPhoto.toDomain(): SearchResource = SearchResource(
     id = id,
     title = title,
-    sizes = sizes
+    sizes = PhotoSizesResource(
+        highQualityUrl = urlL ?: urlM ?: urlS,
+        lowQualityUrl = urlS,
+        width = widthL ?: widthM ?: widthS,
+        height = heightL ?: heightM ?: heightS,
+    )
 )

@@ -9,6 +9,6 @@ val detailsModule = module {
 
     viewModel { params ->
         val destination = params.get<ParentDestination>()
-        DetailsViewModel(interestsRepository = get(), photosRepository = get(), parentDestination = destination)
+        DetailsViewModel(interestsRepository = get(), photosRepository = get(), searchRepository = get(), parentDestination = destination)
     }
 }

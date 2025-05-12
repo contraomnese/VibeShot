@@ -8,7 +8,6 @@ import androidx.paging.cachedIn
 import com.arbuzerxxl.vibeshot.data.network.api.FlickrSearchApi
 import com.arbuzerxxl.vibeshot.data.sources.SearchPagingSource
 import com.arbuzerxxl.vibeshot.domain.models.interest.SearchResource
-import com.arbuzerxxl.vibeshot.domain.repository.PhotosRepository
 import com.arbuzerxxl.vibeshot.domain.repository.SearchRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -23,7 +22,6 @@ private const val SEARCH_PAGE_SIZE = 25
 class SearchRepositoryImpl(
     private val key: String,
     private val searchApi: FlickrSearchApi,
-    private val photosRepository: PhotosRepository,
     private val dispatcher: CoroutineDispatcher
 ) : SearchRepository, KoinComponent {
 
@@ -33,9 +31,9 @@ class SearchRepositoryImpl(
     override fun search(query: String) {
         CoroutineScope(dispatcher).launch {
             Pager(
-                config = PagingConfig(pageSize = SEARCH_PAGE_SIZE, enablePlaceholders = true, initialLoadSize = SEARCH_PAGE_SIZE),
+                config = PagingConfig(pageSize = SEARCH_PAGE_SIZE, enablePlaceholders = true),
             ) {
-                SearchPagingSource(searchApi = searchApi, query = query, key = key, photosRepository = photosRepository)
+                SearchPagingSource(searchApi = searchApi, query = query, key = key)
             }.flow
                 .cachedIn(CoroutineScope(dispatcher))
                 .collect {

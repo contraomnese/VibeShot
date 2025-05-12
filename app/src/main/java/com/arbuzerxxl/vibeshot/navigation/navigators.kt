@@ -8,6 +8,7 @@ import com.arbuzerxxl.vibeshot.features.bottom_menu.navigation.navigateToBottomM
 import com.arbuzerxxl.vibeshot.features.details.navigation.ParentDestination
 import com.arbuzerxxl.vibeshot.features.details.navigation.navigateToDetails
 import com.arbuzerxxl.vibeshot.features.interests.navigation.InterestsDestination
+import com.arbuzerxxl.vibeshot.features.searching.navigation.SearchDestination
 import com.arbuzerxxl.vibeshot.features.start.navigation.StartNavigator
 
 fun NavHostController.startNavigator(shouldSkipAuth: Boolean): StartNavigator = object : StartNavigator {
@@ -39,6 +40,7 @@ fun NavHostController.bottomMenuNavigator(): BottomMenuNavigator = object : Bott
 
         val parentRoute = when (parentDestination) {
             InterestsDestination::class.java.name -> ParentDestination.Interests
+            SearchDestination::class.java.name -> ParentDestination.Search
             else -> throw IllegalArgumentException("Current parent destination doesn't exist")
         }
 
