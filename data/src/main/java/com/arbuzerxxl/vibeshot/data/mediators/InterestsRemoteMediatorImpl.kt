@@ -7,16 +7,13 @@ import androidx.room.withTransaction
 import com.arbuzerxxl.vibeshot.data.exceptions.RequestInterestsPhotosFetchException
 import com.arbuzerxxl.vibeshot.data.mediators.api.InterestsRemoteMediator
 import com.arbuzerxxl.vibeshot.data.network.api.FlickrInterestsApi
-import com.arbuzerxxl.vibeshot.data.network.model.interestingness.InterestsPhotosNetwork
+import com.arbuzerxxl.vibeshot.data.network.model.interests.InterestsResponse
 import com.arbuzerxxl.vibeshot.data.storage.db.AppDatabase
 import com.arbuzerxxl.vibeshot.data.storage.db.interests.dto.InterestsPhotoDto
 import com.arbuzerxxl.vibeshot.data.storage.db.interests.entities.InterestsEntity
 import com.arbuzerxxl.vibeshot.domain.repository.PhotosRepository
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import java.io.IOException
@@ -29,7 +26,9 @@ class InterestsRemoteMediatorImpl(
     private val key: String,
     private val photosRepository: PhotosRepository,
     private val dispatcher: CoroutineDispatcher,
-): InterestsRemoteMediator() {
+) : InterestsRemoteMediator() {
+
+    private var pages: Int? = null
 
     override suspend fun load(
         loadType: LoadType,
@@ -42,31 +41,34 @@ class InterestsRemoteMediatorImpl(
 
                 LoadType.PREPEND ->
                     return MediatorResult.Success(endOfPaginationReached = true)
+
                 LoadType.APPEND -> {
                     val lastItem = state.lastItemOrNull()
-
-                    lastItem?.page?.plus(1) ?: 1
+                    val key = lastItem?.page?.let { page ->
+                        pages?.let { pages ->
+                            return if (page >= pages) MediatorResult.Success(endOfPaginationReached = true) else return@let
+                        }
+                        lastItem.page.plus(1)
+                    } ?: 2
+                    key
                 }
             }
 
             val response = loadPhotos(page = loadKey, pageSize = state.config.pageSize)
 
-            val resources = coroutineScope {
-                response.photos.map { photo ->
-                    async(dispatcher) {
-                        val resourceSizes = photosRepository.getSizes(photo.id)
-                        InterestsEntity(
-                            photoId = photo.id,
-                            title = photo.title,
-                            highQualityUrl = resourceSizes.highQualityUrl,
-                            lowQualityUrl = resourceSizes.lowQualityUrl,
-                            width = resourceSizes.width,
-                            height = resourceSizes.height,
-                            page = loadKey,
-                            lastUpdated = System.currentTimeMillis()
-                        )
-                    }
-                }.awaitAll()
+            pages = response.photos.pages
+
+            val resources = response.photos.photo.map { photo ->
+                InterestsEntity(
+                    photoId = photo.id,
+                    title = photo.title,
+                    highQualityUrl = photo.urlL ?: photo.urlM ?: photo.urlS,
+                    lowQualityUrl = photo.urlS,
+                    width = photo.widthL ?: photo.widthM ?: photo.widthS,
+                    height = photo.heightL ?: photo.heightM ?: photo.heightS,
+                    page = loadKey,
+                    lastUpdated = System.currentTimeMillis()
+                )
             }
 
             database.withTransaction {
@@ -78,7 +80,7 @@ class InterestsRemoteMediatorImpl(
             }
 
             MediatorResult.Success(
-                endOfPaginationReached = response.pages == loadKey
+                endOfPaginationReached = pages == loadKey
             )
         } catch (e: IOException) {
             MediatorResult.Error(e)
@@ -91,22 +93,27 @@ class InterestsRemoteMediatorImpl(
         val lastUpdate = database.interestsDao().getLastUpdateTime() ?: 0L
         val cacheTimeout = TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS)
 
-        return if (System.currentTimeMillis() - lastUpdate <= cacheTimeout)
-        {
+        return if (System.currentTimeMillis() - lastUpdate <= cacheTimeout) {
             InitializeAction.SKIP_INITIAL_REFRESH
         } else {
             InitializeAction.LAUNCH_INITIAL_REFRESH
         }
     }
 
-    private suspend fun loadPhotos(page: Int, pageSize: Int): InterestsPhotosNetwork = withContext(dispatcher) {
+    private suspend fun loadPhotos(page: Int, pageSize: Int): InterestsResponse.Success = withContext(dispatcher) {
         try {
-            api.getPhotos(
+            val interestsResponse = api.getPhotos(
                 key = key,
                 page = page,
                 pageSize = pageSize
             )
-                .response
+
+            val interestResources = when (interestsResponse) {
+                is InterestsResponse.Error -> throw RequestInterestsPhotosFetchException(Throwable(interestsResponse.message))
+                is InterestsResponse.Success -> interestsResponse
+            }
+            interestResources
+
         } catch (cause: Throwable) {
             if (cause is CancellationException) throw cause
             throw RequestInterestsPhotosFetchException(cause)

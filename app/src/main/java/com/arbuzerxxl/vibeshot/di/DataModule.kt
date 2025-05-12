@@ -7,6 +7,7 @@ package com.kiparo.chargerapp.di
 
 import com.arbuzerxxl.vibeshot.BuildConfig
 import com.arbuzerxxl.vibeshot.MainActivityViewModel
+import com.arbuzerxxl.vibeshot.data.adapters.InterestsResponseTypeAdapter
 import com.arbuzerxxl.vibeshot.data.adapters.PhotoExifResponseTypeAdapter
 import com.arbuzerxxl.vibeshot.data.adapters.PhotoInfoResponseTypeAdapter
 import com.arbuzerxxl.vibeshot.data.adapters.PhotoSizesResponseTypeAdapter
@@ -18,6 +19,7 @@ import com.arbuzerxxl.vibeshot.data.network.api.FlickrInterestsApi
 import com.arbuzerxxl.vibeshot.data.network.api.FlickrPhotoApi
 import com.arbuzerxxl.vibeshot.data.network.api.FlickrSearchApi
 import com.arbuzerxxl.vibeshot.data.network.interceptors.ErrorInterceptor
+import com.arbuzerxxl.vibeshot.data.network.model.interests.InterestsResponse
 import com.arbuzerxxl.vibeshot.data.network.model.photos.PhotoExifResponse
 import com.arbuzerxxl.vibeshot.data.network.model.photos.PhotoInfoResponse
 import com.arbuzerxxl.vibeshot.data.network.model.photos.PhotoSizesResponse
@@ -57,6 +59,7 @@ val dataModule = module {
             .registerTypeAdapter(PhotoExifResponse::class.java, PhotoExifResponseTypeAdapter())
             .registerTypeAdapter(PhotoInfoResponse::class.java, PhotoInfoResponseTypeAdapter())
             .registerTypeAdapter(PhotoSizesResponse::class.java, PhotoSizesResponseTypeAdapter())
+            .registerTypeAdapter(InterestsResponse::class.java, InterestsResponseTypeAdapter())
             .create()
     }
 
