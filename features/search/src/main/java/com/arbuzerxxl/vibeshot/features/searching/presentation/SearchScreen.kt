@@ -4,21 +4,23 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.arbuzerxxl.vibeshot.core.design.theme.itemHeight24
-import com.arbuzerxxl.vibeshot.core.design.theme.padding16
 import com.arbuzerxxl.vibeshot.core.design.theme.padding20
 import com.arbuzerxxl.vibeshot.core.ui.widgets.LoadingIndicator
 import com.arbuzerxxl.vibeshot.core.ui.widgets.PhotoGrid
-import com.arbuzerxxl.vibeshot.core.ui.widgets.SearchField
+import com.arbuzerxxl.vibeshot.core.ui.widgets.SearchTextField
 import com.arbuzerxxl.vibeshot.domain.models.interest.SearchResource
 import com.arbuzerxxl.vibeshot.features.searching.navigation.SearchDestination
 import org.koin.androidx.compose.koinViewModel
@@ -38,26 +40,9 @@ internal fun SearchRoute(
         modifier = modifier,
         items = items,
         onPhotoClicked = onPhotoClicked,
-        onSearchQueryChange = viewmodel::onSearch
+        onSearchTriggered = viewmodel::onSearch
     )
 
-}
-
-@Composable
-fun LoadingScreen(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
-        contentAlignment = Alignment.Center
-    ) {
-        LoadingIndicator(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = padding20)
-                .size(itemHeight24)
-        )
-    }
 }
 
 @Composable
@@ -65,7 +50,7 @@ internal fun SearchScreen(
     modifier: Modifier = Modifier,
     items: LazyPagingItems<SearchResource>,
     onPhotoClicked: (Int, String) -> Unit,
-    onSearchQueryChange: (String) -> Unit
+    onSearchTriggered: (String) -> Unit
 ) {
 
     Box(
@@ -74,12 +59,13 @@ internal fun SearchScreen(
             .background(MaterialTheme.colorScheme.background),
         contentAlignment = Alignment.TopCenter
     ) {
+        var searchQuery by remember { mutableStateOf("") }
+
         Column {
-            SearchField(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(padding16),
-                onValueChange = onSearchQueryChange
+            SearchTextField(
+                searchQuery = searchQuery,
+                onSearchQueryChanged = { value: String -> searchQuery = value },
+                onSearchTriggered = onSearchTriggered
             )
 
             PhotoGrid(
@@ -88,7 +74,7 @@ internal fun SearchScreen(
                 parentDestinationName = SearchDestination::class.java.name,
             )
         }
-        if (!items.loadState.isIdle) {
+        if (!items.loadState.isIdle && searchQuery.isNotEmpty()) {
             LoadingIndicator(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)

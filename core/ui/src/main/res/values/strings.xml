@@ -13,7 +13,7 @@
     !--    Bottom menu-->
     <string name="interests">interests</string>
     <string name="profile">profile</string>
-    <string name="search">search</string>
+    <string name="search">Search</string>
 
     !--    Camera-->
     <string name="camera">Camera</string>
@@ -24,4 +24,7 @@
     <string name="shutter_speed">Shutter Speed</string>
     <string name="wb">White Balance</string>
     <string name="flash">Flash</string>
+
+    !--    Search-->
+    <string name="close_search">Close search</string>
 </resources>

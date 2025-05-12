@@ -5,6 +5,7 @@ import androidx.compose.material.icons.outlined.Bolt
 import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.Camera
 import androidx.compose.material.icons.outlined.ChatBubbleOutline
+import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Contrast
 import androidx.compose.material.icons.outlined.Copyright
 import androidx.compose.material.icons.outlined.Exposure
@@ -27,6 +28,7 @@ object VibeShotIcons {
     val DarkMode = Icons.Rounded.DarkMode
     val Interests = Icons.Outlined.Interests
     val Search = Icons.Outlined.Search
+    val Close = Icons.Outlined.Close
     val Profile = Icons.Outlined.Person
     val Likes = Icons.Outlined.FavoriteBorder
     val Comments = Icons.Outlined.ChatBubbleOutline
