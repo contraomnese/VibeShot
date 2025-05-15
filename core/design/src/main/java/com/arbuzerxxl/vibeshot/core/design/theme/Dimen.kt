@@ -10,7 +10,7 @@ val circleItemDiameter = 264.dp
 val circleImageItemHeight = 202.dp
 val circleImageItemWidth = 232.dp
 
-
+val padding2 = 2.dp
 val padding4 = 4.dp
 val padding8 = 8.dp
 val padding12 = 12.dp
@@ -53,10 +53,12 @@ val itemHeight64 = 64.dp
 val itemWidth64 = 64.dp
 
 val itemHeight96 = 96.dp
+val itemHeight128 = 128.dp
 val itemWidth140 = 140.dp
 
 val itemSize136 = 136.dp
 
+val cornerRadius6 = 6.dp
 val cornerRadius8 = 8.dp
 val cornerRadius16 = 16.dp
 val cornerRadius32 = 32.dp

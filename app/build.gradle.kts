@@ -78,6 +78,7 @@ dependencies {
     implementation(project(":features:search"))
     implementation(project(":features:profile"))
     implementation(project(":features:details"))
+    implementation(project(":features:tasks"))
 
     // di
     implementation(libs.koin.core)

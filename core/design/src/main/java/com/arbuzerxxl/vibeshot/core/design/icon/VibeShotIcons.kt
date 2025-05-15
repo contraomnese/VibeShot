@@ -1,6 +1,7 @@
 package com.arbuzerxxl.vibeshot.core.design.icon
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.AddTask
 import androidx.compose.material.icons.outlined.Bolt
 import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.Camera
@@ -44,4 +45,5 @@ object VibeShotIcons {
     val ExposureTime = Icons.Outlined.ShutterSpeed
     val WhiteBalance = Icons.Outlined.Contrast
     val Copyright = Icons.Outlined.Copyright
+    val Tasks = Icons.Outlined.AddTask
 }

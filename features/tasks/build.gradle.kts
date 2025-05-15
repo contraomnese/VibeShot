@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.arbuzerxxl.vibeshot.features.bottom_menu"
+    namespace = "com.arbuzerxxl.vibeshot.features.tasks"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
@@ -42,14 +42,7 @@ dependencies {
     implementation(project(":core:ui"))
     implementation(project(":core:design"))
     implementation(project(":core:navigation"))
-
     implementation(project(":domain"))
-
-    implementation(project(":features:interests"))
-    implementation(project(":features:profile"))
-    implementation(project(":features:search"))
-    implementation(project(":features:details"))
-    implementation(project(":features:tasks"))
 
     // di
     implementation(libs.koin.core)
@@ -79,6 +72,10 @@ dependencies {
     implementation(libs.navigation)
     implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.androidx.navigation.common.ktx)
+
+    // pagging
+    implementation(libs.androidx.paging.runtime.ktx)
+    implementation(libs.androidx.paging.compose)
 
     // parsing
     implementation(libs.kotlinx.serialization.json)
