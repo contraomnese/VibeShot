@@ -1,5 +1,6 @@
 package com.arbuzerxxl.vibeshot.core.ui.widgets
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,23 +15,26 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import com.arbuzerxxl.vibeshot.core.design.theme.VibeShotThemePreview
 import com.arbuzerxxl.vibeshot.core.design.theme.padding8
 import com.arbuzerxxl.vibeshot.core.ui.DevicePreviews
+import com.arbuzerxxl.vibeshot.ui.R
 
 @Composable
 fun TaskTags(
     modifier: Modifier = Modifier,
-    title: String,
+    @StringRes titleId: Int,
     items: List<String>,
+    onClick: (String) -> Unit
 ) {
 
     var enabled by remember { mutableStateOf(true) }
 
     Column(modifier = modifier) {
         Text(
-            text = title, style = MaterialTheme.typography.titleMedium.copy(
+            text = stringResource(titleId), style = MaterialTheme.typography.titleMedium.copy(
                 fontWeight = FontWeight.Light,
                 color = MaterialTheme.colorScheme.onSurface,
             )
@@ -49,6 +53,7 @@ fun TaskTags(
                         tag = tag.uppercase(),
                         onClick = {
                             enabled = !enabled
+                            onClick(tag)
                         },
                         enabled = enabled,
                     )
@@ -65,7 +70,6 @@ fun TaskTags(
 private fun TaskTagsPreview() {
     VibeShotThemePreview {
         TaskTags(
-            title = "Mood",
             items = listOf(
                 "joyful",
                 "sad",
@@ -77,7 +81,9 @@ private fun TaskTagsPreview() {
                 "tired",
                 "romantic",
                 "neutral"
-            )
+            ),
+            titleId = R.string.select_mood,
+            onClick = {}
         )
     }
 }

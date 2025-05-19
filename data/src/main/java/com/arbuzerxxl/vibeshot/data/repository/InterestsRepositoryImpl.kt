@@ -8,7 +8,7 @@ import androidx.paging.cachedIn
 import androidx.paging.map
 import com.arbuzerxxl.vibeshot.data.mappers.toDomain
 import com.arbuzerxxl.vibeshot.data.mediators.api.InterestsRemoteMediator
-import com.arbuzerxxl.vibeshot.data.storage.db.AppDatabase
+import com.arbuzerxxl.vibeshot.data.storage.db.photo.PhotoDatabase
 import com.arbuzerxxl.vibeshot.domain.models.interest.InterestsResource
 import com.arbuzerxxl.vibeshot.domain.repository.InterestsRepository
 import kotlinx.coroutines.CoroutineDispatcher
@@ -25,7 +25,7 @@ private const val INTERESTS_PAGE_SIZE = 25
 
 @OptIn(ExperimentalPagingApi::class)
 class InterestsRepositoryImpl(
-    private val database: AppDatabase,
+    private val database: PhotoDatabase,
     private val dispatcher: CoroutineDispatcher
 ) : InterestsRepository, KoinComponent {
 

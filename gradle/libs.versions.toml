@@ -2,6 +2,7 @@
 
 # app config
 compileSdk = "35"
+gson = "2.9.0"
 minSdk = "26"
 targetSdk = "35"
 
@@ -14,7 +15,6 @@ devtools-ksp = "2.1.20-1.0.32"
 koin = "4.0.4"
 
 # core
-
 coreKtx = "1.15.0"
 kotlinx_immutable = "0.3.5"
 coroutines = "1.10.1"
@@ -33,6 +33,7 @@ composeBom = "2025.03.01"
 composeRuntime = "1.7.8"
 
 # ui
+tensorflowLite = "2.17.0"
 uiTextGoogleFonts = "1.8.0"
 coil = "3.0.0"
 
@@ -72,6 +73,7 @@ coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" 
 coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
 coil-transformations = { module = "com.github.Commit451.coil-transformations:transformations", version.ref = "coil" }
 
+gson-v290 = { module = "com.google.code.gson:gson", version.ref = "gson" }
 koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin" }
 koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
 koin-androidx-compose = { group = "io.insert-koin", name = "koin-androidx-compose", version.ref = "koin" }
@@ -132,6 +134,7 @@ navigation-testing = { group = "androidx.navigation", name = "navigation-testing
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+tensorflow-lite = { module = "org.tensorflow:tensorflow-lite", version.ref = "tensorflowLite" }
 
 
 [plugins]

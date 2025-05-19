@@ -1,4 +1,4 @@
-package com.arbuzerxxl.vibeshot.data.storage.db
+package com.arbuzerxxl.vibeshot.data.storage.db.photo
 
 import android.content.Context
 import androidx.room.Database
@@ -7,13 +7,13 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.arbuzerxxl.vibeshot.data.converters.ExifConverters
 import com.arbuzerxxl.vibeshot.data.converters.TagsConverters
-import com.arbuzerxxl.vibeshot.data.storage.db.details.dao.DetailsDao
-import com.arbuzerxxl.vibeshot.data.storage.db.details.entities.DetailsPhotoEntity
-import com.arbuzerxxl.vibeshot.data.storage.db.interests.dao.InterestsDao
-import com.arbuzerxxl.vibeshot.data.storage.db.interests.entities.InterestsEntity
+import com.arbuzerxxl.vibeshot.data.storage.db.photo.details.dao.DetailsDao
+import com.arbuzerxxl.vibeshot.data.storage.db.photo.details.entities.DetailsPhotoEntity
+import com.arbuzerxxl.vibeshot.data.storage.db.photo.interests.dao.InterestsDao
+import com.arbuzerxxl.vibeshot.data.storage.db.photo.interests.entities.InterestsEntity
 
 private const val DATABASE_VERSION = 1
-const val DATABASE_NAME = "contraomnese_vibeshot.db"
+const val DATABASE_NAME = "contraomnese_vibeshot_photos.db"
 
 @TypeConverters(TagsConverters::class, ExifConverters::class)
 @Database(
@@ -21,16 +21,16 @@ const val DATABASE_NAME = "contraomnese_vibeshot.db"
     version = DATABASE_VERSION,
     exportSchema = false
 )
-abstract class AppDatabase : RoomDatabase() {
+abstract class PhotoDatabase : RoomDatabase() {
 
     abstract fun interestsDao(): InterestsDao
     abstract fun detailsDao(): DetailsDao
 
     companion object {
-        fun create(context: Context): AppDatabase {
+        fun create(context: Context): PhotoDatabase {
             return Room.databaseBuilder(
                 context = context,
-                klass = AppDatabase::class.java,
+                klass = PhotoDatabase::class.java,
                 name = DATABASE_NAME
             )
                 .fallbackToDestructiveMigration()

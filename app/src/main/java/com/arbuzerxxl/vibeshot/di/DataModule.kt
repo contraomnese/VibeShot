@@ -27,6 +27,7 @@ import com.arbuzerxxl.vibeshot.data.network.model.photos.PhotoSizesResponse
 import com.arbuzerxxl.vibeshot.data.network.model.search.SearchResponse
 import com.arbuzerxxl.vibeshot.data.repository.AuthRepositoryImpl
 import com.arbuzerxxl.vibeshot.data.repository.InterestsRepositoryImpl
+import com.arbuzerxxl.vibeshot.data.repository.PhotoTasksRepositoryImpl
 import com.arbuzerxxl.vibeshot.data.repository.PhotosRepositoryImpl
 import com.arbuzerxxl.vibeshot.data.repository.SearchRepositoryImpl
 import com.arbuzerxxl.vibeshot.data.repository.TokenRepositoryImpl
@@ -36,9 +37,11 @@ import com.arbuzerxxl.vibeshot.data.storage.datastore.api.SettingsStorage
 import com.arbuzerxxl.vibeshot.data.storage.datastore.api.UserStorage
 import com.arbuzerxxl.vibeshot.data.storage.datastore.memory.SettingsMemoryStorage
 import com.arbuzerxxl.vibeshot.data.storage.datastore.memory.UserMemoryStorage
-import com.arbuzerxxl.vibeshot.data.storage.db.AppDatabase
+import com.arbuzerxxl.vibeshot.data.storage.db.photo.PhotoDatabase
+import com.arbuzerxxl.vibeshot.data.storage.db.photo_tasks.PhotoTasksDatabase
 import com.arbuzerxxl.vibeshot.domain.repository.AuthRepository
 import com.arbuzerxxl.vibeshot.domain.repository.InterestsRepository
+import com.arbuzerxxl.vibeshot.domain.repository.PhotoTasksRepository
 import com.arbuzerxxl.vibeshot.domain.repository.PhotosRepository
 import com.arbuzerxxl.vibeshot.domain.repository.SearchRepository
 import com.arbuzerxxl.vibeshot.domain.repository.TokenRepository
@@ -97,7 +100,8 @@ val dataModule = module {
         ErrorInterceptor()
     }
 
-    single<AppDatabase> { AppDatabase.create(context = get()) }
+    single<PhotoDatabase> { PhotoDatabase.create(context = get()) }
+    single<PhotoTasksDatabase> { PhotoTasksDatabase.create(context = get()) }
 
     single<FlickrAuthApi> { get<Retrofit>().create(FlickrAuthApi::class.java) }
     single<FlickrInterestsApi> { get<Retrofit>().create(FlickrInterestsApi::class.java) }
@@ -159,7 +163,14 @@ val dataModule = module {
             dispatcher = Dispatchers.IO
         )
     }
+    single<PhotoTasksRepository> {
+        PhotoTasksRepositoryImpl(
+            database = get(),
+            dispatcher = Dispatchers.IO
+        )
+    }
     // endregion
+
 
     // region mediators
     single<InterestsRemoteMediator> {

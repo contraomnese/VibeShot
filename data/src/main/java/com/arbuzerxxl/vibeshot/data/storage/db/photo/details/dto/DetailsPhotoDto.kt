@@ -1,4 +1,4 @@
-package com.arbuzerxxl.vibeshot.data.storage.db.details.dto
+package com.arbuzerxxl.vibeshot.data.storage.db.photo.details.dto
 
 import androidx.room.ColumnInfo
 import com.arbuzerxxl.vibeshot.data.network.model.photos.ExifData

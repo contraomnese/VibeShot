@@ -62,6 +62,10 @@ dependencies {
     implementation(libs.koin.core)
     implementation(libs.koin.android)
 
+    // ai
+    implementation(libs.tensorflow.lite)
+    implementation(libs.gson.v290)
+
     // tests
     testImplementation(libs.junit)
     testImplementation(libs.mockk)

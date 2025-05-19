@@ -1,11 +1,11 @@
-package com.arbuzerxxl.vibeshot.data.storage.db.details.dao
+package com.arbuzerxxl.vibeshot.data.storage.db.photo.details.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.arbuzerxxl.vibeshot.data.storage.db.details.dto.DetailsPhotoDto
-import com.arbuzerxxl.vibeshot.data.storage.db.details.entities.DetailsPhotoEntity
+import com.arbuzerxxl.vibeshot.data.storage.db.photo.details.dto.DetailsPhotoDto
+import com.arbuzerxxl.vibeshot.data.storage.db.photo.details.entities.DetailsPhotoEntity
 
 @Dao
 interface DetailsDao {
@@ -39,4 +39,5 @@ interface DetailsDao {
 
     @Query("DELETE FROM photo_details")
     suspend fun clearAll()
+
 }

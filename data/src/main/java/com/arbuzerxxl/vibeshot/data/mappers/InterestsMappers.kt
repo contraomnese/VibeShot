@@ -1,7 +1,7 @@
 package com.arbuzerxxl.vibeshot.data.mappers
 
 
-import com.arbuzerxxl.vibeshot.data.storage.db.interests.dto.InterestsPhotoDto
+import com.arbuzerxxl.vibeshot.data.storage.db.photo.interests.dto.InterestsPhotoDto
 import com.arbuzerxxl.vibeshot.domain.models.interest.InterestsResource
 import com.arbuzerxxl.vibeshot.domain.models.photo.PhotoSizesResource
 

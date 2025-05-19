@@ -28,4 +28,10 @@
 
     !--    Search-->
     <string name="close_search">Close search</string>
+
+    !--    Photo Tasks-->
+    <string name="select_mood">Select mood:</string>
+    <string name="select_season">Select season:</string>
+    <string name="select_topic">Select topic:</string>
+    <string name="generate_photo_task">Generate task</string>
 </resources>

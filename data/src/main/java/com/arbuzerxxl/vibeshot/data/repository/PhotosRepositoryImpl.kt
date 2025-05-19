@@ -12,8 +12,8 @@ import com.arbuzerxxl.vibeshot.data.network.model.photos.PhotoExifResponse
 import com.arbuzerxxl.vibeshot.data.network.model.photos.PhotoInfo
 import com.arbuzerxxl.vibeshot.data.network.model.photos.PhotoInfoResponse
 import com.arbuzerxxl.vibeshot.data.network.model.photos.PhotoSizesResponse
-import com.arbuzerxxl.vibeshot.data.storage.db.AppDatabase
-import com.arbuzerxxl.vibeshot.data.storage.db.details.dto.DetailsPhotoDto
+import com.arbuzerxxl.vibeshot.data.storage.db.photo.PhotoDatabase
+import com.arbuzerxxl.vibeshot.data.storage.db.photo.details.dto.DetailsPhotoDto
 import com.arbuzerxxl.vibeshot.domain.models.photo.PhotoResource
 import com.arbuzerxxl.vibeshot.domain.models.photo.PhotoSizesResource
 import com.arbuzerxxl.vibeshot.domain.repository.PhotosRepository
@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit
 class PhotosRepositoryImpl(
     private val api: FlickrPhotoApi,
     private val key: String,
-    private val storage: AppDatabase,
+    private val storage: PhotoDatabase,
     private val dispatcher: CoroutineDispatcher,
 ) : PhotosRepository {
 

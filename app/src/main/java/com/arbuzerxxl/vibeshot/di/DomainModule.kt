@@ -5,6 +5,7 @@
 package com.kiparo.chargerapp.di
 
 import com.arbuzerxxl.vibeshot.domain.usecases.auth.ObserveAuthStateUseCase
+import com.arbuzerxxl.vibeshot.domain.usecases.photo_tasks.GetPhotoTasksUseCase
 import org.koin.dsl.module
 
 val domainModule = module {
@@ -14,4 +15,10 @@ val domainModule = module {
             repository = get()
         )
     }
+    factory<GetPhotoTasksUseCase> {
+        GetPhotoTasksUseCase(
+            repository = get()
+        )
+    }
+
 }

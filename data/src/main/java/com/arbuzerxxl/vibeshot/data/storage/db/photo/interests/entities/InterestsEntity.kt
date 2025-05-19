@@ -1,4 +1,4 @@
-package com.arbuzerxxl.vibeshot.data.storage.db.interests.entities
+package com.arbuzerxxl.vibeshot.data.storage.db.photo.interests.entities
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

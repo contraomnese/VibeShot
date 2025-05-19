@@ -8,9 +8,9 @@ import com.arbuzerxxl.vibeshot.data.exceptions.RequestInterestsPhotosFetchExcept
 import com.arbuzerxxl.vibeshot.data.mediators.api.InterestsRemoteMediator
 import com.arbuzerxxl.vibeshot.data.network.api.FlickrInterestsApi
 import com.arbuzerxxl.vibeshot.data.network.model.interests.InterestsResponse
-import com.arbuzerxxl.vibeshot.data.storage.db.AppDatabase
-import com.arbuzerxxl.vibeshot.data.storage.db.interests.dto.InterestsPhotoDto
-import com.arbuzerxxl.vibeshot.data.storage.db.interests.entities.InterestsEntity
+import com.arbuzerxxl.vibeshot.data.storage.db.photo.PhotoDatabase
+import com.arbuzerxxl.vibeshot.data.storage.db.photo.interests.dto.InterestsPhotoDto
+import com.arbuzerxxl.vibeshot.data.storage.db.photo.interests.entities.InterestsEntity
 import com.arbuzerxxl.vibeshot.domain.repository.PhotosRepository
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit
 
 @OptIn(ExperimentalPagingApi::class)
 class InterestsRemoteMediatorImpl(
-    private val database: AppDatabase,
+    private val database: PhotoDatabase,
     private val api: FlickrInterestsApi,
     private val key: String,
     private val photosRepository: PhotosRepository,
