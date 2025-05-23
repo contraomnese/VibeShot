@@ -31,6 +31,7 @@ dependencies {
     // core
     implementation(libs.androidx.core.ktx)
     implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.kotlinx.collections.immutable)
 
     // pagging
     implementation(libs.androidx.paging.runtime.ktx)

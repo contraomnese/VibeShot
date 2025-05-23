@@ -20,5 +20,4 @@ val domainModule = module {
             repository = get()
         )
     }
-
 }

@@ -15,16 +15,21 @@ import androidx.compose.material.icons.outlined.FileUpload
 import androidx.compose.material.icons.outlined.Interests
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.PhotoCamera
+import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.ShutterSpeed
 import androidx.compose.material.icons.outlined.Straighten
 import androidx.compose.material.icons.outlined.Visibility
+import androidx.compose.material.icons.rounded.ArrowDropDown
+import androidx.compose.material.icons.rounded.ArrowDropUp
 import androidx.compose.material.icons.rounded.CalendarMonth
 import androidx.compose.material.icons.rounded.DarkMode
 import androidx.compose.material.icons.rounded.LightMode
 
 
 object VibeShotIcons {
+    val ArrowDropUp = Icons.Rounded.ArrowDropUp
+    val ArrowDropDown = Icons.Rounded.ArrowDropDown
     val LightMode = Icons.Rounded.LightMode
     val DarkMode = Icons.Rounded.DarkMode
     val Interests = Icons.Outlined.Interests
@@ -46,4 +51,5 @@ object VibeShotIcons {
     val WhiteBalance = Icons.Outlined.Contrast
     val Copyright = Icons.Outlined.Copyright
     val Tasks = Icons.Outlined.AddTask
+    val Refresh = Icons.Outlined.Refresh
 }

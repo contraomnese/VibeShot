@@ -27,10 +27,9 @@ fun TaskTags(
     modifier: Modifier = Modifier,
     @StringRes titleId: Int,
     items: List<String>,
+    currentItem: String,
     onClick: (String) -> Unit
 ) {
-
-    var enabled by remember { mutableStateOf(true) }
 
     Column(modifier = modifier) {
         Text(
@@ -41,6 +40,7 @@ fun TaskTags(
         )
         if (items.isNotEmpty()) {
             val scrollState = rememberScrollState()
+            var currentItem by remember { mutableStateOf(currentItem) }
 
             Row(
                 modifier = Modifier
@@ -52,10 +52,10 @@ fun TaskTags(
                     TaskTagItem(
                         tag = tag.uppercase(),
                         onClick = {
-                            enabled = !enabled
+                            currentItem = tag
                             onClick(tag)
                         },
-                        enabled = enabled,
+                        selected = tag == currentItem,
                     )
                 }
             }
@@ -83,6 +83,7 @@ private fun TaskTagsPreview() {
                 "neutral"
             ),
             titleId = R.string.select_mood,
+            currentItem = "",
             onClick = {}
         )
     }

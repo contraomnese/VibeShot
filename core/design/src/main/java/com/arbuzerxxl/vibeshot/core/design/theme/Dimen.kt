@@ -58,6 +58,9 @@ val itemWidth140 = 140.dp
 
 val itemSize136 = 136.dp
 
+val itemWidth80 = 80.dp
+val itemHeight160 = 160.dp
+
 val cornerRadius6 = 6.dp
 val cornerRadius8 = 8.dp
 val cornerRadius16 = 16.dp

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- Для файлов во внутреннем кеше -->
+    <cache-path name="app_cache" path="."/>
+
+    <!-- Дополнительные пути (по необходимости) -->
+    <files-path name="app_files" path="."/>
+    <external-files-path name="external_files" path="."/>
+    <external-cache-path name="external_cache" path="."/>
+</paths>

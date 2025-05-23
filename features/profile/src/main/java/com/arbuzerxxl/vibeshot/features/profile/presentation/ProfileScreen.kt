@@ -71,8 +71,6 @@ internal fun ProfileScreen(
             modifier = Modifier
                 .padding(bottom = padding40, start = padding24, end = padding24)
                 .align(Alignment.BottomCenter),
-            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
             onClicked = { logOut(); onLogOutClicked() }
         )
     }

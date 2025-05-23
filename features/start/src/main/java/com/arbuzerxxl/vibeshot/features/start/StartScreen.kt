@@ -90,8 +90,6 @@ internal fun StartScreen(
                 BaseButton(
                     title = stringResource(id = R.string.get_started_title_button),
                     modifier = Modifier.padding(bottom = padding40, start = padding24, end = padding24).align(Alignment.BottomCenter),
-                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
                     onClicked = onStartClicked
                 )
             }

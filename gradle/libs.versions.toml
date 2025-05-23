@@ -3,7 +3,7 @@
 # app config
 compileSdk = "35"
 gson = "2.9.0"
-minSdk = "26"
+minSdk = "28"
 targetSdk = "35"
 
 # plugins

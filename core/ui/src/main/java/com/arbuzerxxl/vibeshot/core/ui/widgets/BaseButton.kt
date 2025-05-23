@@ -10,7 +10,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import com.arbuzerxxl.vibeshot.core.design.theme.VibeShotThemePreview
 import com.arbuzerxxl.vibeshot.core.design.theme.baseButtonHeight
@@ -23,8 +22,6 @@ import com.arbuzerxxl.vibeshot.ui.R
 fun BaseButton(
     modifier: Modifier = Modifier,
     title: String,
-    contentColor: Color,
-    containerColor: Color,
     onClicked: () -> Unit
 ) {
     Button(
@@ -34,10 +31,10 @@ fun BaseButton(
         onClick = onClicked,
         contentPadding = PaddingValues(vertical = padding4),
         colors = ButtonColors(
-            contentColor = contentColor,
-            containerColor = containerColor,
-            disabledContentColor = MaterialTheme.colorScheme.background,
-            disabledContainerColor = MaterialTheme.colorScheme.onSurface
+            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            disabledContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+            disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer
         ),
         shape = RoundedCornerShape(cornerSize16)
     ) {
@@ -54,8 +51,6 @@ private fun BaseButtonPreview() {
     VibeShotThemePreview {
         BaseButton(
             title = stringResource(id = R.string.get_started_title_button),
-            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
             onClicked = { }
         )
     }

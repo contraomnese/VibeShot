@@ -36,6 +36,7 @@ android {
             buildConfigField("String", "FLICKR_API_BASE_URL", "\"${FLICKR_API_BASE_URL}\"")
             buildConfigField("String", "FLICKR_API_CALLBACK", "\"${FLICKR_API_CALLBACK}\"")
 
+
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),

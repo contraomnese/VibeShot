@@ -3,6 +3,7 @@ package com.arbuzerxxl.vibeshot.app
 import android.app.Application
 import android.os.StrictMode
 import com.arbuzerxxl.vibeshot.BuildConfig
+import com.arbuzerxxl.vibeshot.di.appModule
 import com.arbuzerxxl.vibeshot.di.featuresApiModule
 import com.kiparo.chargerapp.di.dataModule
 import com.kiparo.chargerapp.di.domainModule
@@ -18,6 +19,7 @@ class App : Application() {
             androidLogger()
             androidContext(this@App)
             modules(
+                appModule,
                 dataModule,
                 domainModule,
                 featuresApiModule

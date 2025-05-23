@@ -5,3 +5,6 @@ data class TasksResource(
     val tasks: List<String>,
 )
 
+@JvmInline
+value class TaskResource(val task: String)
+

@@ -15,6 +15,7 @@
     <string name="profile">profile</string>
     <string name="search">Search</string>
     <string name="tasks">Tasks</string>
+    <string name="refresh_task">Refresh task</string>
 
     !--    Camera-->
     <string name="camera">Camera</string>
