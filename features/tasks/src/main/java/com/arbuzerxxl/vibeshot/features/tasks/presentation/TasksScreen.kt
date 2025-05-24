@@ -1,6 +1,7 @@
 package com.arbuzerxxl.vibeshot.features.tasks.presentation
 
 import android.Manifest
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -18,7 +19,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -33,6 +37,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -43,6 +49,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arbuzerxxl.vibeshot.core.design.icon.VibeShotIcons
 import com.arbuzerxxl.vibeshot.core.design.theme.VibeShotThemePreview
 import com.arbuzerxxl.vibeshot.core.design.theme.baseButtonHeight
+import com.arbuzerxxl.vibeshot.core.design.theme.cornerSize16
 import com.arbuzerxxl.vibeshot.core.design.theme.padding16
 import com.arbuzerxxl.vibeshot.core.design.theme.padding8
 import com.arbuzerxxl.vibeshot.core.ui.DevicePreviews
@@ -90,8 +97,22 @@ internal fun TasksScreen(
     onTopicClick: (String) -> Unit,
     onGenerateTaskClick: () -> Unit,
     onRefreshTaskClick: () -> Unit,
-    onReceive: (Intent) -> Unit,
+    onReceive: (PhotoTaskIntent) -> Unit,
 ) {
+
+    val context = LocalContext.current
+
+    LaunchedEffect(uiState.error) {
+        uiState.error?.let {
+            Toast.makeText(context, "Unexpected error", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    LaunchedEffect(uiState.notification) {
+        uiState.notification?.let {
+            Toast.makeText(context, uiState.notification, Toast.LENGTH_LONG).show()
+        }
+    }
 
     Box(
         modifier = modifier
@@ -110,6 +131,10 @@ internal fun TasksScreen(
             onRefreshTaskClick = onRefreshTaskClick,
             onReceive = onReceive
         )
+
+        uiState.error?.let {
+            Toast.makeText(context, it, Toast.LENGTH_LONG).show()
+        }
     }
 }
 
@@ -122,15 +147,17 @@ private fun TaskContent(
     onTopicClick: (String) -> Unit,
     onGenerateTaskClick: () -> Unit,
     onRefreshTaskClick: () -> Unit,
-    onReceive: (Intent) -> Unit,
+    onReceive: (PhotoTaskIntent) -> Unit,
 ) {
 
     val onRefreshTaskClick = remember { { onRefreshTaskClick() } }
     var expanded by remember { mutableStateOf(true) }
+    val scrollState = rememberScrollState()
 
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(scrollState)
             .padding(horizontal = padding8)
     ) {
 
@@ -228,36 +255,39 @@ private fun TaskContent(modifier: Modifier = Modifier, task: String) {
 private fun CameraContent(
     modifier: Modifier = Modifier,
     uiState: TasksUiState,
-    onReceive: (Intent) -> Unit,
+    onReceive: (PhotoTaskIntent) -> Unit,
 ) {
 
     val currentContext = LocalContext.current
 
     val pickImageFromAlbumLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-            if (uri != null) {
-                onReceive(Intent.OnFinishPickingImagesWith(currentContext, listOf(uri)))
-            }
+            onReceive(
+                PhotoTaskIntent.OnFinishPickingImageWith(
+                    currentContext,
+                    uri
+                )
+            )
         }
 
     val cameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { isImageSaved ->
         if (isImageSaved) {
-            onReceive(Intent.OnImageSavedWith(currentContext))
+            onReceive(PhotoTaskIntent.OnImageSavedWith(currentContext))
         } else {
-            onReceive(Intent.OnImageSavingCanceled)
+            onReceive(PhotoTaskIntent.OnImageSavingCanceled)
         }
     }
 
     val permissionLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { permissionGranted ->
             if (permissionGranted) {
-                onReceive(Intent.OnPermissionGrantedWith(currentContext))
+                onReceive(PhotoTaskIntent.OnPermissionGrantedWith(currentContext))
             } else {
-                onReceive(Intent.OnPermissionDenied)
+                onReceive(PhotoTaskIntent.OnPermissionDenied)
             }
         }
 
-    LaunchedEffect(key1 = uiState.tempFileUrl) {
+    LaunchedEffect(uiState.tempFileUrl) {
         uiState.tempFileUrl?.let {
             cameraLauncher.launch(it)
         }
@@ -281,6 +311,30 @@ private fun CameraContent(
                 val mediaRequest = PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                 pickImageFromAlbumLauncher.launch(mediaRequest)
             }, title = "Pick a picture"
+        )
+    }
+    uiState.selectedPicture?.let {
+        SelectedPictureContent(picture = it)
+    }
+}
+
+@Composable
+private fun SelectedPictureContent(picture: ImageBitmap) {
+    Column {
+        Image(
+            modifier = Modifier
+                .padding(padding16)
+                .clip(RoundedCornerShape(cornerSize16)),
+            bitmap = picture,
+            contentDescription = null,
+            contentScale = ContentScale.FillWidth
+        )
+        BaseButton(
+            modifier = Modifier
+                .padding(vertical = padding16)
+                .fillMaxWidth(),
+            onClicked = {},
+            title = "Publish"
         )
     }
 }

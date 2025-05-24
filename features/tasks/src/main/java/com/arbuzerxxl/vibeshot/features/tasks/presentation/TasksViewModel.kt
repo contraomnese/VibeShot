@@ -27,11 +27,19 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.File
 
+internal sealed class PhotoTaskIntent {
+    data class OnPermissionGrantedWith(val compositionContext: Context) : PhotoTaskIntent()
+    data object OnPermissionDenied : PhotoTaskIntent()
+    data class OnImageSavedWith(val compositionContext: Context) : PhotoTaskIntent()
+    data object OnImageSavingCanceled : PhotoTaskIntent()
+    data class OnFinishPickingImageWith(val compositionContext: Context, val imageUrl: Uri?) : PhotoTaskIntent()
+}
 
 @Immutable
 data class TasksUiState(
     val isLoading: Boolean = false,
     val error: String? = null,
+    val notification: String? = null,
     val categories: TaskCategoryResource = TaskCategoryResource.EMPTY,
     val mood: String = "",
     val season: String = "",
@@ -39,13 +47,13 @@ data class TasksUiState(
     val tasks: ImmutableList<TaskResource>? = null,
     val task: TaskResource? = null,
     val tempFileUrl: Uri? = null,
-    val selectedPictures: List<ImageBitmap> = emptyList(),
+    val selectedPicture: ImageBitmap? = null,
 )
 
 internal class TasksViewModel(
     private val photoTasksRepository: PhotoTasksRepository,
     private val getPhotoTasksUseCase: GetPhotoTasksUseCase,
-    private val applicationId: ApplicationId
+    private val applicationId: ApplicationId,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<TasksUiState>(TasksUiState(isLoading = true))
@@ -57,10 +65,9 @@ internal class TasksViewModel(
     )
 
     init {
-        try {
-            _uiState.update { it.copy(isLoading = true) }
-
-            viewModelScope.launch {
+        viewModelScope.launch {
+            try {
+                _uiState.update { it.copy(isLoading = true) }
                 val moodDeferred = async { photoTasksRepository.getMood() }
                 val seasonDeferred = async { photoTasksRepository.getSeason() }
                 val topicDeferred = async { photoTasksRepository.getTopic() }
@@ -79,9 +86,9 @@ internal class TasksViewModel(
                         tasks = null
                     )
                 }
+            } catch (e: Exception) {
+                _uiState.update { it.copy(isLoading = false, error = e.message) }
             }
-        } catch (e: Exception) {
-            _uiState.update { it.copy(isLoading = false, error = e.message) }
         }
     }
 
@@ -127,89 +134,87 @@ internal class TasksViewModel(
 
     fun onRefreshTaskClick() {
         _uiState.update { currentState ->
-            currentState.copy(task = currentState.tasks?.random())
+            currentState.copy(task = currentState.tasks?.random(), selectedPicture = null)
         }
     }
 
-    fun onReceive(intent: Intent) = viewModelScope.launch {
-        when(intent) {
-            is Intent.OnPermissionGrantedWith -> {
-                val tempFile = File.createTempFile(
-                    "temp_image_file_", /* prefix */
-                    ".jpg", /* suffix */
-                    intent.compositionContext.cacheDir  /* cache directory */
-                )
-
-                val uri = FileProvider.getUriForFile(intent.compositionContext,
-                    "${applicationId.id}.provider",
-                    tempFile
-                )
-
+    fun onReceive(photoTaskIntent: PhotoTaskIntent) = viewModelScope.launch {
+        when (photoTaskIntent) {
+            is PhotoTaskIntent.OnPermissionGrantedWith -> {
                 _uiState.update { currentState ->
-                    currentState.copy(tempFileUrl = uri)
+                    currentState.copy(tempFileUrl = getTempFileUri(photoTaskIntent))
                 }
             }
 
-            is Intent.OnPermissionDenied -> {
-                println("User did not grant permission to use the camera")
-            }
+            is PhotoTaskIntent.OnPermissionDenied,
+                -> updateNotification(notification = "User did not grant permission to use the camera")
 
-            is Intent.OnFinishPickingImagesWith -> {
-                if (intent.imageUrls.isNotEmpty()) {
-                    val newImages = mutableListOf<ImageBitmap>()
-                    for (eachImageUrl in intent.imageUrls) {
-                        val inputStream = intent.compositionContext.contentResolver.openInputStream(eachImageUrl)
-                        val bytes = inputStream?.readBytes()
-                        inputStream?.close()
-
-                        if (bytes != null) {
-                            val bitmapOptions = BitmapFactory.Options()
-                            bitmapOptions.inMutable = true
-                            val bitmap: Bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size, bitmapOptions)
-                            newImages.add(bitmap.asImageBitmap())
-                        } else {
-                            println("The image that was picked could not be read from the device at this url: $eachImageUrl")
-                        }
-                    }
-
-                    _uiState.update { currentState ->
-                        currentState.copy(
-                            selectedPictures = (currentState.selectedPictures + newImages),
-                            tempFileUrl = null
-                        )
-                    }
+            is PhotoTaskIntent.OnFinishPickingImageWith -> {
+                if (photoTaskIntent.imageUrl != null) {
+                    val selectedPicture = getSelectedPicture(photoTaskIntent = photoTaskIntent)
+                    updateSelectedPicture(selectedPicture)
                 } else {
-                    // user did not pick anything
+                    updateNotification(notification = "No any picture was selected")
                 }
             }
 
-            is Intent.OnImageSavedWith -> {
-                val tempImageUrl = _uiState.value.tempFileUrl
-                if (tempImageUrl != null) {
-                    val source = ImageDecoder.createSource(intent.compositionContext.contentResolver, tempImageUrl)
-
-                    val currentPictures = _uiState.value.selectedPictures.toMutableList()
-                    currentPictures.add(ImageDecoder.decodeBitmap(source).asImageBitmap())
-
-                    _uiState.value = _uiState.value.copy(
-                        tempFileUrl = null,
-                        selectedPictures = currentPictures)
+            is PhotoTaskIntent.OnImageSavedWith -> {
+                _uiState.value.tempFileUrl?.let {
+                    val source = ImageDecoder.createSource(photoTaskIntent.compositionContext.contentResolver, it)
+                    updateSelectedPicture(image = ImageDecoder.decodeBitmap(source))
                 }
             }
 
-            is Intent.OnImageSavingCanceled -> {
+            is PhotoTaskIntent.OnImageSavingCanceled -> {
                 _uiState.value = _uiState.value.copy(tempFileUrl = null)
             }
         }
     }
-}
 
-sealed class Intent {
-    data class OnPermissionGrantedWith(val compositionContext: Context): Intent()
-    data object OnPermissionDenied: Intent()
-    data class OnImageSavedWith (val compositionContext: Context): Intent()
-    data object OnImageSavingCanceled: Intent()
-    data class OnFinishPickingImagesWith(val compositionContext: Context, val imageUrls: List<Uri>): Intent()
+    private fun getTempFileUri(photoTaskIntent: PhotoTaskIntent.OnPermissionGrantedWith): Uri {
+        val tempFile = File.createTempFile(
+            "temp_image_file_", /* prefix */
+            ".jpg", /* suffix */
+            photoTaskIntent.compositionContext.cacheDir  /* cache directory */
+        )
+
+        val uri = FileProvider.getUriForFile(
+            photoTaskIntent.compositionContext,
+            "${applicationId.id}.provider",
+            tempFile
+        )
+        return uri
+    }
+
+    private fun getSelectedPicture(photoTaskIntent: PhotoTaskIntent.OnFinishPickingImageWith): Bitmap? {
+        return photoTaskIntent.imageUrl?.let {
+            val selectedPicture = photoTaskIntent.imageUrl
+            val inputStream = photoTaskIntent.compositionContext.contentResolver.openInputStream(selectedPicture)
+            val bytes = inputStream?.readBytes()
+            inputStream?.close()
+
+            bytes?.let {
+                val bitmapOptions = BitmapFactory.Options()
+                bitmapOptions.inMutable = true
+                BitmapFactory.decodeByteArray(bytes, 0, bytes.size, bitmapOptions)
+            }
+        }
+    }
+
+    private fun updateNotification(notification: String) {
+        _uiState.update { currentState ->
+            currentState.copy(notification = notification)
+        }
+    }
+
+    private fun updateSelectedPicture(image: Bitmap?) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                selectedPicture = image?.asImageBitmap(),
+                tempFileUrl = null
+            )
+        }
+    }
 }
 
 

@@ -12,3 +12,8 @@ class RequestPhotosFetchException(cause: Throwable): Throwable(cause = cause)
 class RequestSearchPhotosFetchException(cause: Throwable): Throwable(cause = cause)
 class RequestPhotoSizesFetchException(cause: Throwable): Throwable(cause = cause)
 class RequestPhotoInfoFetchException(cause: Throwable): Throwable(cause = cause)
+
+class RequestMoodInitializeException(cause: Throwable): Throwable(cause = cause)
+class RequestSeasonInitializeException(cause: Throwable): Throwable(cause = cause)
+class RequestTopicInitializeException(cause: Throwable): Throwable(cause = cause)
+class RequestPhotoTaskFetchException(cause: Throwable): Throwable(cause = cause)

@@ -35,4 +35,8 @@
     <string name="select_season">Select season:</string>
     <string name="select_topic">Select topic:</string>
     <string name="generate_photo_task">Generate task</string>
+
+    !--    Errors-->
+    <string name="unexpected_error">Unexpected error</string>
+
 </resources>
