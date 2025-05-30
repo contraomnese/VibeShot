@@ -1,8 +1,8 @@
 package com.arbuzerxxl.vibeshot.data.adapters
 
 
-import com.arbuzerxxl.vibeshot.data.network.model.photos.PhotoInfo
-import com.arbuzerxxl.vibeshot.data.network.model.photos.PhotoInfoResponse
+import com.arbuzerxxl.vibeshot.data.network.model.response.photos.PhotoInfo
+import com.arbuzerxxl.vibeshot.data.network.model.response.photos.PhotoInfoResponse
 import com.google.gson.Gson
 import com.google.gson.TypeAdapter
 import com.google.gson.stream.JsonReader

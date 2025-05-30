@@ -1,6 +1,7 @@
 package com.arbuzerxxl.vibeshot.core.design.icon
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.outlined.AddTask
 import androidx.compose.material.icons.outlined.Bolt
 import androidx.compose.material.icons.outlined.CalendarMonth
@@ -52,4 +53,5 @@ object VibeShotIcons {
     val Copyright = Icons.Outlined.Copyright
     val Tasks = Icons.Outlined.AddTask
     val Refresh = Icons.Outlined.Refresh
+    val Check = Icons.Default.Check
 }

@@ -1,6 +1,6 @@
 package com.arbuzerxxl.vibeshot.data.network.interceptors
 
-import com.arbuzerxxl.vibeshot.data.network.model.exceptions.AppException
+import com.arbuzerxxl.vibeshot.data.network.model.response.exceptions.AppException
 import okhttp3.Interceptor
 import okhttp3.Response
 

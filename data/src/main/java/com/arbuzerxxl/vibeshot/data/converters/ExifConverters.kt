@@ -1,7 +1,7 @@
 package com.arbuzerxxl.vibeshot.data.converters
 
 import androidx.room.TypeConverter
-import com.arbuzerxxl.vibeshot.data.network.model.photos.ExifData
+import com.arbuzerxxl.vibeshot.data.network.model.response.photos.ExifData
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 

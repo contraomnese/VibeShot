@@ -1,4 +1,4 @@
-package com.arbuzerxxl.vibeshot.data.network.model.search
+package com.arbuzerxxl.vibeshot.data.network.model.response.search
 
 import com.arbuzerxxl.vibeshot.data.adapters.SearchResponseTypeAdapter
 import com.google.gson.annotations.JsonAdapter

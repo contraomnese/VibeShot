@@ -1,6 +1,6 @@
 package com.arbuzerxxl.vibeshot.data.network.api
 
-import com.arbuzerxxl.vibeshot.data.network.model.search.SearchResponse
+import com.arbuzerxxl.vibeshot.data.network.model.response.search.SearchResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 

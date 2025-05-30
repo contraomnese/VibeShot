@@ -1,6 +1,6 @@
 package com.arbuzerxxl.vibeshot.data.mappers
 
-import com.arbuzerxxl.vibeshot.data.network.model.search.SearchPhoto
+import com.arbuzerxxl.vibeshot.data.network.model.response.search.SearchPhoto
 import com.arbuzerxxl.vibeshot.domain.models.interest.SearchResource
 import com.arbuzerxxl.vibeshot.domain.models.photo.PhotoSizesResource
 

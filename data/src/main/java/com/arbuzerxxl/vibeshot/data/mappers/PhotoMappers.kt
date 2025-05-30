@@ -1,8 +1,8 @@
 package com.arbuzerxxl.vibeshot.data.mappers
 
-import com.arbuzerxxl.vibeshot.data.network.model.photos.PhotoExif
-import com.arbuzerxxl.vibeshot.data.network.model.photos.PhotoInfo
-import com.arbuzerxxl.vibeshot.data.network.model.photos.PhotoSizes
+import com.arbuzerxxl.vibeshot.data.network.model.response.photos.PhotoExif
+import com.arbuzerxxl.vibeshot.data.network.model.response.photos.PhotoInfo
+import com.arbuzerxxl.vibeshot.data.network.model.response.photos.PhotoSizes
 import com.arbuzerxxl.vibeshot.data.storage.db.photo.details.dto.DetailsPhotoDto
 import com.arbuzerxxl.vibeshot.data.storage.db.photo.details.entities.DetailsPhotoEntity
 import com.arbuzerxxl.vibeshot.domain.models.photo.CameraResource

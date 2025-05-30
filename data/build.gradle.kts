@@ -49,6 +49,7 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter.json)
     implementation(libs.converter.scalars)
+    implementation(libs.converter.simplexml)
     implementation(libs.okhttp3.interceptor)
     implementation(libs.gson)
     implementation(libs.androidx.datastore.preferences)

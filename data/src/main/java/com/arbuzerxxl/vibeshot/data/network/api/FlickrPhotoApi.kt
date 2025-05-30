@@ -1,8 +1,8 @@
 package com.arbuzerxxl.vibeshot.data.network.api
 
-import com.arbuzerxxl.vibeshot.data.network.model.photos.PhotoExifResponse
-import com.arbuzerxxl.vibeshot.data.network.model.photos.PhotoInfoResponse
-import com.arbuzerxxl.vibeshot.data.network.model.photos.PhotoSizesResponse
+import com.arbuzerxxl.vibeshot.data.network.model.response.photos.PhotoExifResponse
+import com.arbuzerxxl.vibeshot.data.network.model.response.photos.PhotoInfoResponse
+import com.arbuzerxxl.vibeshot.data.network.model.response.photos.PhotoSizesResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 

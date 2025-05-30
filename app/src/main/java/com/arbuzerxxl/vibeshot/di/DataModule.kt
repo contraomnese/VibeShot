@@ -19,12 +19,13 @@ import com.arbuzerxxl.vibeshot.data.network.api.FlickrAuthApi
 import com.arbuzerxxl.vibeshot.data.network.api.FlickrInterestsApi
 import com.arbuzerxxl.vibeshot.data.network.api.FlickrPhotoApi
 import com.arbuzerxxl.vibeshot.data.network.api.FlickrSearchApi
+import com.arbuzerxxl.vibeshot.data.network.api.FlickrUploadPhotoApi
 import com.arbuzerxxl.vibeshot.data.network.interceptors.ErrorInterceptor
-import com.arbuzerxxl.vibeshot.data.network.model.interests.InterestsResponse
-import com.arbuzerxxl.vibeshot.data.network.model.photos.PhotoExifResponse
-import com.arbuzerxxl.vibeshot.data.network.model.photos.PhotoInfoResponse
-import com.arbuzerxxl.vibeshot.data.network.model.photos.PhotoSizesResponse
-import com.arbuzerxxl.vibeshot.data.network.model.search.SearchResponse
+import com.arbuzerxxl.vibeshot.data.network.model.response.interests.InterestsResponse
+import com.arbuzerxxl.vibeshot.data.network.model.response.photos.PhotoExifResponse
+import com.arbuzerxxl.vibeshot.data.network.model.response.photos.PhotoInfoResponse
+import com.arbuzerxxl.vibeshot.data.network.model.response.photos.PhotoSizesResponse
+import com.arbuzerxxl.vibeshot.data.network.model.response.search.SearchResponse
 import com.arbuzerxxl.vibeshot.data.repository.AuthRepositoryImpl
 import com.arbuzerxxl.vibeshot.data.repository.InterestsRepositoryImpl
 import com.arbuzerxxl.vibeshot.data.repository.PhotoTasksRepositoryImpl
@@ -52,10 +53,15 @@ import com.google.gson.GsonBuilder
 import kotlinx.coroutines.Dispatchers
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
+import retrofit2.converter.simplexml.SimpleXmlConverterFactory
+
+private const val MAIN_RETROFIT = "MainRetrofit"
+private const val UPLOAD_RETROFIT = "UploadRetrofit"
 
 val dataModule = module {
 
@@ -70,12 +76,20 @@ val dataModule = module {
     }
 
     // region Network
-    single<Retrofit> {
+    single(named(MAIN_RETROFIT)) {
         Retrofit.Builder()
             .baseUrl(BuildConfig.FLICKR_API_BASE_URL)
             .client(get<OkHttpClient>())
             .addConverterFactory(ScalarsConverterFactory.create())
             .addConverterFactory(GsonConverterFactory.create(get()))
+            .build()
+    }
+
+    single(named(UPLOAD_RETROFIT)) {
+        Retrofit.Builder()
+            .baseUrl(BuildConfig.FLICKR_API_UPLOAD_URL)
+            .client(get<OkHttpClient>())
+            .addConverterFactory(SimpleXmlConverterFactory.create())
             .build()
     }
 
@@ -100,13 +114,17 @@ val dataModule = module {
         ErrorInterceptor()
     }
 
+    // API
+    single<FlickrAuthApi> { get<Retrofit>(named(MAIN_RETROFIT)).create(FlickrAuthApi::class.java) }
+    single<FlickrInterestsApi> { get<Retrofit>(named(MAIN_RETROFIT)).create(FlickrInterestsApi::class.java) }
+    single<FlickrPhotoApi> { get<Retrofit>(named(MAIN_RETROFIT)).create(FlickrPhotoApi::class.java) }
+    single<FlickrSearchApi> { get<Retrofit>(named(MAIN_RETROFIT)).create(FlickrSearchApi::class.java) }
+    single<FlickrUploadPhotoApi> { get<Retrofit>(named(UPLOAD_RETROFIT)).create(FlickrUploadPhotoApi::class.java) }
+    // endregion
+
+    // region databases
     single<PhotoDatabase> { PhotoDatabase.create(context = get()) }
     single<PhotoTasksDatabase> { PhotoTasksDatabase.create(context = get()) }
-
-    single<FlickrAuthApi> { get<Retrofit>().create(FlickrAuthApi::class.java) }
-    single<FlickrInterestsApi> { get<Retrofit>().create(FlickrInterestsApi::class.java) }
-    single<FlickrPhotoApi> { get<Retrofit>().create(FlickrPhotoApi::class.java) }
-    single<FlickrSearchApi> { get<Retrofit>().create(FlickrSearchApi::class.java) }
     // endregion
 
     // region Repositories
@@ -151,9 +169,13 @@ val dataModule = module {
     factory<PhotosRepository> {
         PhotosRepositoryImpl(
             api = get(),
-            key = BuildConfig.FLICKR_API_KEY,
+            uploadApi = get(),
+            apiKey = BuildConfig.FLICKR_API_KEY,
+            apiSecret = BuildConfig.FLICKR_SECRET,
+            apiBaseUrl = BuildConfig.FLICKR_API_UPLOAD_URL,
             dispatcher = Dispatchers.IO,
-            storage = get()
+            storage = get(),
+            context = get()
         )
     }
     single<SearchRepository> {

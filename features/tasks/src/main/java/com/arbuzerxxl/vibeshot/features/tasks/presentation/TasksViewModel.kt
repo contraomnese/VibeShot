@@ -12,16 +12,22 @@ import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arbuzerxxl.vibeshot.domain.models.app.ApplicationId
+import com.arbuzerxxl.vibeshot.domain.models.auth.AuthState
 import com.arbuzerxxl.vibeshot.domain.models.photo_tasks.TaskCategoryResource
 import com.arbuzerxxl.vibeshot.domain.models.photo_tasks.TaskResource
 import com.arbuzerxxl.vibeshot.domain.repository.PhotoTasksRepository
+import com.arbuzerxxl.vibeshot.domain.repository.PhotosRepository
+import com.arbuzerxxl.vibeshot.domain.repository.UserDataRepository
 import com.arbuzerxxl.vibeshot.domain.usecases.photo_tasks.GetPhotoTasksUseCase
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -47,11 +53,16 @@ data class TasksUiState(
     val tasks: ImmutableList<TaskResource>? = null,
     val task: TaskResource? = null,
     val tempFileUrl: Uri? = null,
+    val selectedPictureFileUrl: Uri? = null,
     val selectedPicture: ImageBitmap? = null,
+    val authState: AuthState.Authenticated? = null,
+    val photoId: String? = null,
 )
 
 internal class TasksViewModel(
     private val photoTasksRepository: PhotoTasksRepository,
+    private val photosRepository: PhotosRepository,
+    private val userDataRepository: UserDataRepository,
     private val getPhotoTasksUseCase: GetPhotoTasksUseCase,
     private val applicationId: ApplicationId,
 ) : ViewModel() {
@@ -68,23 +79,55 @@ internal class TasksViewModel(
         viewModelScope.launch {
             try {
                 _uiState.update { it.copy(isLoading = true) }
+
                 val moodDeferred = async { photoTasksRepository.getMood() }
                 val seasonDeferred = async { photoTasksRepository.getSeason() }
                 val topicDeferred = async { photoTasksRepository.getTopic() }
-                val categories = TaskCategoryResource(
-                    mood = moodDeferred.await(),
-                    season = seasonDeferred.await(),
-                    topic = topicDeferred.await()
-                )
+
+                val (categories, authState) = coroutineScope {
+                    val categoriesResource = async {
+                        TaskCategoryResource(
+                            mood = moodDeferred.await(),
+                            season = seasonDeferred.await(),
+                            topic = topicDeferred.await()
+                        )
+                    }
+
+                    val authStateFlow = async {
+                        userDataRepository.userData
+                            .map { it.authState }
+                            .first()
+                    }
+
+                    Pair(categoriesResource.await(), authStateFlow.await())
+                }
+
                 _uiState.update { currentState ->
-                    currentState.copy(
-                        isLoading = false,
-                        categories = categories,
-                        mood = categories.mood.moods.first(),
-                        season = categories.season.seasons.first(),
-                        topic = categories.topic.topics.first(),
-                        tasks = null
-                    )
+                    when (authState) {
+                        is AuthState.Authenticated -> {
+                            currentState.copy(
+                                authState = authState,
+                                isLoading = false,
+                                categories = categories,
+                                mood = categories.mood.moods.first(),
+                                season = categories.season.seasons.first(),
+                                topic = categories.topic.topics.first(),
+                                tasks = null
+                            )
+                        }
+
+                        is AuthState.Guest, is AuthState.Unauthenticated -> {
+                            currentState.copy(
+                                authState = null,
+                                isLoading = false,
+                                categories = categories,
+                                mood = categories.mood.moods.first(),
+                                season = categories.season.seasons.first(),
+                                topic = categories.topic.topics.first(),
+                                tasks = null
+                            )
+                        }
+                    }
                 }
             } catch (e: Exception) {
                 _uiState.update { it.copy(isLoading = false, error = e.message) }
@@ -134,7 +177,39 @@ internal class TasksViewModel(
 
     fun onRefreshTaskClick() {
         _uiState.update { currentState ->
-            currentState.copy(task = currentState.tasks?.random(), selectedPicture = null)
+            currentState.copy(
+                task = currentState.tasks?.random(),
+                selectedPicture = null,
+                selectedPictureFileUrl = null
+            )
+        }
+    }
+
+    fun onPublishClick() {
+        uiState.value.authState?.let { authState ->
+            uiState.value.selectedPictureFileUrl?.let { url ->
+                viewModelScope.launch {
+                    try {
+                        val photoId = photosRepository.uploadPhoto(
+                            token = authState.user.token!!.accessToken,
+                            tokenSecret = authState.user.token!!.accessTokenSecret,
+                            photoUrl = url,
+                            title = null ?: throw IllegalStateException("Can't upload image without title!")
+                        )
+                        _uiState.update { currentState ->
+                            currentState.copy(
+                                photoId = photoId,
+                                task = null,
+                                selectedPictureFileUrl = null,
+                                selectedPicture = null
+                            )
+                        }
+                    }
+                    catch (e: Exception) {
+                        _uiState.update { it.copy(error = e.message) }
+                    }
+                }
+            }
         }
     }
 
@@ -147,21 +222,21 @@ internal class TasksViewModel(
             }
 
             is PhotoTaskIntent.OnPermissionDenied,
-                -> updateNotification(notification = "User did not grant permission to use the camera")
+            -> updateNotification(notification = "User did not grant permission to use the camera")
 
             is PhotoTaskIntent.OnFinishPickingImageWith -> {
                 if (photoTaskIntent.imageUrl != null) {
                     val selectedPicture = getSelectedPicture(photoTaskIntent = photoTaskIntent)
-                    updateSelectedPicture(selectedPicture)
+                    updateSelectedPicture(image = selectedPicture, selectedPictureFileUrl = photoTaskIntent.imageUrl)
                 } else {
                     updateNotification(notification = "No any picture was selected")
                 }
             }
 
             is PhotoTaskIntent.OnImageSavedWith -> {
-                _uiState.value.tempFileUrl?.let {
-                    val source = ImageDecoder.createSource(photoTaskIntent.compositionContext.contentResolver, it)
-                    updateSelectedPicture(image = ImageDecoder.decodeBitmap(source))
+                _uiState.value.tempFileUrl?.let { uri ->
+                    val source = ImageDecoder.createSource(photoTaskIntent.compositionContext.contentResolver, uri)
+                    updateSelectedPicture(image = ImageDecoder.decodeBitmap(source), selectedPictureFileUrl = uri)
                 }
             }
 
@@ -207,11 +282,28 @@ internal class TasksViewModel(
         }
     }
 
-    private fun updateSelectedPicture(image: Bitmap?) {
+    private fun updateSelectedPicture(image: Bitmap?, selectedPictureFileUrl: Uri) {
         _uiState.update { currentState ->
             currentState.copy(
                 selectedPicture = image?.asImageBitmap(),
-                tempFileUrl = null
+                selectedPictureFileUrl = selectedPictureFileUrl,
+                tempFileUrl = null,
+            )
+        }
+    }
+
+    fun clearError() {
+        _uiState.update { currentState ->
+            currentState.copy(
+                error = null
+            )
+        }
+    }
+
+    fun clearNotification() {
+        _uiState.update { currentState ->
+            currentState.copy(
+                notification = null
             )
         }
     }

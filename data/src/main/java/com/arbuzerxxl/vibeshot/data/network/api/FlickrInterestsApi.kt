@@ -1,6 +1,6 @@
 package com.arbuzerxxl.vibeshot.data.network.api
 
-import com.arbuzerxxl.vibeshot.data.network.model.interests.InterestsResponse
+import com.arbuzerxxl.vibeshot.data.network.model.response.interests.InterestsResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 

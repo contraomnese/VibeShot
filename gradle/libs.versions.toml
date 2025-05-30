@@ -2,12 +2,11 @@
 
 # app config
 compileSdk = "35"
-gson = "2.9.0"
 minSdk = "28"
 targetSdk = "35"
 
 # plugins
-agp = "8.8.1"
+agp = "8.6.0"
 org-jetbrains-kotlin-android = "2.1.20"
 devtools-ksp = "2.1.20-1.0.32"
 
@@ -45,9 +44,11 @@ browser = "1.8.0"
 retrofit2 = "2.9.0"
 okhttp3 = "4.11.0"
 converterScalars = "2.9.0"
+converterSimplexml = "2.9.0"
 datastorePreferences = "1.1.4"
 androidx-room = "2.6.1"
 pagingRuntimeKtx = "3.3.6"
+gson = "2.9.0"
 
 # tests
 junit = "4.13.2"
@@ -73,6 +74,7 @@ coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" 
 coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
 coil-transformations = { module = "com.github.Commit451.coil-transformations:transformations", version.ref = "coil" }
 
+converter-simplexml = { module = "com.squareup.retrofit2:converter-simplexml", version.ref = "converterSimplexml" }
 gson-v290 = { module = "com.google.code.gson:gson", version.ref = "gson" }
 koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin" }
 koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }

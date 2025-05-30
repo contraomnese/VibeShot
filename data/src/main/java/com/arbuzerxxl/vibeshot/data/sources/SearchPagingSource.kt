@@ -5,7 +5,7 @@ import androidx.paging.PagingState
 import com.arbuzerxxl.vibeshot.data.exceptions.RequestSearchPhotosFetchException
 import com.arbuzerxxl.vibeshot.data.mappers.toDomain
 import com.arbuzerxxl.vibeshot.data.network.api.FlickrSearchApi
-import com.arbuzerxxl.vibeshot.data.network.model.search.SearchResponse
+import com.arbuzerxxl.vibeshot.data.network.model.response.search.SearchResponse
 import com.arbuzerxxl.vibeshot.domain.models.interest.SearchResource
 import kotlinx.coroutines.CancellationException
 

@@ -1,4 +1,4 @@
-package com.arbuzerxxl.vibeshot.data.network.model.photos
+package com.arbuzerxxl.vibeshot.data.network.model.response.photos
 
 import com.arbuzerxxl.vibeshot.data.adapters.PhotoInfoResponseTypeAdapter
 import com.google.gson.annotations.JsonAdapter

@@ -1,8 +1,8 @@
 package com.arbuzerxxl.vibeshot.data.storage.db.photo.details.dto
 
 import androidx.room.ColumnInfo
-import com.arbuzerxxl.vibeshot.data.network.model.photos.ExifData
-import com.arbuzerxxl.vibeshot.data.network.model.photos.Tag
+import com.arbuzerxxl.vibeshot.data.network.model.response.photos.ExifData
+import com.arbuzerxxl.vibeshot.data.network.model.response.photos.Tag
 
 data class DetailsPhotoDto(
     @ColumnInfo(name = PHOTO_ID) val photoId: String,
@@ -32,7 +32,7 @@ data class DetailsPhotoDto(
     @ColumnInfo(name = CAMERA) val camera: String?,
     @ColumnInfo(name = EXIF_JSON) val exifJson: List<ExifData>?,
 
-) {
+    ) {
     companion object {
 
         const val PHOTO_ID = "alias_details_photo_id"

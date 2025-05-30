@@ -17,3 +17,5 @@ class RequestMoodInitializeException(cause: Throwable): Throwable(cause = cause)
 class RequestSeasonInitializeException(cause: Throwable): Throwable(cause = cause)
 class RequestTopicInitializeException(cause: Throwable): Throwable(cause = cause)
 class RequestPhotoTaskFetchException(cause: Throwable): Throwable(cause = cause)
+
+class RequestUploadPhotoException(cause: Throwable): Throwable(cause = cause)

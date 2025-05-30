@@ -5,8 +5,13 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,6 +22,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
@@ -24,6 +30,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -35,7 +42,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
@@ -50,7 +60,9 @@ import com.arbuzerxxl.vibeshot.core.design.icon.VibeShotIcons
 import com.arbuzerxxl.vibeshot.core.design.theme.VibeShotThemePreview
 import com.arbuzerxxl.vibeshot.core.design.theme.baseButtonHeight
 import com.arbuzerxxl.vibeshot.core.design.theme.cornerSize16
+import com.arbuzerxxl.vibeshot.core.design.theme.itemWidth1
 import com.arbuzerxxl.vibeshot.core.design.theme.padding16
+import com.arbuzerxxl.vibeshot.core.design.theme.padding24
 import com.arbuzerxxl.vibeshot.core.design.theme.padding8
 import com.arbuzerxxl.vibeshot.core.ui.DevicePreviews
 import com.arbuzerxxl.vibeshot.core.ui.widgets.BaseButton
@@ -60,14 +72,12 @@ import com.arbuzerxxl.vibeshot.core.ui.widgets.TaskTags
 import com.arbuzerxxl.vibeshot.domain.models.photo_tasks.MoodResource
 import com.arbuzerxxl.vibeshot.domain.models.photo_tasks.SeasonResource
 import com.arbuzerxxl.vibeshot.domain.models.photo_tasks.TaskCategoryResource
-import com.arbuzerxxl.vibeshot.domain.models.photo_tasks.TaskResource
 import com.arbuzerxxl.vibeshot.domain.models.photo_tasks.TopicResource
 import com.arbuzerxxl.vibeshot.ui.R
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
-import org.koin.core.annotation.KoinExperimentalAPI
 
-@OptIn(KoinExperimentalAPI::class)
 @Composable
 internal fun TasksRoute(
     modifier: Modifier = Modifier,
@@ -84,7 +94,10 @@ internal fun TasksRoute(
         onTopicClick = viewmodel::onTopicClick,
         onGenerateTaskClick = viewmodel::onGenerateTaskClick,
         onRefreshTaskClick = viewmodel::onRefreshTaskClick,
-        onReceive = viewmodel::onReceive
+        onReceive = viewmodel::onReceive,
+        onPublishClicked = viewmodel::onPublishClick,
+        clearError = viewmodel::clearError,
+        clearNotification = viewmodel::clearNotification
     )
 }
 
@@ -98,19 +111,24 @@ internal fun TasksScreen(
     onGenerateTaskClick: () -> Unit,
     onRefreshTaskClick: () -> Unit,
     onReceive: (PhotoTaskIntent) -> Unit,
+    onPublishClicked: () -> Unit,
+    clearError: () -> Unit,
+    clearNotification: () -> Unit
 ) {
 
     val context = LocalContext.current
 
     LaunchedEffect(uiState.error) {
         uiState.error?.let {
-            Toast.makeText(context, "Unexpected error", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, uiState.error, Toast.LENGTH_SHORT).show()
+            clearError()
         }
     }
 
     LaunchedEffect(uiState.notification) {
         uiState.notification?.let {
             Toast.makeText(context, uiState.notification, Toast.LENGTH_LONG).show()
+            clearNotification()
         }
     }
 
@@ -129,7 +147,8 @@ internal fun TasksScreen(
             onSeasonClick = onSeasonClick,
             onTopicClick = onTopicClick,
             onRefreshTaskClick = onRefreshTaskClick,
-            onReceive = onReceive
+            onReceive = onReceive,
+            onPublishClicked = onPublishClicked
         )
 
         uiState.error?.let {
@@ -148,6 +167,7 @@ private fun TaskContent(
     onGenerateTaskClick: () -> Unit,
     onRefreshTaskClick: () -> Unit,
     onReceive: (PhotoTaskIntent) -> Unit,
+    onPublishClicked: () -> Unit,
 ) {
 
     val onRefreshTaskClick = remember { { onRefreshTaskClick() } }
@@ -226,23 +246,41 @@ private fun TaskContent(
                 colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.onSurface)
             )
         }
-
         uiState.task?.let {
-            TaskContent(modifier = Modifier.align(Alignment.CenterHorizontally), task = it.task)
+            Box(
+                modifier = Modifier
+                    .padding(vertical = padding16)
+                    .border(
+                        width = itemWidth1,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        shape = RoundedCornerShape(cornerSize16)
+                    )
+                    .fillMaxWidth(), contentAlignment = Alignment.Center
+            ) {
+                TaskContent(message = it.task)
+            }
             CameraContent(
                 uiState = uiState,
-                onReceive = onReceive
+                onReceive = onReceive,
+                onPublishClicked = onPublishClicked
             )
         }
+        PhotoUploadStatus(
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(vertical = padding24),
+            photoId = uiState.photoId,
+            expandCallback = { expanded = !expanded }
+        )
     }
 }
 
 @Composable
-private fun TaskContent(modifier: Modifier = Modifier, task: String) {
+private fun TaskContent(modifier: Modifier = Modifier, message: String) {
     Text(
         modifier = modifier
-            .padding(vertical = padding16),
-        text = task, style = MaterialTheme.typography.labelMedium.copy(
+            .padding(padding16),
+        text = message, style = MaterialTheme.typography.labelMedium.copy(
             fontWeight = FontWeight.Light,
             color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center,
@@ -256,6 +294,7 @@ private fun CameraContent(
     modifier: Modifier = Modifier,
     uiState: TasksUiState,
     onReceive: (PhotoTaskIntent) -> Unit,
+    onPublishClicked: () -> Unit,
 ) {
 
     val currentContext = LocalContext.current
@@ -314,12 +353,12 @@ private fun CameraContent(
         )
     }
     uiState.selectedPicture?.let {
-        SelectedPictureContent(picture = it)
+        SelectedPictureContent(picture = it, onPublishClicked = onPublishClicked)
     }
 }
 
 @Composable
-private fun SelectedPictureContent(picture: ImageBitmap) {
+private fun SelectedPictureContent(picture: ImageBitmap, onPublishClicked: () -> Unit) {
     Column {
         Image(
             modifier = Modifier
@@ -333,9 +372,60 @@ private fun SelectedPictureContent(picture: ImageBitmap) {
             modifier = Modifier
                 .padding(vertical = padding16)
                 .fillMaxWidth(),
-            onClicked = {},
+            onClicked = onPublishClicked,
             title = "Publish"
         )
+    }
+}
+
+@Composable
+private fun PhotoUploadStatus(modifier: Modifier, photoId: String?, expandCallback: () -> Unit) {
+
+    var showSuccess by remember { mutableStateOf(false) }
+
+    LaunchedEffect(photoId) {
+        if (photoId != null) {
+            showSuccess = true
+            delay(3000)
+            showSuccess = false
+            delay(2000)
+            expandCallback()
+        }
+    }
+
+    val transition = updateTransition(targetState = showSuccess, label = "PhotoUploadTransition")
+
+    val scale by transition.animateFloat(
+        label = "ScaleAnimation",
+        transitionSpec = {
+            tween(durationMillis = 500, easing = FastOutSlowInEasing)
+        }
+    ) { isVisible -> if (isVisible) 1f else 0f }
+
+    val alpha by transition.animateFloat(
+        label = "AlphaAnimation",
+        transitionSpec = {
+            tween(durationMillis = 500)
+        }
+    ) { isVisible -> if (isVisible) 1f else 0f }
+
+    if (showSuccess || transition.currentState) {
+        Box(
+            modifier = modifier
+                .size(64.dp)
+                .scale(scale)
+                .alpha(alpha)
+                .background(Color(0xFF4CAF50), shape = CircleShape)
+                .padding(12.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = VibeShotIcons.Check,
+                contentDescription = stringResource(R.string.photo_upload_success),
+                tint = Color.White,
+                modifier = Modifier.size(32.dp)
+            )
+        }
     }
 }
 
@@ -351,14 +441,17 @@ private fun TasksScreenPreview() {
                     topic = TopicResource(persistentListOf())
                 ),
                 tasks = null, mood = "sad", season = "winter", topic = "nature",
-                task = TaskResource("Example task")
+                task = null, photoId = "1234"
             ),
             onGenerateTaskClick = {},
             onMoodClick = {},
             onSeasonClick = {},
             onTopicClick = {},
             onRefreshTaskClick = {},
-            onReceive = {}
+            onReceive = {},
+            onPublishClicked = {},
+            clearNotification = {},
+            clearError = {}
         )
     }
 }

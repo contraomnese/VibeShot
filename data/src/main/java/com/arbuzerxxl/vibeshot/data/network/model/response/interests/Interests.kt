@@ -1,4 +1,4 @@
-package com.arbuzerxxl.vibeshot.data.network.model.interests
+package com.arbuzerxxl.vibeshot.data.network.model.response.interests
 
 import com.arbuzerxxl.vibeshot.data.adapters.InterestsResponseTypeAdapter
 import com.google.gson.annotations.JsonAdapter

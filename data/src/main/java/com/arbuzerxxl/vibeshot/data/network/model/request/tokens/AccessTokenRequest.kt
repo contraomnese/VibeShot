@@ -1,4 +1,4 @@
-package com.arbuzerxxl.vibeshot.data.network.model.tokens
+package com.arbuzerxxl.vibeshot.data.network.model.request.tokens
 
 import okhttp3.internal.toHexString
 import java.util.Base64
@@ -10,16 +10,18 @@ private const val ALGORITHM = "HmacSHA1"
 private const val OAUTH_VERSION = "1.0"
 private const val ENCRYPTION_METHOD = "HMAC-SHA1"
 
-data class RequestTokenRequest(
+data class AccessTokenRequest(
     val baseUrl: String,
     val oAuthStep: String,
+    val token: String,
+    val verifier: String,
     val nonce: String = UUID.randomUUID().toString(),
     val timestamp: String = System.currentTimeMillis().toString(),
     val consumerKey: String,
     val method: String = ENCRYPTION_METHOD,
     val oAuthVersion: String = OAUTH_VERSION,
-    val callback: String,
     val secret: String,
+    val secretToken: String
 ) {
     val signature: String = generateSignature()
 
@@ -27,7 +29,7 @@ data class RequestTokenRequest(
 
         val baseString = this.generateBaseString()
 
-        val key = "$secret&"
+        val key = "$secret&$secretToken"
         val hMacSHA256 = Mac.getInstance(ALGORITHM)
         val secretKey = SecretKeySpec(key.toByteArray(), ALGORITHM)
         hMacSHA256.init(secretKey)
@@ -52,10 +54,11 @@ data class RequestTokenRequest(
     // using lexicographical byte value ordering, separated by an '&'
     private fun generateBaseString(): String = "GET&" +
             "${(baseUrl + oAuthStep).convertToBaseString()}&" +
-            "oauth_callback=${callback.convertToBaseString()}&".convertToBaseString() +
             "oauth_consumer_key=$consumerKey&".convertToBaseString() +
             "oauth_nonce=$nonce&".convertToBaseString() +
             "oauth_signature_method=$method&".convertToBaseString() +
             "oauth_timestamp=$timestamp&".convertToBaseString() +
+            "oauth_token=$token&".convertToBaseString() +
+            "oauth_verifier=$verifier&".convertToBaseString() +
             "oauth_version=$oAuthVersion".convertToBaseString()
 }

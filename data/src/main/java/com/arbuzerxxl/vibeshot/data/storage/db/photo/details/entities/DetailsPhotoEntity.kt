@@ -3,8 +3,8 @@ package com.arbuzerxxl.vibeshot.data.storage.db.photo.details.entities
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.arbuzerxxl.vibeshot.data.network.model.photos.ExifData
-import com.arbuzerxxl.vibeshot.data.network.model.photos.Tag
+import com.arbuzerxxl.vibeshot.data.network.model.response.photos.ExifData
+import com.arbuzerxxl.vibeshot.data.network.model.response.photos.Tag
 
 @Entity(tableName = DetailsPhotoEntity.TABLE_NAME)
 data class DetailsPhotoEntity(

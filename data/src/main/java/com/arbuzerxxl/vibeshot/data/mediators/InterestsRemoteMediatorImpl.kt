@@ -7,7 +7,7 @@ import androidx.room.withTransaction
 import com.arbuzerxxl.vibeshot.data.exceptions.RequestInterestsPhotosFetchException
 import com.arbuzerxxl.vibeshot.data.mediators.api.InterestsRemoteMediator
 import com.arbuzerxxl.vibeshot.data.network.api.FlickrInterestsApi
-import com.arbuzerxxl.vibeshot.data.network.model.interests.InterestsResponse
+import com.arbuzerxxl.vibeshot.data.network.model.response.interests.InterestsResponse
 import com.arbuzerxxl.vibeshot.data.storage.db.photo.PhotoDatabase
 import com.arbuzerxxl.vibeshot.data.storage.db.photo.interests.dto.InterestsPhotoDto
 import com.arbuzerxxl.vibeshot.data.storage.db.photo.interests.entities.InterestsEntity
