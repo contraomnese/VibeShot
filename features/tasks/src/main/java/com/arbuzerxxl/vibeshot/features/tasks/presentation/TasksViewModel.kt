@@ -194,7 +194,7 @@ internal class TasksViewModel(
                             token = authState.user.token!!.accessToken,
                             tokenSecret = authState.user.token!!.accessTokenSecret,
                             photoUrl = url,
-                            title = null ?: throw IllegalStateException("Can't upload image without title!")
+                            title = uiState.value.task?.task ?: throw IllegalStateException("Can't upload image without title!")
                         )
                         _uiState.update { currentState ->
                             currentState.copy(
