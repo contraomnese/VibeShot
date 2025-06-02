@@ -1,15 +1,16 @@
 package com.arbuzerxxl.vibeshot.core.design.icon
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.outlined.AddTask
 import androidx.compose.material.icons.outlined.Bolt
 import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.Camera
 import androidx.compose.material.icons.outlined.ChatBubbleOutline
+import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Contrast
 import androidx.compose.material.icons.outlined.Copyright
+import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.material.icons.outlined.Exposure
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.FileUpload
@@ -19,6 +20,7 @@ import androidx.compose.material.icons.outlined.PhotoCamera
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.ShutterSpeed
+import androidx.compose.material.icons.outlined.SignalCellularConnectedNoInternet0Bar
 import androidx.compose.material.icons.outlined.Straighten
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.rounded.ArrowDropDown
@@ -53,5 +55,7 @@ object VibeShotIcons {
     val Copyright = Icons.Outlined.Copyright
     val Tasks = Icons.Outlined.AddTask
     val Refresh = Icons.Outlined.Refresh
-    val Check = Icons.Default.Check
+    val Check = Icons.Outlined.Check
+    val Error = Icons.Outlined.ErrorOutline
+    val InternetDisabled = Icons.Outlined.SignalCellularConnectedNoInternet0Bar
 }

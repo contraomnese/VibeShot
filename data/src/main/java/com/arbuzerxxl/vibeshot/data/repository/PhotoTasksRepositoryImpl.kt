@@ -30,30 +30,30 @@ class PhotoTasksRepositoryImpl(
         }
     }
 
-    override suspend fun getMood(): MoodResource = withContext(dispatcher) {
+    override suspend fun getMood(): List<MoodResource> = withContext(dispatcher) {
         try {
             val moods = database.tasksCategoryDao().getMoods()
-            MoodResource(moods = moods.map { it.title }.toPersistentList())
+            moods.map { MoodResource(it.title) }.toPersistentList()
         } catch (cause: Throwable) {
             throw RequestMoodInitializeException(cause)
         }
     }
 
 
-    override suspend fun getSeason(): SeasonResource = withContext(dispatcher) {
+    override suspend fun getSeason(): List<SeasonResource> = withContext(dispatcher) {
         try {
             val seasons = database.tasksCategoryDao().getSeasons()
-            SeasonResource(seasons = seasons.map { it.title }.toPersistentList())
+            seasons.map { SeasonResource(it.title) }.toPersistentList()
         } catch (cause: Throwable) {
             throw RequestSeasonInitializeException(cause)
         }
 
     }
 
-    override suspend fun getTopic(): TopicResource = withContext(dispatcher) {
+    override suspend fun getTopic(): List<TopicResource> = withContext(dispatcher) {
         try {
             val topics = database.tasksCategoryDao().getTopics()
-            TopicResource(topics = topics.map { it.title }.toPersistentList())
+            topics.map { TopicResource(it.title) }.toPersistentList()
         } catch (cause: Throwable) {
             throw RequestTopicInitializeException(cause)
         }

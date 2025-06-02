@@ -14,6 +14,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -33,6 +34,7 @@ fun TaskTags(
 
     Column(modifier = modifier) {
         Text(
+            modifier = Modifier.align(Alignment.CenterHorizontally),
             text = stringResource(titleId), style = MaterialTheme.typography.titleMedium.copy(
                 fontWeight = FontWeight.Light,
                 color = MaterialTheme.colorScheme.onSurface,
@@ -40,7 +42,7 @@ fun TaskTags(
         )
         if (items.isNotEmpty()) {
             val scrollState = rememberScrollState()
-            var currentItem by remember { mutableStateOf(currentItem) }
+            var currentItemClicked by remember { mutableStateOf(currentItem) }
 
             Row(
                 modifier = Modifier
@@ -52,10 +54,10 @@ fun TaskTags(
                     TaskTagItem(
                         tag = tag.uppercase(),
                         onClick = {
-                            currentItem = tag
+                            currentItemClicked = tag
                             onClick(tag)
                         },
-                        selected = tag == currentItem,
+                        selected = tag == currentItemClicked,
                     )
                 }
             }
@@ -83,7 +85,7 @@ private fun TaskTagsPreview() {
                 "neutral"
             ),
             titleId = R.string.select_mood,
-            currentItem = "",
+            currentItem = "sad",
             onClick = {}
         )
     }

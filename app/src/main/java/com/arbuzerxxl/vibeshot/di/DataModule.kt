@@ -59,6 +59,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import retrofit2.converter.simplexml.SimpleXmlConverterFactory
+import java.util.concurrent.TimeUnit
 
 private const val MAIN_RETROFIT = "MainRetrofit"
 private const val UPLOAD_RETROFIT = "UploadRetrofit"
@@ -95,6 +96,10 @@ val dataModule = module {
 
     factory<OkHttpClient> {
         OkHttpClient.Builder()
+            .connectTimeout(15, TimeUnit.SECONDS)
+            .readTimeout(20, TimeUnit.SECONDS)
+            .writeTimeout(20, TimeUnit.SECONDS)
+            .retryOnConnectionFailure(true)
             .addInterceptor(get<HttpLoggingInterceptor>())
             .addInterceptor(get<ErrorInterceptor>())
             .build()
@@ -197,6 +202,7 @@ val dataModule = module {
     // region mediators
     single<InterestsRemoteMediator> {
         InterestsRemoteMediatorImpl(
+            context = get(),
             database = get(),
             api = get(),
             key = BuildConfig.FLICKR_API_KEY,

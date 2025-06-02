@@ -26,7 +26,7 @@ private const val INTERESTS_PAGE_SIZE = 25
 @OptIn(ExperimentalPagingApi::class)
 class InterestsRepositoryImpl(
     private val database: PhotoDatabase,
-    private val dispatcher: CoroutineDispatcher
+    private val dispatcher: CoroutineDispatcher,
 ) : InterestsRepository, KoinComponent {
 
     private val mediator: InterestsRemoteMediator by inject(parameters = { parametersOf(INTERESTS_PAGE_SIZE) })
@@ -38,18 +38,21 @@ class InterestsRepositoryImpl(
         load()
     }
 
-    private fun load() = CoroutineScope(dispatcher).launch {
-        Pager(
-            config = PagingConfig(pageSize = INTERESTS_PAGE_SIZE, enablePlaceholders = true),
-            remoteMediator = mediator
-        ) {
-            database.interestsDao().getAll()
-        }.flow
-            .cachedIn(CoroutineScope(dispatcher))
-            .map { pagingData -> pagingData.map { it.toDomain() } }
-            .collect {
-                _data.emit(it)
-            }
+    override fun load() {
+
+        CoroutineScope(dispatcher).launch {
+            Pager(
+                config = PagingConfig(pageSize = INTERESTS_PAGE_SIZE, enablePlaceholders = true),
+                remoteMediator = mediator
+            ) {
+                database.interestsDao().getAll()
+            }.flow
+                .cachedIn(CoroutineScope(dispatcher))
+                .map { pagingData -> pagingData.map { it.toDomain() } }
+                .collect {
+                    _data.emit(it)
+                }
+        }
     }
 }
 

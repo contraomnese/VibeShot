@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.arbuzerxxl.vibeshot.core.design.theme.VibeShotThemePreview
@@ -69,13 +70,13 @@ fun TaskTagItem(
         ) {
             Text(
                 modifier = Modifier.padding(horizontal = padding4),
-                text = tag,
+                text = tag.uppercase(),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 style = MaterialTheme.typography.labelMedium.copy(
                     fontWeight = FontWeight.Light,
                     fontSize = 10.sp
                 ),
-                maxLines = 1,
+                textAlign = TextAlign.Center,
                 softWrap = true
             )
         }
@@ -88,6 +89,18 @@ private fun TaskTagItemPreview() {
     VibeShotThemePreview {
         TaskTagItem(
             tag = "Winter",
+            selected = true,
+            onClick = {}
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun TaskTagLongItemPreview() {
+    VibeShotThemePreview {
+        TaskTagItem(
+            tag = "Example long winter",
             selected = true,
             onClick = {}
         )

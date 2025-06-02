@@ -7,4 +7,5 @@ import kotlinx.coroutines.flow.SharedFlow
 interface InterestsRepository {
 
     val data: SharedFlow<PagingData<InterestsResource>>
+    fun load()
 }

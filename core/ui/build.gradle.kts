@@ -48,6 +48,11 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.core)
 
+    // di
+    implementation(libs.koin.core)
+    implementation(libs.koin.android)
+    implementation(libs.koin.androidx.compose)
+
     // ui compose
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)

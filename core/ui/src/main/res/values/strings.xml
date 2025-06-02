@@ -31,13 +31,20 @@
     <string name="close_search">Close search</string>
 
     !--    Photo Tasks-->
-    <string name="select_mood">Select mood:</string>
-    <string name="select_season">Select season:</string>
-    <string name="select_topic">Select topic:</string>
+    <string name="select_mood">Select mood</string>
+    <string name="select_season">Select season</string>
+    <string name="select_topic">Select topic</string>
     <string name="generate_photo_task">Generate task</string>
     <string name="photo_upload_success">Upload Success</string>
+    <string name="categories_empty">Categories for generating tasks could not be loaded</string>
 
     !--    Errors-->
     <string name="unexpected_error">Unexpected error</string>
+    <string name="loading_error">Loading error</string>
+    <string name="no_internet_connection">No internet connection</string>
+
+    !--    Interests-->
+    <string name="interests_load_error">Failed to load interests photos. Please, try again.</string>
+    <string name="load_interests">Try to load interests photos.</string>
 
 </resources>

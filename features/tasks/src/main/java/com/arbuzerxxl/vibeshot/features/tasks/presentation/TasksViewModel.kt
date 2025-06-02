@@ -46,18 +46,22 @@ data class TasksUiState(
     val isLoading: Boolean = false,
     val error: String? = null,
     val notification: String? = null,
-    val categories: TaskCategoryResource = TaskCategoryResource.EMPTY,
-    val mood: String = "",
-    val season: String = "",
-    val topic: String = "",
+    val categoriesForTaskGeneration: TaskCategoryResource? = null,
+    val onSelectionMood: Int = 0,
+    val onSelectionSeason: Int = 0,
+    val onSelectionTopic: Int = 0,
     val tasks: ImmutableList<TaskResource>? = null,
-    val task: TaskResource? = null,
-    val tempFileUrl: Uri? = null,
+    val currentTask: TaskResource? = null,
+    val selectedPictureTempFileUrl: Uri? = null,
     val selectedPictureFileUrl: Uri? = null,
     val selectedPicture: ImageBitmap? = null,
     val authState: AuthState.Authenticated? = null,
     val photoId: String? = null,
-)
+) {
+    fun selectionMoodTitle(): String = categoriesForTaskGeneration!!.moods[onSelectionMood].title
+    fun selectionSeasonTitle(): String = categoriesForTaskGeneration!!.seasons[onSelectionSeason].title
+    fun selectionTopicTitle(): String = categoriesForTaskGeneration!!.topics[onSelectionTopic].title
+}
 
 internal class TasksViewModel(
     private val photoTasksRepository: PhotoTasksRepository,
@@ -67,7 +71,7 @@ internal class TasksViewModel(
     private val applicationId: ApplicationId,
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow<TasksUiState>(TasksUiState(isLoading = true))
+    private val _uiState = MutableStateFlow<TasksUiState>(TasksUiState())
 
     val uiState: StateFlow<TasksUiState> = _uiState.stateIn(
         scope = viewModelScope,
@@ -87,9 +91,9 @@ internal class TasksViewModel(
                 val (categories, authState) = coroutineScope {
                     val categoriesResource = async {
                         TaskCategoryResource(
-                            mood = moodDeferred.await(),
-                            season = seasonDeferred.await(),
-                            topic = topicDeferred.await()
+                            moods = moodDeferred.await(),
+                            seasons = seasonDeferred.await(),
+                            topics = topicDeferred.await()
                         )
                     }
 
@@ -108,10 +112,7 @@ internal class TasksViewModel(
                             currentState.copy(
                                 authState = authState,
                                 isLoading = false,
-                                categories = categories,
-                                mood = categories.mood.moods.first(),
-                                season = categories.season.seasons.first(),
-                                topic = categories.topic.topics.first(),
+                                categoriesForTaskGeneration = categories,
                                 tasks = null
                             )
                         }
@@ -120,16 +121,14 @@ internal class TasksViewModel(
                             currentState.copy(
                                 authState = null,
                                 isLoading = false,
-                                categories = categories,
-                                mood = categories.mood.moods.first(),
-                                season = categories.season.seasons.first(),
-                                topic = categories.topic.topics.first(),
+                                categoriesForTaskGeneration = categories,
                                 tasks = null
                             )
                         }
                     }
                 }
-            } catch (e: Exception) {
+            }
+            catch (e: Exception) {
                 _uiState.update { it.copy(isLoading = false, error = e.message) }
             }
         }
@@ -138,39 +137,39 @@ internal class TasksViewModel(
     fun onGenerateTaskClick() {
         viewModelScope.launch {
             val tasks = getPhotoTasksUseCase(
-                mood = uiState.value.mood,
-                season = uiState.value.season,
-                topic = uiState.value.topic
+                mood = uiState.value.selectionMoodTitle(),
+                season = uiState.value.selectionSeasonTitle(),
+                topic = uiState.value.selectionTopicTitle()
             )
             _uiState.update { currentState ->
                 currentState.copy(
                     tasks = tasks.toPersistentList(),
-                    task = tasks.random()
+                    currentTask = tasks.random()
                 )
             }
         }
     }
 
     fun onMoodClick(title: String) {
-        if (title != uiState.value.mood) {
+        if (title != uiState.value.selectionMoodTitle()) {
             _uiState.update { currentState ->
-                currentState.copy(mood = title, tasks = null)
+                currentState.copy(onSelectionMood = currentState.categoriesForTaskGeneration!!.moods.indexOfFirst { it.title == title }, tasks = null)
             }
         }
     }
 
     fun onSeasonClick(title: String) {
-        if (title != uiState.value.season) {
+        if (title != uiState.value.selectionSeasonTitle()) {
             _uiState.update { currentState ->
-                currentState.copy(season = title, tasks = null)
+                currentState.copy(onSelectionSeason = currentState.categoriesForTaskGeneration!!.seasons.indexOfFirst { it.title == title }, tasks = null)
             }
         }
     }
 
     fun onTopicClick(title: String) {
-        if (title != uiState.value.topic) {
+        if (title != uiState.value.selectionTopicTitle()) {
             _uiState.update { currentState ->
-                currentState.copy(topic = title, tasks = null)
+                currentState.copy(onSelectionTopic = currentState.categoriesForTaskGeneration!!.topics.indexOfFirst { it.title == title }, tasks = null)
             }
         }
     }
@@ -178,7 +177,7 @@ internal class TasksViewModel(
     fun onRefreshTaskClick() {
         _uiState.update { currentState ->
             currentState.copy(
-                task = currentState.tasks?.random(),
+                currentTask = currentState.tasks?.random(),
                 selectedPicture = null,
                 selectedPictureFileUrl = null
             )
@@ -194,19 +193,19 @@ internal class TasksViewModel(
                             token = authState.user.token!!.accessToken,
                             tokenSecret = authState.user.token!!.accessTokenSecret,
                             photoUrl = url,
-                            title = uiState.value.task?.task ?: throw IllegalStateException("Can't upload image without title!")
+                            title = uiState.value.currentTask!!.task
                         )
                         _uiState.update { currentState ->
                             currentState.copy(
                                 photoId = photoId,
-                                task = null,
+                                currentTask = null,
                                 selectedPictureFileUrl = null,
                                 selectedPicture = null
                             )
                         }
                     }
                     catch (e: Exception) {
-                        _uiState.update { it.copy(error = e.message) }
+                        _uiState.update { it.copy(error = "Failed to publish photo. Please try again.") }
                     }
                 }
             }
@@ -217,7 +216,7 @@ internal class TasksViewModel(
         when (photoTaskIntent) {
             is PhotoTaskIntent.OnPermissionGrantedWith -> {
                 _uiState.update { currentState ->
-                    currentState.copy(tempFileUrl = getTempFileUri(photoTaskIntent))
+                    currentState.copy(selectedPictureTempFileUrl = getTempFileUri(photoTaskIntent))
                 }
             }
 
@@ -234,14 +233,14 @@ internal class TasksViewModel(
             }
 
             is PhotoTaskIntent.OnImageSavedWith -> {
-                _uiState.value.tempFileUrl?.let { uri ->
+                _uiState.value.selectedPictureTempFileUrl?.let { uri ->
                     val source = ImageDecoder.createSource(photoTaskIntent.compositionContext.contentResolver, uri)
                     updateSelectedPicture(image = ImageDecoder.decodeBitmap(source), selectedPictureFileUrl = uri)
                 }
             }
 
             is PhotoTaskIntent.OnImageSavingCanceled -> {
-                _uiState.value = _uiState.value.copy(tempFileUrl = null)
+                _uiState.value = _uiState.value.copy(selectedPictureTempFileUrl = null)
             }
         }
     }
@@ -287,7 +286,7 @@ internal class TasksViewModel(
             currentState.copy(
                 selectedPicture = image?.asImageBitmap(),
                 selectedPictureFileUrl = selectedPictureFileUrl,
-                tempFileUrl = null,
+                selectedPictureTempFileUrl = null,
             )
         }
     }

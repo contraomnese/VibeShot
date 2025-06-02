@@ -8,7 +8,7 @@ import com.arbuzerxxl.vibeshot.domain.models.photo_tasks.TopicResource
 interface PhotoTasksRepository {
 
     suspend fun getTasks(mood: String, season: String, topic: String): List<TaskResource>
-    suspend fun getMood(): MoodResource
-    suspend fun getSeason(): SeasonResource
-    suspend fun getTopic(): TopicResource
+    suspend fun getMood(): List<MoodResource>
+    suspend fun getSeason(): List<SeasonResource>
+    suspend fun getTopic(): List<TopicResource>
 }

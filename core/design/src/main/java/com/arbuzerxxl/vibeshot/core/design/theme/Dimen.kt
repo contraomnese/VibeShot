@@ -28,9 +28,11 @@ val bottomSheetHiddenOffset = 120.dp
 
 val itemWidth0_5 = 0.5.dp
 val itemWidth1 = 1.dp
+val itemWidth2 = 2.dp
 
 val itemHeight2 = 2.dp
 val itemHeight4 = 4.dp
+val itemHeight16 = 16.dp
 val itemWidth40 = 40.dp
 
 val itemHeight24 = 24.dp

@@ -12,7 +12,6 @@ import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -46,7 +45,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -63,18 +61,21 @@ import com.arbuzerxxl.vibeshot.core.design.theme.cornerSize16
 import com.arbuzerxxl.vibeshot.core.design.theme.itemWidth1
 import com.arbuzerxxl.vibeshot.core.design.theme.padding16
 import com.arbuzerxxl.vibeshot.core.design.theme.padding24
+import com.arbuzerxxl.vibeshot.core.design.theme.padding32
 import com.arbuzerxxl.vibeshot.core.design.theme.padding8
 import com.arbuzerxxl.vibeshot.core.ui.DevicePreviews
 import com.arbuzerxxl.vibeshot.core.ui.widgets.BaseButton
 import com.arbuzerxxl.vibeshot.core.ui.widgets.CollapsibleWidget
 import com.arbuzerxxl.vibeshot.core.ui.widgets.LoadingIndicator
+import com.arbuzerxxl.vibeshot.core.ui.widgets.RefreshButton
 import com.arbuzerxxl.vibeshot.core.ui.widgets.TaskTags
 import com.arbuzerxxl.vibeshot.domain.models.photo_tasks.MoodResource
 import com.arbuzerxxl.vibeshot.domain.models.photo_tasks.SeasonResource
 import com.arbuzerxxl.vibeshot.domain.models.photo_tasks.TaskCategoryResource
+import com.arbuzerxxl.vibeshot.domain.models.photo_tasks.TaskResource
 import com.arbuzerxxl.vibeshot.domain.models.photo_tasks.TopicResource
 import com.arbuzerxxl.vibeshot.ui.R
-import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
 
@@ -113,7 +114,7 @@ internal fun TasksScreen(
     onReceive: (PhotoTaskIntent) -> Unit,
     onPublishClicked: () -> Unit,
     clearError: () -> Unit,
-    clearNotification: () -> Unit
+    clearNotification: () -> Unit,
 ) {
 
     val context = LocalContext.current
@@ -150,10 +151,6 @@ internal fun TasksScreen(
             onReceive = onReceive,
             onPublishClicked = onPublishClicked
         )
-
-        uiState.error?.let {
-            Toast.makeText(context, it, Toast.LENGTH_LONG).show()
-        }
     }
 }
 
@@ -170,107 +167,114 @@ private fun TaskContent(
     onPublishClicked: () -> Unit,
 ) {
 
-    val onRefreshTaskClick = remember { { onRefreshTaskClick() } }
+    val onRefreshTaskClicked = remember { { onRefreshTaskClick() } }
     var expanded by remember { mutableStateOf(true) }
     val scrollState = rememberScrollState()
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(scrollState)
-            .padding(horizontal = padding8)
-    ) {
-
-        CollapsibleWidget(
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-            expanded = expanded,
-            onExpandedChange = { expanded = it }
-        ) {
-            TaskTags(
-                titleId = R.string.select_mood,
-                items = uiState.categories.mood.moods,
-                currentItem = uiState.mood,
-                onClick = onMoodClick
-            )
-            TaskTags(
-                titleId = R.string.select_season,
-                items = uiState.categories.season.seasons,
-                currentItem = uiState.season,
-                onClick = onSeasonClick
-            )
-            TaskTags(
-                titleId = R.string.select_topic,
-                items = uiState.categories.topic.topics,
-                currentItem = uiState.topic,
-                onClick = onTopicClick
-            )
-        }
-
-
-        Row(
-            modifier = modifier
-                .wrapContentWidth()
-                .requiredHeight(baseButtonHeight)
-                .align(Alignment.CenterHorizontally),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(padding16)
-        ) {
-
-            TextButton(
-                onClick = {
-                    onGenerateTaskClick()
-                    expanded = !expanded
-                },
-                enabled = uiState.tasks == null,
-                colors = ButtonColors(
-                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    disabledContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                    disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer
-                )
-            ) {
-                Text(
-                    text = "Generate", style = MaterialTheme.typography.labelLarge
-                )
-            }
-
-            Image(
-                modifier = Modifier
-                    .clip(CircleShape)
-                    .clickable(
-                        onClick = onRefreshTaskClick,
-                        enabled = uiState.tasks != null
-                    ),
-                imageVector = VibeShotIcons.Refresh,
-                contentDescription = stringResource(R.string.refresh_task),
-                colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.onSurface)
-            )
-        }
-        uiState.task?.let {
-            Box(
-                modifier = Modifier
-                    .padding(vertical = padding16)
-                    .border(
-                        width = itemWidth1,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        shape = RoundedCornerShape(cornerSize16)
-                    )
-                    .fillMaxWidth(), contentAlignment = Alignment.Center
-            ) {
-                TaskContent(message = it.task)
-            }
-            CameraContent(
-                uiState = uiState,
-                onReceive = onReceive,
-                onPublishClicked = onPublishClicked
-            )
-        }
-        PhotoUploadStatus(
+    uiState.categoriesForTaskGeneration?.let { categories ->
+        Column(
             modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(vertical = padding24),
-            photoId = uiState.photoId,
-            expandCallback = { expanded = !expanded }
+                .fillMaxSize()
+                .verticalScroll(scrollState)
+                .padding(horizontal = padding8)
+        ) {
+            CollapsibleWidget(
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+                expanded = expanded,
+                onExpandedChange = { expanded = it }
+            ) {
+                TaskTags(
+                    titleId = R.string.select_mood,
+                    items = categories.moods.map { it.title },
+                    currentItem = uiState.selectionMoodTitle(),
+                    onClick = onMoodClick
+                )
+                TaskTags(
+                    titleId = R.string.select_season,
+                    items = categories.seasons.map { it.title },
+                    currentItem = uiState.selectionSeasonTitle(),
+                    onClick = onSeasonClick
+                )
+                TaskTags(
+                    titleId = R.string.select_topic,
+                    items = categories.topics.map { it.title },
+                    currentItem = uiState.selectionTopicTitle(),
+                    onClick = onTopicClick
+                )
+            }
+            Row(
+                modifier = modifier
+                    .wrapContentWidth()
+                    .requiredHeight(baseButtonHeight)
+                    .align(Alignment.CenterHorizontally),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(padding16)
+            ) {
+
+                TextButton(
+                    onClick = {
+                        onGenerateTaskClick()
+                        expanded = !expanded
+                    },
+                    enabled = uiState.tasks == null,
+                    colors = ButtonColors(
+                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        disabledContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                        disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer
+                    )
+                ) {
+                    Text(
+                        text = "Generate", style = MaterialTheme.typography.labelLarge
+                    )
+                }
+                RefreshButton(
+                    onClick = onRefreshTaskClicked, description = R.string.refresh_task, enabled = uiState.tasks != null
+                )
+            }
+            uiState.currentTask?.let {
+                Box(
+                    modifier = Modifier
+                        .padding(vertical = padding16)
+                        .border(
+                            width = itemWidth1,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            shape = RoundedCornerShape(cornerSize16)
+                        )
+                        .fillMaxWidth(), contentAlignment = Alignment.Center
+                ) {
+                    TaskContent(message = it.task)
+                }
+                CameraContent(
+                    uiState = uiState,
+                    onReceive = onReceive,
+                    onPublishClicked = onPublishClicked
+                )
+            }
+            PhotoUploadStatus(
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(vertical = padding24),
+                photoId = uiState.photoId,
+                expandCallback = { expanded = !expanded }
+            )
+        }
+    } ?: TasksContentEmpty()
+}
+
+@Composable
+private fun TasksContentEmpty(modifier: Modifier = Modifier) {
+    Box(modifier = modifier.fillMaxSize()) {
+        Text(
+            modifier = modifier
+                .align(Alignment.Center)
+                .padding(padding32),
+            text = stringResource(R.string.categories_empty), style = MaterialTheme.typography.labelMedium.copy(
+                fontWeight = FontWeight.Light,
+                color = MaterialTheme.colorScheme.onSurface,
+                textAlign = TextAlign.Center,
+                fontSize = 16.sp
+            )
         )
     }
 }
@@ -326,8 +330,8 @@ private fun CameraContent(
             }
         }
 
-    LaunchedEffect(uiState.tempFileUrl) {
-        uiState.tempFileUrl?.let {
+    LaunchedEffect(uiState.selectedPictureTempFileUrl) {
+        uiState.selectedPictureTempFileUrl?.let {
             cameraLauncher.launch(it)
         }
     }
@@ -431,17 +435,47 @@ private fun PhotoUploadStatus(modifier: Modifier, photoId: String?, expandCallba
 
 @DevicePreviews
 @Composable
-private fun TasksScreenPreview() {
+private fun TasksScreenEmptyPreview() {
     VibeShotThemePreview {
         TasksScreen(
             uiState = TasksUiState(
-                categories = TaskCategoryResource(
-                    mood = MoodResource(persistentListOf()),
-                    season = SeasonResource(persistentListOf()),
-                    topic = TopicResource(persistentListOf())
+                categoriesForTaskGeneration = null,
+                tasks = null,
+                currentTask = null,
+                photoId = ""
+            ),
+            onGenerateTaskClick = {},
+            onMoodClick = {},
+            onSeasonClick = {},
+            onTopicClick = {},
+            onRefreshTaskClick = {},
+            onReceive = {},
+            onPublishClicked = {},
+            clearNotification = {},
+            clearError = {}
+        )
+    }
+}
+
+
+@DevicePreviews
+@Composable
+private fun TasksScreenPreview() {
+    VibeShotThemePreview {
+
+        val moodResource = List(6) { MoodResource("example mood") }.toImmutableList()
+        val seasonResource = List(4) { SeasonResource("example season") }.toImmutableList()
+        val topicResource = List(8) { TopicResource("example topic") }.toImmutableList()
+
+        TasksScreen(
+            uiState = TasksUiState(
+                categoriesForTaskGeneration = TaskCategoryResource(
+                    moods = moodResource,
+                    seasons = seasonResource,
+                    topics = topicResource
                 ),
-                tasks = null, mood = "sad", season = "winter", topic = "nature",
-                task = null, photoId = "1234"
+                tasks = null, onSelectionMood = 1, onSelectionSeason = 2, onSelectionTopic = 1,
+                currentTask = TaskResource("Example task"), photoId = "1234"
             ),
             onGenerateTaskClick = {},
             onMoodClick = {},

@@ -17,10 +17,10 @@ import com.arbuzerxxl.vibeshot.core.ui.widgets.NavBar
 import com.arbuzerxxl.vibeshot.features.bottom_menu.navigation.BottomMenuNavigator
 import com.arbuzerxxl.vibeshot.features.bottom_menu.navigation.interestsNavigator
 import com.arbuzerxxl.vibeshot.features.bottom_menu.navigation.searchNavigator
+import com.arbuzerxxl.vibeshot.features.interests.navigation.InterestsDestination
 import com.arbuzerxxl.vibeshot.features.interests.navigation.interests
 import com.arbuzerxxl.vibeshot.features.profile.navigation.profile
 import com.arbuzerxxl.vibeshot.features.searching.navigation.search
-import com.arbuzerxxl.vibeshot.features.tasks.navigation.TasksDestination
 import com.arbuzerxxl.vibeshot.features.tasks.navigation.tasks
 import com.kiparo.pizzaapp.presentation.features.bottom_menu.BottomMenuViewModel
 import kotlinx.collections.immutable.ImmutableList
@@ -63,7 +63,7 @@ internal fun BottomMenuScreen(
         }
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
-            NavHost(navController = navController, startDestination = TasksDestination) {
+            NavHost(navController = navController, startDestination = InterestsDestination) {
                 interests(navController.interestsNavigator(externalNavigator))
                 search(navController.searchNavigator(externalNavigator))
                 tasks()
