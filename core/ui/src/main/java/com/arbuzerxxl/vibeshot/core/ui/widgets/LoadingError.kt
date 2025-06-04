@@ -17,8 +17,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import com.arbuzerxxl.vibeshot.core.design.icon.VibeShotIcons
+import com.arbuzerxxl.vibeshot.core.design.theme.VibeShotThemePreview
 import com.arbuzerxxl.vibeshot.core.design.theme.itemWidth48
 import com.arbuzerxxl.vibeshot.core.design.theme.padding32
+import com.arbuzerxxl.vibeshot.core.ui.DevicePreviews
 import com.arbuzerxxl.vibeshot.ui.R
 
 @Composable
@@ -56,5 +58,13 @@ fun LoadingError(
                 onClick = onRefreshClick, description = R.string.load_interests
             )
         }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun LoadingErrorPreview(modifier: Modifier = Modifier) {
+    VibeShotThemePreview {
+        LoadingError(textResId = R.string.interests_load_error, onRefreshClick = { })
     }
 }

@@ -4,21 +4,19 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.arbuzerxxl.vibeshot.core.design.theme.itemHeight24
 import com.arbuzerxxl.vibeshot.core.design.theme.padding16
-import com.arbuzerxxl.vibeshot.core.design.theme.padding20
-import com.arbuzerxxl.vibeshot.core.ui.utils.ConnectionBanner
-import com.arbuzerxxl.vibeshot.core.ui.widgets.LoadingError
-import com.arbuzerxxl.vibeshot.core.ui.widgets.LoadingIndicator
+import com.arbuzerxxl.vibeshot.core.ui.widgets.ConnectionBanner
+import com.arbuzerxxl.vibeshot.core.ui.widgets.ErrorBanner
 import com.arbuzerxxl.vibeshot.core.ui.widgets.PhotoGrid
 import com.arbuzerxxl.vibeshot.domain.models.interest.InterestsResource
 import com.arbuzerxxl.vibeshot.features.interests.navigation.InterestsDestination
@@ -30,28 +28,27 @@ import org.koin.androidx.compose.koinViewModel
 internal fun InterestsRoute(
     modifier: Modifier = Modifier,
     viewmodel: InterestsViewModel = koinViewModel(),
-    onPhotoClicked: (Int, String) -> Unit,
+    onPhotoClickNavigate: (Int, String) -> Unit,
 ) {
-
-    val items = viewmodel.uiState.collectAsLazyPagingItems()
-    val isConnected by viewmodel.isConnected.collectAsState()
+    val uiState by viewmodel.uiState.collectAsStateWithLifecycle()
+    val items = uiState.data.collectAsLazyPagingItems()
 
     InterestsScreen(
         modifier = modifier,
+        uiState = uiState,
         items = items,
-        onPhotoClicked = onPhotoClicked,
-        onRefreshClicked = viewmodel::onRefreshClick,
-        isConnected = isConnected
+        onPhotoClickNavigate = onPhotoClickNavigate,
+        onRefresh = viewmodel::onRefreshClick,
     )
 }
 
 @Composable
 internal fun InterestsScreen(
     modifier: Modifier = Modifier,
+    uiState: InterestsUiState,
     items: LazyPagingItems<InterestsResource>,
-    onPhotoClicked: (Int, String) -> Unit,
-    onRefreshClicked: () -> Unit,
-    isConnected: Boolean
+    onPhotoClickNavigate: (Int, String) -> Unit,
+    onRefresh: () -> Unit,
 ) {
 
     Box(
@@ -60,23 +57,26 @@ internal fun InterestsScreen(
             .background(MaterialTheme.colorScheme.background),
         contentAlignment = Alignment.Center
     ) {
-
-        PhotoGrid(
-            items = items,
-            onPhotoClicked = onPhotoClicked,
-            parentDestinationName = InterestsDestination::class.java.name,
-        )
-        if (items.loadState.hasError) {
-            LoadingError(textResId = R.string.interests_load_error, onRefreshClick = onRefreshClicked)
-        }
-        if (!items.loadState.isIdle) {
-            LoadingIndicator(
+        when {
+            !uiState.isNetworkConnected -> ConnectionBanner(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
-                    .padding(bottom = padding20)
-                    .size(itemHeight24)
+                    .padding(bottom = padding16)
+            )
+
+            items.loadState.hasError -> ErrorBanner(
+                modifier = Modifier.align(Alignment.TopCenter),
+                message = stringResource(R.string.loading_error)
+            )
+
+            else -> PhotoGrid(
+                modifier = Modifier.fillMaxSize(),
+                items = items,
+                onPhotoClickNavigate = onPhotoClickNavigate,
+                parentDestinationName = InterestsDestination::class.java.name,
+                isRefreshing = items.loadState.refresh == LoadState.Loading,
+                onRefresh = onRefresh
             )
         }
-        ConnectionBanner(modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = padding16), isConnected = isConnected)
     }
 }

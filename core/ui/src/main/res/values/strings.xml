@@ -9,6 +9,7 @@
     <string name="skip_now_button">Skip for now</string>
     <string name="have_account">Have an account?</string>
     <string name="logout_title_button">Logout</string>
+    <string name="clear">Clear</string>
 
     !--    Bottom menu-->
     <string name="interests">interests</string>
@@ -40,8 +41,11 @@
 
     !--    Errors-->
     <string name="unexpected_error">Unexpected error</string>
-    <string name="loading_error">Loading error</string>
-    <string name="no_internet_connection">No internet connection</string>
+    <string name="loading_error">Failed to load data</string>
+    <string name="no_internet_connection_error">No internet connection</string>
+    <string name="camera_permission_error">User did not grant permission to use the camera</string>
+    <string name="empty_selected_photo_error">No any picture was selected</string>
+    <string name="long_error_preview">So long error message for check error banner in preview mode</string>
 
     !--    Interests-->
     <string name="interests_load_error">Failed to load interests photos. Please, try again.</string>

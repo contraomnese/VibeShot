@@ -12,42 +12,6 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 
 @SuppressLint("MissingPermission")
-//class NetworkMonitor(context: Context) : DefaultLifecycleObserver {
-//
-//    private val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-//
-//    private val _isConnected = MutableStateFlow(checkInternet())
-//    val isConnected: StateFlow<Boolean> = _isConnected.asStateFlow()
-//
-//    private val callback = object : ConnectivityManager.NetworkCallback() {
-//        override fun onAvailable(network: Network) {
-//            _isConnected.value = true
-//        }
-//
-//        override fun onLost(network: Network) {
-//            _isConnected.value = checkInternet()
-//        }
-//    }
-//
-//    init {
-//        val request = NetworkRequest.Builder()
-//            .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-//            .build()
-//
-//        connectivityManager.registerNetworkCallback(request, callback)
-//    }
-//
-//    private fun checkInternet(): Boolean {
-//        val activeNetwork = connectivityManager.activeNetwork
-//        val capabilities = connectivityManager.getNetworkCapabilities(activeNetwork)
-//        return capabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
-//    }
-//
-//    fun stop() {
-//        connectivityManager.unregisterNetworkCallback(callback)
-//    }
-//}
-
 class NetworkMonitor(context: Context) {
 
     private val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager

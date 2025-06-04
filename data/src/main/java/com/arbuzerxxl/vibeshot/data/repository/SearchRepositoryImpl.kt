@@ -11,6 +11,7 @@ import com.arbuzerxxl.vibeshot.domain.models.interest.SearchResource
 import com.arbuzerxxl.vibeshot.domain.repository.SearchRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
@@ -28,7 +29,7 @@ class SearchRepositoryImpl(
     private val _data = MutableSharedFlow<PagingData<SearchResource>>(replay = 1)
     override val data: SharedFlow<PagingData<SearchResource>> = _data
 
-    override fun search(query: String) {
+    override suspend fun search(query: String) {
         CoroutineScope(dispatcher).launch {
             Pager(
                 config = PagingConfig(pageSize = SEARCH_PAGE_SIZE, enablePlaceholders = true),
@@ -40,5 +41,10 @@ class SearchRepositoryImpl(
                     _data.emit(it)
                 }
         }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override suspend fun clear() {
+        _data.emit(PagingData.empty())
     }
 }

@@ -11,25 +11,25 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
 import com.arbuzerxxl.vibeshot.core.design.icon.VibeShotIcons
 import com.arbuzerxxl.vibeshot.core.design.theme.VibeShotThemePreview
-import com.arbuzerxxl.vibeshot.core.design.theme.itemWidth1
 import com.arbuzerxxl.vibeshot.core.design.theme.padding8
 import com.arbuzerxxl.vibeshot.core.ui.DevicePreviews
 
 @Composable
 fun CollapsibleWidget(
     modifier: Modifier = Modifier,
-    expanded: Boolean,
-    onExpandedChange: (Boolean) -> Unit,
+    isExpanded: Boolean,
+    onExpandedChange: () -> Unit,
     content: @Composable () -> Unit,
 ) {
 
@@ -41,34 +41,23 @@ fun CollapsibleWidget(
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
+            horizontalArrangement = Arrangement.Center,
             modifier = Modifier
-                .clickable { onExpandedChange(!expanded) }
                 .fillMaxWidth()
         ) {
-            HorizontalDivider(
-                modifier = Modifier.weight(1f),
-                thickness = itemWidth1,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-
-            Image(
-                imageVector = if (expanded) VibeShotIcons.ArrowDropUp else VibeShotIcons.ArrowDropDown,
-                contentDescription = if (expanded) "Hide" else "Show",
-                colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.onSurface),
+             Image(
+                imageVector = if (isExpanded) VibeShotIcons.ArrowDropUp else VibeShotIcons.ArrowDropDown,
+                contentDescription = if (isExpanded) "Hide" else "Show",
+                colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.onBackground),
                 modifier = Modifier
+                    .clip(CircleShape)
+                    .clickable(onClick = onExpandedChange)
                     .padding(horizontal = padding8)
-            )
-
-            HorizontalDivider(
-                modifier = Modifier.weight(1f),
-                thickness = itemWidth1,
-                color = MaterialTheme.colorScheme.onSurface
             )
         }
 
         AnimatedVisibility(
-            visible = expanded,
+            visible = isExpanded,
             enter = expandVertically(
                 animationSpec = tween(durationMillis = 600)
             ),
@@ -91,7 +80,7 @@ fun CollapsibleWidget(
 @Composable
 private fun CollapsibleWidgetPreview() {
     VibeShotThemePreview {
-        CollapsibleWidget(expanded = true, onExpandedChange = {}) {
+        CollapsibleWidget(isExpanded = true, onExpandedChange = {}) {
             Text(text = "1234")
         }
     }

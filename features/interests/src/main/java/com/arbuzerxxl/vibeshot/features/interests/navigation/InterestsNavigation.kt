@@ -41,6 +41,6 @@ fun NavGraphBuilder.interests(externalNavigator: InterestNavigator) {
 
         rememberKoinModules(unloadOnForgotten = true) { listOf(interestsModule) }
 
-        InterestsRoute(onPhotoClicked = externalNavigator::navigateToDetails)
+        InterestsRoute(onPhotoClickNavigate = externalNavigator::navigateToDetails)
     }
 }

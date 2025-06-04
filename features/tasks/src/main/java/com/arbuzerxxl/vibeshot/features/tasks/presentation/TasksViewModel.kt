@@ -23,6 +23,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -42,10 +43,9 @@ internal sealed class PhotoTaskIntent {
 }
 
 @Immutable
-data class TasksUiState(
+internal data class TasksUiState(
     val isLoading: Boolean = false,
     val error: String? = null,
-    val notification: String? = null,
     val categoriesForTaskGeneration: TaskCategoryResource? = null,
     val onSelectionMood: Int = 0,
     val onSelectionSeason: Int = 0,
@@ -57,10 +57,22 @@ data class TasksUiState(
     val selectedPicture: ImageBitmap? = null,
     val authState: AuthState.Authenticated? = null,
     val photoId: String? = null,
+    val expandedTaskGeneratorPanel: Boolean = true
 ) {
     fun selectionMoodTitle(): String = categoriesForTaskGeneration!!.moods[onSelectionMood].title
     fun selectionSeasonTitle(): String = categoriesForTaskGeneration!!.seasons[onSelectionSeason].title
     fun selectionTopicTitle(): String = categoriesForTaskGeneration!!.topics[onSelectionTopic].title
+}
+
+@Immutable
+internal sealed class TasksEvent {
+    data object RefreshTaskClicked : TasksEvent()
+    data object GenerateTaskClicked: TasksEvent()
+    data object PublishClicked: TasksEvent()
+    data class MoodClicked(val title: String): TasksEvent()
+    data class SeasonClicked(val title: String): TasksEvent()
+    data class TopicClicked(val title: String): TasksEvent()
+    data class ReceivePhotoTaskIntent(val intent: PhotoTaskIntent): TasksEvent()
 }
 
 internal class TasksViewModel(
@@ -134,7 +146,19 @@ internal class TasksViewModel(
         }
     }
 
-    fun onGenerateTaskClick() {
+    fun onEvent(event: TasksEvent) {
+        when (event) {
+            is TasksEvent.GenerateTaskClicked -> onGenerateTaskClick()
+            is TasksEvent.RefreshTaskClicked -> onRefreshTaskClick()
+            is TasksEvent.PublishClicked -> onPublishClick()
+            is TasksEvent.MoodClicked -> onMoodClick(title = event.title)
+            is TasksEvent.SeasonClicked -> onSeasonClick(title = event.title)
+            is TasksEvent.TopicClicked -> onTopicClick(title = event.title)
+            is TasksEvent.ReceivePhotoTaskIntent -> onPhotoSelectReceive(intent = event.intent)
+        }
+    }
+
+    private fun onGenerateTaskClick() {
         viewModelScope.launch {
             val tasks = getPhotoTasksUseCase(
                 mood = uiState.value.selectionMoodTitle(),
@@ -144,13 +168,14 @@ internal class TasksViewModel(
             _uiState.update { currentState ->
                 currentState.copy(
                     tasks = tasks.toPersistentList(),
-                    currentTask = tasks.random()
+                    currentTask = tasks.random(),
+                    expandedTaskGeneratorPanel = false
                 )
             }
         }
     }
 
-    fun onMoodClick(title: String) {
+    private fun onMoodClick(title: String) {
         if (title != uiState.value.selectionMoodTitle()) {
             _uiState.update { currentState ->
                 currentState.copy(onSelectionMood = currentState.categoriesForTaskGeneration!!.moods.indexOfFirst { it.title == title }, tasks = null)
@@ -158,7 +183,7 @@ internal class TasksViewModel(
         }
     }
 
-    fun onSeasonClick(title: String) {
+    private fun onSeasonClick(title: String) {
         if (title != uiState.value.selectionSeasonTitle()) {
             _uiState.update { currentState ->
                 currentState.copy(onSelectionSeason = currentState.categoriesForTaskGeneration!!.seasons.indexOfFirst { it.title == title }, tasks = null)
@@ -166,7 +191,7 @@ internal class TasksViewModel(
         }
     }
 
-    fun onTopicClick(title: String) {
+    private fun onTopicClick(title: String) {
         if (title != uiState.value.selectionTopicTitle()) {
             _uiState.update { currentState ->
                 currentState.copy(onSelectionTopic = currentState.categoriesForTaskGeneration!!.topics.indexOfFirst { it.title == title }, tasks = null)
@@ -174,7 +199,7 @@ internal class TasksViewModel(
         }
     }
 
-    fun onRefreshTaskClick() {
+    private fun onRefreshTaskClick() {
         _uiState.update { currentState ->
             currentState.copy(
                 currentTask = currentState.tasks?.random(),
@@ -184,7 +209,7 @@ internal class TasksViewModel(
         }
     }
 
-    fun onPublishClick() {
+    private fun onPublishClick() {
         uiState.value.authState?.let { authState ->
             uiState.value.selectedPictureFileUrl?.let { url ->
                 viewModelScope.launch {
@@ -200,7 +225,7 @@ internal class TasksViewModel(
                                 photoId = photoId,
                                 currentTask = null,
                                 selectedPictureFileUrl = null,
-                                selectedPicture = null
+                                selectedPicture = null,
                             )
                         }
                     }
@@ -212,29 +237,31 @@ internal class TasksViewModel(
         }
     }
 
-    fun onReceive(photoTaskIntent: PhotoTaskIntent) = viewModelScope.launch {
-        when (photoTaskIntent) {
+    private fun onPhotoSelectReceive(intent: PhotoTaskIntent) = viewModelScope.launch {
+
+        when (intent) {
+
             is PhotoTaskIntent.OnPermissionGrantedWith -> {
                 _uiState.update { currentState ->
-                    currentState.copy(selectedPictureTempFileUrl = getTempFileUri(photoTaskIntent))
+                    currentState.copy(selectedPictureTempFileUrl = getTempFileUri(intent))
                 }
             }
 
             is PhotoTaskIntent.OnPermissionDenied,
-            -> updateNotification(notification = "User did not grant permission to use the camera")
+            -> updateError(error = "User did not grant permission to use the camera")
 
             is PhotoTaskIntent.OnFinishPickingImageWith -> {
-                if (photoTaskIntent.imageUrl != null) {
-                    val selectedPicture = getSelectedPicture(photoTaskIntent = photoTaskIntent)
-                    updateSelectedPicture(image = selectedPicture, selectedPictureFileUrl = photoTaskIntent.imageUrl)
+                if (intent.imageUrl != null) {
+                    val selectedPicture = getSelectedPicture(photoTaskIntent = intent)
+                    updateSelectedPicture(image = selectedPicture, selectedPictureFileUrl = intent.imageUrl)
                 } else {
-                    updateNotification(notification = "No any picture was selected")
+                    updateError(error = "No any picture was selected")
                 }
             }
 
             is PhotoTaskIntent.OnImageSavedWith -> {
                 _uiState.value.selectedPictureTempFileUrl?.let { uri ->
-                    val source = ImageDecoder.createSource(photoTaskIntent.compositionContext.contentResolver, uri)
+                    val source = ImageDecoder.createSource(intent.compositionContext.contentResolver, uri)
                     updateSelectedPicture(image = ImageDecoder.decodeBitmap(source), selectedPictureFileUrl = uri)
                 }
             }
@@ -275,23 +302,29 @@ internal class TasksViewModel(
         }
     }
 
-    private fun updateNotification(notification: String) {
-        _uiState.update { currentState ->
-            currentState.copy(notification = notification)
-        }
-    }
-
     private fun updateSelectedPicture(image: Bitmap?, selectedPictureFileUrl: Uri) {
         _uiState.update { currentState ->
             currentState.copy(
                 selectedPicture = image?.asImageBitmap(),
                 selectedPictureFileUrl = selectedPictureFileUrl,
-                selectedPictureTempFileUrl = null,
+                selectedPictureTempFileUrl = null
             )
         }
     }
 
-    fun clearError() {
+    private fun updateError(error: String) {
+        viewModelScope.launch {
+            _uiState.update { currentState ->
+                currentState.copy(
+                    error = error
+                )
+            }
+            delay(2000)
+            clearError()
+        }
+    }
+
+    private fun clearError() {
         _uiState.update { currentState ->
             currentState.copy(
                 error = null
@@ -299,10 +332,10 @@ internal class TasksViewModel(
         }
     }
 
-    fun clearNotification() {
+    fun onChangeExpandedTaskGeneratorPanel() {
         _uiState.update { currentState ->
             currentState.copy(
-                notification = null
+                expandedTaskGeneratorPanel = !currentState.expandedTaskGeneratorPanel
             )
         }
     }

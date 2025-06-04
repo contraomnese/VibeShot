@@ -8,5 +8,7 @@ interface SearchRepository {
 
     val data: SharedFlow<PagingData<SearchResource>>
 
-    fun search(query: String)
+    suspend fun search(query: String)
+
+    suspend fun clear()
 }
