@@ -45,6 +45,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -73,6 +74,7 @@ import com.arbuzerxxl.vibeshot.core.design.theme.padding80
 import com.arbuzerxxl.vibeshot.core.design.theme.zero
 import com.arbuzerxxl.vibeshot.core.ui.DevicePreviews
 import com.arbuzerxxl.vibeshot.core.ui.widgets.CameraCard
+import com.arbuzerxxl.vibeshot.core.ui.widgets.ErrorBanner
 import com.arbuzerxxl.vibeshot.core.ui.widgets.LoadingIndicator
 import com.arbuzerxxl.vibeshot.core.ui.widgets.OwnerItem
 import com.arbuzerxxl.vibeshot.core.ui.widgets.PhotoDetailsItem
@@ -84,6 +86,7 @@ import com.arbuzerxxl.vibeshot.domain.models.photo.PhotoResource
 import com.arbuzerxxl.vibeshot.domain.utils.formatDateTimeWithLocale
 import com.arbuzerxxl.vibeshot.domain.utils.formatUnixTimeWithSystemLocale
 import com.arbuzerxxl.vibeshot.features.details.navigation.ParentDestination
+import com.arbuzerxxl.vibeshot.ui.R
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
 import org.koin.core.parameter.parametersOf
@@ -104,17 +107,27 @@ internal fun DetailsRoute(
     viewmodel: DetailsViewModel = koinViewModel(parameters = { parametersOf(parentDestination) }),
 ) {
 
-    val uiState: DetailsUiState by viewmodel.uiState.collectAsStateWithLifecycle()
+    val uiState by viewmodel.uiState.collectAsStateWithLifecycle()
+    val items = uiState.photos.collectAsLazyPagingItems()
 
-    when (uiState) {
-        DetailsUiState.Loading -> LoadingIndicator()
-        is DetailsUiState.Success -> {
-            val items = (uiState as DetailsUiState.Success).photos.collectAsLazyPagingItems()
-            val currentPhoto = (uiState as DetailsUiState.Success).currentPhoto
-            DetailsScreen(
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background),
+        contentAlignment = Alignment.Center
+    ) {
+        when {
+            items.loadState.hasError -> ErrorBanner(
+                modifier = Modifier.align(Alignment.TopCenter),
+                message = stringResource(R.string.loading_error)
+            )
+
+            uiState.isLoading -> LoadingIndicator()
+
+            else -> DetailsScreen(
                 modifier = modifier,
                 items = items,
-                photo = currentPhoto,
+                photo = uiState.currentPhoto,
                 photoPosition = photoPosition,
                 onSelectPhoto = viewmodel::setPhoto
             )
@@ -131,6 +144,7 @@ private fun DetailsScreen(
     items: LazyPagingItems<DetailsPhoto>,
     onSelectPhoto: (DetailsPhoto) -> Unit,
 ) {
+
 
     val listState = rememberLazyListState(initialFirstVisibleItemIndex = photoPosition)
 

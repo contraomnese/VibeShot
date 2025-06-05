@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.arbuzerxxl.vibeshot.core.ui.utils.NetworkMonitor
 import com.arbuzerxxl.vibeshot.domain.models.interest.SearchResource
 import com.arbuzerxxl.vibeshot.domain.repository.SearchRepository
 import kotlinx.coroutines.delay
@@ -24,12 +23,10 @@ internal data class SearchUiState(
     val isLoading: Boolean = false,
     val error: String? = null,
     val data: Flow<PagingData<SearchResource>> = flowOf(),
-    val isNetworkConnected: Boolean = false,
 )
 
 internal class SearchViewModel(
     private val searchRepository: SearchRepository,
-    private val networkMonitor: NetworkMonitor,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SearchUiState())
@@ -44,8 +41,6 @@ internal class SearchViewModel(
         val searchData = searchRepository
             .data
             .cachedIn(viewModelScope)
-
-        updatingNetworkStatus()
 
         _uiState.update { currentState ->
             currentState.copy(
@@ -72,26 +67,6 @@ internal class SearchViewModel(
     fun clearSearchData() {
         viewModelScope.launch {
             searchRepository.clear()
-        }
-    }
-
-    private fun updatingNetworkStatus() {
-
-        val isConnected = networkMonitor.isConnected
-            .stateIn(
-                viewModelScope,
-                SharingStarted.WhileSubscribed(5000),
-                true
-            )
-
-        viewModelScope.launch {
-            isConnected.collect { value ->
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        isNetworkConnected = value
-                    )
-                }
-            }
         }
     }
 }

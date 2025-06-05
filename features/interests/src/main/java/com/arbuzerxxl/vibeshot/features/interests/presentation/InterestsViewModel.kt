@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.arbuzerxxl.vibeshot.core.ui.utils.NetworkMonitor
 import com.arbuzerxxl.vibeshot.domain.models.interest.InterestsResource
 import com.arbuzerxxl.vibeshot.domain.repository.InterestsRepository
 import kotlinx.coroutines.flow.Flow
@@ -22,12 +21,10 @@ internal data class InterestsUiState(
     val isLoading: Boolean = false,
     val error: String? = null,
     val data: Flow<PagingData<InterestsResource>> = flowOf(),
-    val isNetworkConnected: Boolean = false,
 )
 
 internal class InterestsViewModel(
     private val interestsRepository: InterestsRepository,
-    private val networkMonitor: NetworkMonitor,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(InterestsUiState())
@@ -47,8 +44,6 @@ internal class InterestsViewModel(
                     .data
                     .cachedIn(viewModelScope)
 
-                updatingNetworkStatus()
-
                 _uiState.update { currentState ->
                     currentState.copy(
                         isLoading = false,
@@ -64,25 +59,4 @@ internal class InterestsViewModel(
     fun onRefreshClick() {
         interestsRepository.load()
     }
-
-    private fun updatingNetworkStatus() {
-
-        val isConnected = networkMonitor.isConnected
-            .stateIn(
-                viewModelScope,
-                SharingStarted.WhileSubscribed(5000),
-                true
-            )
-
-        viewModelScope.launch {
-            isConnected.collect { value ->
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        isNetworkConnected = value
-                    )
-                }
-            }
-        }
-    }
-
 }

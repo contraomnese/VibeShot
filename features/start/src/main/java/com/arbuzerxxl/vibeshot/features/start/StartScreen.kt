@@ -20,7 +20,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arbuzerxxl.vibeshot.core.design.icon.VibeShotIcons
 import com.arbuzerxxl.vibeshot.core.design.theme.VibeShotThemePreview
 import com.arbuzerxxl.vibeshot.core.design.theme.padding24
-import com.arbuzerxxl.vibeshot.core.design.theme.padding32
 import com.arbuzerxxl.vibeshot.core.design.theme.padding40
 import com.arbuzerxxl.vibeshot.core.ui.DevicePreviews
 import com.arbuzerxxl.vibeshot.core.ui.widgets.BaseButton
@@ -64,7 +63,7 @@ internal fun StartScreen(
             is StartUiState.Success -> {
                 uiState.darkMode?.let {
                     IconButton(
-                        modifier = Modifier.padding(top = padding32, end = padding32).align(Alignment.TopEnd),
+                        modifier = Modifier.padding(top = padding40, end = padding40).align(Alignment.TopEnd),
                         onClick = { setTheme(!uiState.darkMode) }) {
                         if (!uiState.darkMode) Icon(
                             imageVector = VibeShotIcons.DarkMode,

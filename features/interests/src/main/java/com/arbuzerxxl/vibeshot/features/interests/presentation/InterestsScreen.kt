@@ -3,7 +3,6 @@ package com.arbuzerxxl.vibeshot.features.interests.presentation
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -14,8 +13,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.arbuzerxxl.vibeshot.core.design.theme.padding16
-import com.arbuzerxxl.vibeshot.core.ui.widgets.ConnectionBanner
 import com.arbuzerxxl.vibeshot.core.ui.widgets.ErrorBanner
 import com.arbuzerxxl.vibeshot.core.ui.widgets.PhotoGrid
 import com.arbuzerxxl.vibeshot.domain.models.interest.InterestsResource
@@ -35,7 +32,6 @@ internal fun InterestsRoute(
 
     InterestsScreen(
         modifier = modifier,
-        uiState = uiState,
         items = items,
         onPhotoClickNavigate = onPhotoClickNavigate,
         onRefresh = viewmodel::onRefreshClick,
@@ -45,7 +41,6 @@ internal fun InterestsRoute(
 @Composable
 internal fun InterestsScreen(
     modifier: Modifier = Modifier,
-    uiState: InterestsUiState,
     items: LazyPagingItems<InterestsResource>,
     onPhotoClickNavigate: (Int, String) -> Unit,
     onRefresh: () -> Unit,
@@ -58,12 +53,6 @@ internal fun InterestsScreen(
         contentAlignment = Alignment.Center
     ) {
         when {
-            !uiState.isNetworkConnected -> ConnectionBanner(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = padding16)
-            )
-
             items.loadState.hasError -> ErrorBanner(
                 modifier = Modifier.align(Alignment.TopCenter),
                 message = stringResource(R.string.loading_error)

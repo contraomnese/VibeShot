@@ -1,5 +1,6 @@
 package com.arbuzerxxl.vibeshot.data.repository
 
+import android.content.Context
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
@@ -21,6 +22,7 @@ private const val SEARCH_PAGE_SIZE = 25
 
 @OptIn(ExperimentalPagingApi::class)
 class SearchRepositoryImpl(
+    private val context: Context,
     private val key: String,
     private val searchApi: FlickrSearchApi,
     private val dispatcher: CoroutineDispatcher
@@ -34,7 +36,7 @@ class SearchRepositoryImpl(
             Pager(
                 config = PagingConfig(pageSize = SEARCH_PAGE_SIZE, enablePlaceholders = true),
             ) {
-                SearchPagingSource(searchApi = searchApi, query = query, key = key)
+                SearchPagingSource(searchApi = searchApi, query = query, key = key, context = context)
             }.flow
                 .cachedIn(CoroutineScope(dispatcher))
                 .collect {

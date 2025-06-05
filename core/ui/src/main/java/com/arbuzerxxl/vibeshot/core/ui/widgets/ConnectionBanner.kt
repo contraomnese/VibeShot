@@ -26,9 +26,9 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.arbuzerxxl.vibeshot.core.design.icon.VibeShotIcons
 import com.arbuzerxxl.vibeshot.core.design.theme.VibeShotThemePreview
-import com.arbuzerxxl.vibeshot.core.design.theme.cornerSize16
-import com.arbuzerxxl.vibeshot.core.design.theme.padding12
+import com.arbuzerxxl.vibeshot.core.design.theme.cornerSize8
 import com.arbuzerxxl.vibeshot.core.design.theme.padding16
+import com.arbuzerxxl.vibeshot.core.design.theme.padding4
 import com.arbuzerxxl.vibeshot.core.design.theme.padding8
 import com.arbuzerxxl.vibeshot.core.ui.DevicePreviews
 import com.arbuzerxxl.vibeshot.ui.R
@@ -38,7 +38,7 @@ fun ConnectionBanner(
     modifier: Modifier,
 ) {
     AnimatedVisibility(
-        modifier = modifier.alpha(0.8f),
+        modifier = modifier.alpha(0.5f),
         visible = true,
         enter = slideInVertically { -it },
         exit = slideOutVertically { -it }
@@ -46,15 +46,15 @@ fun ConnectionBanner(
         Box(
             Modifier
                 .padding(horizontal = 24.dp)
-                .clip(RoundedCornerShape(cornerSize16))
-                .background(MaterialTheme.colorScheme.primaryContainer)
+                .clip(RoundedCornerShape(cornerSize8))
+                .background(MaterialTheme.colorScheme.tertiaryContainer)
                 .fillMaxWidth()
                 .zIndex(1f),
             contentAlignment = Alignment.Center
         ) {
             Row(
                 modifier = Modifier
-                    .padding(padding12)
+                    .padding(padding4)
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
@@ -64,7 +64,7 @@ fun ConnectionBanner(
                     contentDescription = stringResource(
                         id = R.string.no_internet_connection_error,
                     ),
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                    tint = MaterialTheme.colorScheme.onTertiaryContainer,
                 )
                 Text(
                     modifier = Modifier.padding(start = padding8),
@@ -73,7 +73,7 @@ fun ConnectionBanner(
                         fontWeight = FontWeight.Bold,
                         fontSize = 16.sp
                     ),
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    color = MaterialTheme.colorScheme.onTertiaryContainer,
                 )
             }
         }

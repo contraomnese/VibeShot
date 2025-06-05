@@ -185,6 +185,7 @@ val dataModule = module {
     }
     single<SearchRepository> {
         SearchRepositoryImpl(
+            context = get(),
             key = BuildConfig.FLICKR_API_KEY,
             searchApi = get(),
             dispatcher = Dispatchers.IO

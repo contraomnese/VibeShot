@@ -115,7 +115,7 @@ class PhotosRepositoryImpl(
                 if (response.status == "ok") {
                     response.photoId
                 } else {
-                    "Error uploading photo"
+                    throw RequestUploadPhotoException(Throwable(response.msg))
                 }
 
             } catch (cause: Throwable) {

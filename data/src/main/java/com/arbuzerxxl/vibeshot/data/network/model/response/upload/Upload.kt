@@ -9,6 +9,9 @@ data class FlickrUploadResponse(
     @field:Element(name = "photoid", required = false)
     var photoId: String? = null,
 
+    @field:Element(name = "msg", required = false)
+    var msg: String? = null,
+
     @field:Attribute(name = "stat", required = false)
     var status: String? = null
 )

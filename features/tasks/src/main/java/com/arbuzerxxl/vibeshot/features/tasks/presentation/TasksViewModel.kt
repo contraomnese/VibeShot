@@ -56,8 +56,8 @@ internal data class TasksUiState(
     val selectedPictureFileUrl: Uri? = null,
     val selectedPicture: ImageBitmap? = null,
     val authState: AuthState.Authenticated? = null,
-    val photoId: String? = null,
-    val expandedTaskGeneratorPanel: Boolean = true
+    val photoUploadStatus: PhotoUploadStatus = PhotoUploadStatus.Idle,
+    val isExpandedTaskGeneratorPanel: Boolean = true,
 ) {
     fun selectionMoodTitle(): String = categoriesForTaskGeneration!!.moods[onSelectionMood].title
     fun selectionSeasonTitle(): String = categoriesForTaskGeneration!!.seasons[onSelectionSeason].title
@@ -67,12 +67,20 @@ internal data class TasksUiState(
 @Immutable
 internal sealed class TasksEvent {
     data object RefreshTaskClicked : TasksEvent()
-    data object GenerateTaskClicked: TasksEvent()
-    data object PublishClicked: TasksEvent()
-    data class MoodClicked(val title: String): TasksEvent()
-    data class SeasonClicked(val title: String): TasksEvent()
-    data class TopicClicked(val title: String): TasksEvent()
-    data class ReceivePhotoTaskIntent(val intent: PhotoTaskIntent): TasksEvent()
+    data object GenerateTaskClicked : TasksEvent()
+    data object PublishClicked : TasksEvent()
+    data class MoodClicked(val title: String) : TasksEvent()
+    data class SeasonClicked(val title: String) : TasksEvent()
+    data class TopicClicked(val title: String) : TasksEvent()
+    data class ReceivePhotoTaskIntent(val intent: PhotoTaskIntent) : TasksEvent()
+}
+
+@Immutable
+internal sealed interface PhotoUploadStatus {
+    data object Failed : PhotoUploadStatus
+    data object Success : PhotoUploadStatus
+    data object Loading : PhotoUploadStatus
+    data object Idle : PhotoUploadStatus
 }
 
 internal class TasksViewModel(
@@ -139,8 +147,7 @@ internal class TasksViewModel(
                         }
                     }
                 }
-            }
-            catch (e: Exception) {
+            } catch (e: Exception) {
                 _uiState.update { it.copy(isLoading = false, error = e.message) }
             }
         }
@@ -169,7 +176,8 @@ internal class TasksViewModel(
                 currentState.copy(
                     tasks = tasks.toPersistentList(),
                     currentTask = tasks.random(),
-                    expandedTaskGeneratorPanel = false
+                    isExpandedTaskGeneratorPanel = false,
+                    photoUploadStatus = PhotoUploadStatus.Idle
                 )
             }
         }
@@ -178,7 +186,10 @@ internal class TasksViewModel(
     private fun onMoodClick(title: String) {
         if (title != uiState.value.selectionMoodTitle()) {
             _uiState.update { currentState ->
-                currentState.copy(onSelectionMood = currentState.categoriesForTaskGeneration!!.moods.indexOfFirst { it.title == title }, tasks = null)
+                currentState.copy(
+                    onSelectionMood = currentState.categoriesForTaskGeneration!!.moods.indexOfFirst { it.title == title },
+                    tasks = null
+                )
             }
         }
     }
@@ -186,7 +197,10 @@ internal class TasksViewModel(
     private fun onSeasonClick(title: String) {
         if (title != uiState.value.selectionSeasonTitle()) {
             _uiState.update { currentState ->
-                currentState.copy(onSelectionSeason = currentState.categoriesForTaskGeneration!!.seasons.indexOfFirst { it.title == title }, tasks = null)
+                currentState.copy(
+                    onSelectionSeason = currentState.categoriesForTaskGeneration!!.seasons.indexOfFirst { it.title == title },
+                    tasks = null
+                )
             }
         }
     }
@@ -194,7 +208,10 @@ internal class TasksViewModel(
     private fun onTopicClick(title: String) {
         if (title != uiState.value.selectionTopicTitle()) {
             _uiState.update { currentState ->
-                currentState.copy(onSelectionTopic = currentState.categoriesForTaskGeneration!!.topics.indexOfFirst { it.title == title }, tasks = null)
+                currentState.copy(
+                    onSelectionTopic = currentState.categoriesForTaskGeneration!!.topics.indexOfFirst { it.title == title },
+                    tasks = null
+                )
             }
         }
     }
@@ -204,7 +221,8 @@ internal class TasksViewModel(
             currentState.copy(
                 currentTask = currentState.tasks?.random(),
                 selectedPicture = null,
-                selectedPictureFileUrl = null
+                selectedPictureFileUrl = null,
+                photoUploadStatus = PhotoUploadStatus.Idle
             )
         }
     }
@@ -214,23 +232,40 @@ internal class TasksViewModel(
             uiState.value.selectedPictureFileUrl?.let { url ->
                 viewModelScope.launch {
                     try {
+                        _uiState.update { currentState ->
+                            currentState.copy(
+                                photoUploadStatus = PhotoUploadStatus.Loading,
+                                isExpandedTaskGeneratorPanel = false
+                            )
+                        }
                         val photoId = photosRepository.uploadPhoto(
                             token = authState.user.token!!.accessToken,
                             tokenSecret = authState.user.token!!.accessTokenSecret,
                             photoUrl = url,
                             title = uiState.value.currentTask!!.task
                         )
+                        if (photoId != null) {
+                            _uiState.update { currentState ->
+                                currentState.copy(
+                                    currentTask = null,
+                                    selectedPictureFileUrl = null,
+                                    selectedPicture = null,
+                                    photoUploadStatus = PhotoUploadStatus.Success,
+                                )
+                            }
+                        }
+                    } catch (e: Exception) {
+                        updateError(error = "Failed to publish photo. Please try again.")
                         _uiState.update { currentState ->
                             currentState.copy(
-                                photoId = photoId,
-                                currentTask = null,
-                                selectedPictureFileUrl = null,
-                                selectedPicture = null,
+                                photoUploadStatus = PhotoUploadStatus.Failed
                             )
                         }
-                    }
-                    catch (e: Exception) {
-                        _uiState.update { it.copy(error = "Failed to publish photo. Please try again.") }
+                    } finally {
+                        delay(2000)
+                        _uiState.update { currentState ->
+                            currentState.copy(photoUploadStatus = PhotoUploadStatus.Idle)
+                        }
                     }
                 }
             }
@@ -335,9 +370,21 @@ internal class TasksViewModel(
     fun onChangeExpandedTaskGeneratorPanel() {
         _uiState.update { currentState ->
             currentState.copy(
-                expandedTaskGeneratorPanel = !currentState.expandedTaskGeneratorPanel
+                isExpandedTaskGeneratorPanel = !currentState.isExpandedTaskGeneratorPanel
             )
         }
+    }
+
+    private fun onResetUiState() {
+        viewModelScope.launch {
+            delay(5000)
+            _uiState.update { currentState ->
+                TasksUiState(
+                    tasks = currentState.tasks
+                )
+            }
+        }
+
     }
 }
 

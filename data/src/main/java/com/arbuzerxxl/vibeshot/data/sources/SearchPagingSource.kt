@@ -1,15 +1,18 @@
 package com.arbuzerxxl.vibeshot.data.sources
 
+import android.content.Context
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.arbuzerxxl.vibeshot.data.exceptions.RequestSearchPhotosFetchException
 import com.arbuzerxxl.vibeshot.data.mappers.toDomain
 import com.arbuzerxxl.vibeshot.data.network.api.FlickrSearchApi
 import com.arbuzerxxl.vibeshot.data.network.model.response.search.SearchResponse
+import com.arbuzerxxl.vibeshot.data.utils.NetworkUtils
 import com.arbuzerxxl.vibeshot.domain.models.interest.SearchResource
 import kotlinx.coroutines.CancellationException
 
 class SearchPagingSource(
+    private val context: Context,
     private val key: String,
     private val searchApi: FlickrSearchApi,
     private val query: String,
@@ -22,23 +25,34 @@ class SearchPagingSource(
     }
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, SearchResource> {
-        try {
+
+        if (!NetworkUtils(context).isInternetAvailable()) {
+            return LoadResult.Error(RequestSearchPhotosFetchException(Throwable("No internet connection")))
+        }
+
+        return try {
             val nextPageNumber = params.key ?: 1
-            val searchResponse = searchApi.searchByQuery(query = query, page = nextPageNumber, key = key, pageSize = params.loadSize)
+
+            val searchResponse = searchApi.searchByQuery(
+                query = query,
+                page = nextPageNumber,
+                key = key,
+                pageSize = params.loadSize
+            )
 
             val searchResources = when (searchResponse) {
                 is SearchResponse.Error -> throw RequestSearchPhotosFetchException(Throwable(searchResponse.message))
                 is SearchResponse.Success -> searchResponse
             }
 
-            return LoadResult.Page(
+            LoadResult.Page(
                 data = searchResources.photos.photo.map { it.toDomain() },
                 prevKey = null,
-                nextKey = if (searchResponse.photos.page == searchResponse.photos.pages) null else searchResponse.photos.page.plus(1)
+                nextKey = if (searchResponse.photos.page == searchResponse.photos.pages) null else searchResponse.photos.page + 1
             )
         } catch (cause: Throwable) {
             if (cause is CancellationException) throw cause
-            throw RequestSearchPhotosFetchException(cause)
+            LoadResult.Error(RequestSearchPhotosFetchException(cause))
         }
     }
 }

@@ -5,14 +5,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.arbuzerxxl.vibeshot.core.design.theme.padding4
 import com.arbuzerxxl.vibeshot.core.navigation.TopLevelDestination
 import com.arbuzerxxl.vibeshot.core.navigation.navigateSingleTopTo
+import com.arbuzerxxl.vibeshot.core.ui.widgets.ConnectionBanner
 import com.arbuzerxxl.vibeshot.core.ui.widgets.NavBar
 import com.arbuzerxxl.vibeshot.features.bottom_menu.navigation.BottomMenuNavigator
 import com.arbuzerxxl.vibeshot.features.bottom_menu.navigation.interestsNavigator
@@ -37,13 +40,15 @@ internal fun BottomMenuRoute(
 
     BottomMenuScreen(
         topLevelDestinations = uiState.topLevelDestinations,
-        externalNavigator = externalNavigator
+        externalNavigator = externalNavigator,
+        isNetworkConnected = uiState.isNetworkConnected
     )
 
 }
 
 @Composable
 internal fun BottomMenuScreen(
+    isNetworkConnected: Boolean,
     externalNavigator: BottomMenuNavigator,
     topLevelDestinations: ImmutableList<TopLevelDestination>,
 ) {
@@ -69,6 +74,12 @@ internal fun BottomMenuScreen(
                 tasks()
                 profile(externalNavigator::onLogOut)
             }
+            if (!isNetworkConnected)
+                ConnectionBanner(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = padding4)
+                )
         }
     }
 }

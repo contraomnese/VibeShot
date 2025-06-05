@@ -33,11 +33,12 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.arbuzerxxl.vibeshot.core.design.icon.VibeShotIcons
 import com.arbuzerxxl.vibeshot.core.design.theme.VibeShotThemePreview
-import com.arbuzerxxl.vibeshot.core.design.theme.cornerSize16
+import com.arbuzerxxl.vibeshot.core.design.theme.cornerSize8
 import com.arbuzerxxl.vibeshot.core.design.theme.itemHeight24
-import com.arbuzerxxl.vibeshot.core.design.theme.padding12
 import com.arbuzerxxl.vibeshot.core.design.theme.padding16
 import com.arbuzerxxl.vibeshot.core.design.theme.padding24
+import com.arbuzerxxl.vibeshot.core.design.theme.padding4
+import com.arbuzerxxl.vibeshot.core.design.theme.padding8
 import com.arbuzerxxl.vibeshot.core.ui.DevicePreviews
 import kotlinx.coroutines.delay
 
@@ -64,17 +65,17 @@ fun BoxScope.ErrorBanner(
     ) {
         Box(
             modifier
-                .padding(start = padding24, end = padding24, bottom = padding16)
-                .clip(RoundedCornerShape(cornerSize16))
-                .background(MaterialTheme.colorScheme.primaryContainer)
+                .padding(start = padding24, end = padding24, top = padding8)
+                .clip(RoundedCornerShape(cornerSize8))
+                .background(MaterialTheme.colorScheme.surfaceVariant)
                 .fillMaxWidth()
-                .alpha(0.8f)
+                .alpha(0.5f)
                 .zIndex(1f),
             contentAlignment = Alignment.Center
         ) {
             Row(
                 modifier = Modifier
-                    .padding(padding12)
+                    .padding(padding4)
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
@@ -83,7 +84,7 @@ fun BoxScope.ErrorBanner(
                     modifier = Modifier.size(itemHeight24),
                     imageVector = VibeShotIcons.Error,
                     contentDescription = message,
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Text(
                     modifier = Modifier.padding(horizontal = padding16),
@@ -96,7 +97,7 @@ fun BoxScope.ErrorBanner(
                     softWrap = true,
                     overflow = TextOverflow.Ellipsis,
                     textAlign = TextAlign.Center,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
         }
@@ -109,7 +110,6 @@ fun ErrorBannerPreview(modifier: Modifier = Modifier) {
     VibeShotThemePreview {
         Box(modifier = Modifier.fillMaxSize()) {
             ErrorBanner(
-                modifier = Modifier.align(Alignment.BottomCenter),
                 message = "Message error",
                 visible = true
             )
@@ -123,8 +123,6 @@ fun ErrorBannerWithLongErrorPreview(modifier: Modifier = Modifier) {
     VibeShotThemePreview {
         Box(modifier = Modifier.fillMaxSize()) {
             ErrorBanner(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter),
                 message = "Message error long long long long long long",
                 visible = true
             )

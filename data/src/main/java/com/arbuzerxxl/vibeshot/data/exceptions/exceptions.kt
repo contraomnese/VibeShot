@@ -1,21 +1,21 @@
 package com.arbuzerxxl.vibeshot.data.exceptions
 
-class RequestTokenFetchException(cause: Throwable): Throwable(cause = cause)
-class RequestTokenInvalidResponseException(cause: Throwable): Throwable(cause = cause)
-class RequestTokenInitializeException(cause: Throwable): Throwable(cause = cause)
-class AccessTokenFetchException(cause: Throwable): Throwable(cause = cause)
-class AccessTokenInvalidResponseException(cause: Throwable): Throwable(cause = cause)
+class RequestTokenFetchException(cause: Throwable): Exception(cause)
+class RequestTokenInvalidResponseException(cause: Throwable): Exception(cause)
+class RequestTokenInitializeException(cause: Throwable): Exception(cause)
+class AccessTokenFetchException(cause: Throwable): Exception(cause)
+class AccessTokenInvalidResponseException(cause: Throwable): Exception(cause)
 
-class RequestInterestsPhotosFetchException(cause: Throwable): Throwable(cause = cause)
+class RequestInterestsPhotosFetchException(cause: Throwable): Exception(cause)
 
-class RequestPhotosFetchException(cause: Throwable): Throwable(cause = cause)
-class RequestSearchPhotosFetchException(cause: Throwable): Throwable(cause = cause)
-class RequestPhotoSizesFetchException(cause: Throwable): Throwable(cause = cause)
-class RequestPhotoInfoFetchException(cause: Throwable): Throwable(cause = cause)
+class RequestPhotosFetchException(cause: Throwable): Exception(cause)
+class RequestSearchPhotosFetchException(cause: Throwable): Exception(cause)
+class RequestPhotoSizesFetchException(cause: Throwable): Exception(cause)
+class RequestPhotoInfoFetchException(cause: Throwable): Exception(cause)
 
-class RequestMoodInitializeException(cause: Throwable): Throwable(cause = cause)
-class RequestSeasonInitializeException(cause: Throwable): Throwable(cause = cause)
-class RequestTopicInitializeException(cause: Throwable): Throwable(cause = cause)
-class RequestPhotoTaskFetchException(cause: Throwable): Throwable(cause = cause)
+class RequestMoodInitializeException(cause: Throwable): Exception(cause)
+class RequestSeasonInitializeException(cause: Throwable): Exception(cause)
+class RequestTopicInitializeException(cause: Throwable): Exception(cause)
+class RequestPhotoTaskFetchException(cause: Throwable): Exception(cause)
 
-class RequestUploadPhotoException(cause: Throwable): Throwable(cause = cause)
+class RequestUploadPhotoException(cause: Throwable): Exception(cause)

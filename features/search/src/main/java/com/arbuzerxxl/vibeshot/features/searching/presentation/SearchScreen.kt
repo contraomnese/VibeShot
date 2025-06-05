@@ -5,7 +5,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -23,9 +22,7 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.arbuzerxxl.vibeshot.core.design.theme.VibeShotThemePreview
 import com.arbuzerxxl.vibeshot.core.design.theme.cornerSize2
-import com.arbuzerxxl.vibeshot.core.design.theme.padding16
 import com.arbuzerxxl.vibeshot.core.ui.DevicePreviews
-import com.arbuzerxxl.vibeshot.core.ui.widgets.ConnectionBanner
 import com.arbuzerxxl.vibeshot.core.ui.widgets.ErrorBanner
 import com.arbuzerxxl.vibeshot.core.ui.widgets.PhotoGrid
 import com.arbuzerxxl.vibeshot.core.ui.widgets.SearchTextField
@@ -74,12 +71,6 @@ internal fun SearchScreen(
         val refreshSearch = remember { { onSearchTriggered(searchQuery) } }
 
         when {
-            !uiState.isNetworkConnected -> ConnectionBanner(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = padding16)
-            )
-
             uiState.error != null -> ErrorBanner(
                 modifier = Modifier.align(Alignment.TopCenter),
                 message = stringResource(R.string.loading_error)
@@ -127,7 +118,6 @@ private fun SearchScreenPreview() {
             isLoading = true,
             error = null,
             data = flowOf(),
-            isNetworkConnected = true
         )
         SearchScreen(
             uiState = state, items = state.data.collectAsLazyPagingItems(),

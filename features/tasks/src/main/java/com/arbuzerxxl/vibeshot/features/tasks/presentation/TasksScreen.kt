@@ -40,6 +40,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -103,15 +104,16 @@ internal fun TasksScreen(
             .background(MaterialTheme.colorScheme.background),
         contentAlignment = Alignment.TopStart
     ) {
+
         when {
             uiState.isLoading -> LoadingIndicator(modifier = Modifier.align(Alignment.Center))
-            uiState.error != null -> ErrorBanner(message = uiState.error)
             else -> TaskContent(
                 uiState = uiState,
                 onEvent = onEvent,
                 onChangeExpandedTaskGeneratorPanel = onChangeExpandedTaskGeneratorPanel
             )
         }
+        if (uiState.error != null) ErrorBanner(message = uiState.error)
     }
 }
 
@@ -137,13 +139,16 @@ private fun TaskContent(
 
     val scrollState = rememberScrollState()
 
+
+
     uiState.categoriesForTaskGeneration?.let { categories ->
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(scrollState)
-                .padding(horizontal = padding8)
+                .padding(horizontal = padding8),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             TaskGeneratorPanel(
                 categoryResource = categories,
@@ -153,7 +158,7 @@ private fun TaskContent(
                 onMoodClicked = moodClickEvent,
                 onSeasonClicked = seasonClickEvent,
                 onTopicClicked = topicClickEvent,
-                isExpanded = uiState.expandedTaskGeneratorPanel,
+                isExpanded = uiState.isExpandedTaskGeneratorPanel,
                 onExpandedChange = onChangeExpandedTaskGeneratorPanel
             )
             TaskGeneratorButton(
@@ -162,19 +167,42 @@ private fun TaskContent(
                 enabled = uiState.tasks != null
             )
             uiState.currentTask?.let {
-                TaskBox(task = it.task)
-                CameraContent(
-                    uiState = uiState,
-                    onEvent = onEvent
-                )
+                when (uiState.photoUploadStatus) {
+                    PhotoUploadStatus.Idle -> {
+                        TaskBox(task = it.task)
+                        CameraContent(
+                            uiState = uiState,
+                            onEvent = onEvent
+                        )
+                    }
+                    PhotoUploadStatus.Loading -> Box(
+                        modifier = modifier
+                            .size(64.dp)
+                            .padding(12.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        LoadingIndicator()
+                    }
+                    PhotoUploadStatus.Failed -> PhotoUploadStatus(
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .padding(vertical = padding24),
+                        iconVector = VibeShotIcons.Error,
+                        boxColor = MaterialTheme.colorScheme.error,
+                        contentDescription = stringResource(R.string.loading_error),
+                        onExpandedChange = onChangeExpandedTaskGeneratorPanel
+                    )
+                    PhotoUploadStatus.Success -> PhotoUploadStatus(
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .padding(vertical = padding24),
+                        iconVector = VibeShotIcons.Check,
+                        boxColor = MaterialTheme.colorScheme.tertiary,
+                        contentDescription = stringResource(R.string.photo_upload_success),
+                        onExpandedChange = onChangeExpandedTaskGeneratorPanel
+                    )
+                }
             }
-            PhotoUploadStatus(
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(vertical = padding24),
-                photoId = uiState.photoId,
-                onExpandedChange = onChangeExpandedTaskGeneratorPanel
-            )
         }
     } ?: TasksContentEmpty()
 }
@@ -291,23 +319,23 @@ private fun SelectedPictureContent(picture: ImageBitmap, onPublishClicked: () ->
 @Composable
 private fun PhotoUploadStatus(
     modifier: Modifier,
-    photoId: String?,
     onExpandedChange: () -> Unit,
+    iconVector: ImageVector,
+    contentDescription: String,
+    boxColor: Color,
 ) {
 
-    var showSuccess by remember { mutableStateOf(false) }
+    var showUploadStatus by remember { mutableStateOf(false) }
 
-    LaunchedEffect(photoId) {
-        if (photoId != null) {
-            showSuccess = true
-            delay(3000)
-            showSuccess = false
-            delay(2000)
-            onExpandedChange()
-        }
+    LaunchedEffect(Unit) {
+        showUploadStatus = true
+        delay(3000)
+        showUploadStatus = false
+        delay(2000)
+        onExpandedChange()
     }
 
-    val transition = updateTransition(targetState = showSuccess, label = "PhotoUploadTransition")
+    val transition = updateTransition(targetState = showUploadStatus, label = "PhotoUploadTransition")
 
     val scale by transition.animateFloat(
         label = "ScaleAnimation",
@@ -323,23 +351,21 @@ private fun PhotoUploadStatus(
         }
     ) { isVisible -> if (isVisible) 1f else 0f }
 
-    if (showSuccess || transition.currentState) {
-        Box(
-            modifier = modifier
-                .size(64.dp)
-                .scale(scale)
-                .alpha(alpha)
-                .background(Color(0xFF4CAF50), shape = CircleShape)
-                .padding(12.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = VibeShotIcons.Check,
-                contentDescription = stringResource(R.string.photo_upload_success),
-                tint = Color.White,
-                modifier = Modifier.size(32.dp)
-            )
-        }
+    Box(
+        modifier = modifier
+            .size(64.dp)
+            .scale(scale)
+            .alpha(alpha)
+            .background(color = boxColor, shape = CircleShape)
+            .padding(12.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            imageVector = iconVector,
+            contentDescription = contentDescription,
+            tint = Color.White,
+            modifier = Modifier.size(32.dp)
+        )
     }
 }
 
@@ -348,18 +374,12 @@ private fun PhotoUploadStatus(
 private fun TasksScreenEmptyPreview() {
     VibeShotThemePreview {
         TasksScreen(
-            uiState = TasksUiState(
-                categoriesForTaskGeneration = null,
-                tasks = null,
-                currentTask = null,
-                photoId = ""
-            ),
+            uiState = TasksUiState(),
             onEvent = {},
             onChangeExpandedTaskGeneratorPanel = {}
         )
     }
 }
-
 
 @DevicePreviews
 @Composable
@@ -377,8 +397,38 @@ private fun TasksScreenPreview() {
                     seasons = seasonResource,
                     topics = topicResource
                 ),
-                tasks = null, onSelectionMood = 1, onSelectionSeason = 2, onSelectionTopic = 1,
-                currentTask = TaskResource("Example task"), photoId = "1234"
+                tasks = null,
+                onSelectionMood = 1,
+                onSelectionSeason = 2,
+                onSelectionTopic = 1,
+                currentTask = TaskResource("Example task"),
+            ),
+            onEvent = {},
+            onChangeExpandedTaskGeneratorPanel = {}
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun TasksScreenUploadStatusSuccessPreview() {
+    VibeShotThemePreview {
+
+        val moodResource = List(6) { MoodResource("example mood") }.toImmutableList()
+        val seasonResource = List(4) { SeasonResource("example season") }.toImmutableList()
+        val topicResource = List(8) { TopicResource("example topic") }.toImmutableList()
+
+        TasksScreen(
+            uiState = TasksUiState(
+                categoriesForTaskGeneration = TaskCategoryResource(
+                    moods = moodResource,
+                    seasons = seasonResource,
+                    topics = topicResource
+                ),
+                tasks = null,
+                currentTask = TaskResource("Example task"),
+                isExpandedTaskGeneratorPanel = false,
+                photoUploadStatus = PhotoUploadStatus.Loading
             ),
             onEvent = {},
             onChangeExpandedTaskGeneratorPanel = {}

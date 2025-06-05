@@ -83,6 +83,7 @@ val elevation4 = 4.dp
 val zero = 0.dp
 
 val cornerSize2 = 2.dp
+val cornerSize8 = 8.dp
 val cornerSize16 = 16.dp
 val cornerSize28 = 28.dp
 
