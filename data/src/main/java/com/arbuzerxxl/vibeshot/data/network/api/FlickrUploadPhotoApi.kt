@@ -15,6 +15,8 @@ interface FlickrUploadPhotoApi {
     suspend fun uploadPhoto(
         @Header("Authorization") authorizationHeader: String,
         @Part photo: MultipartBody.Part,
-        @Part("title") title: RequestBody
+        @Part("title") title: RequestBody,
+        @Part("description") description: RequestBody,
+        @Part("tags") tags: RequestBody
     ): FlickrUploadResponse
 }

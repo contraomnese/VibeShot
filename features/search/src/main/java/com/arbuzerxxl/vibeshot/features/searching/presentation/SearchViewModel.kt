@@ -5,68 +5,86 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import com.arbuzerxxl.vibeshot.core.ui.utils.ErrorMonitor
 import com.arbuzerxxl.vibeshot.domain.models.interest.SearchResource
 import com.arbuzerxxl.vibeshot.domain.repository.SearchRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.coroutines.cancellation.CancellationException
 
+private const val UNKNOWN_ERROR = "Unknown error"
 
 @Immutable
 internal data class SearchUiState(
     val isLoading: Boolean = false,
-    val error: String? = null,
     val data: Flow<PagingData<SearchResource>> = flowOf(),
 )
 
 internal class SearchViewModel(
     private val searchRepository: SearchRepository,
+    private val errorMonitor: ErrorMonitor,
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(SearchUiState())
+    private val _uiState = MutableStateFlow(SearchUiState(isLoading = true))
 
-    val uiState: StateFlow<SearchUiState> = _uiState.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = SearchUiState(isLoading = false)
-    )
+    val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
 
     init {
-        val searchData = searchRepository
-            .data
-            .cachedIn(viewModelScope)
+        viewModelScope.launch {
+            try {
+                val searchData = searchRepository
+                    .data
+                    .cachedIn(viewModelScope)
 
-        _uiState.update { currentState ->
-            currentState.copy(
-                isLoading = false,
-                data = searchData
-            )
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        isLoading = false,
+                        data = searchData
+                    )
+                }
+            } catch (e: Exception) {
+                _uiState.update { it.copy(isLoading = false) }
+                errorMonitor.tryEmit(e.message ?: UNKNOWN_ERROR)
+            }
         }
     }
 
     fun onSearch(query: String) {
-        try {
-            viewModelScope.launch {
+
+        viewModelScope.launch {
+            try {
                 _uiState.update { it.copy(isLoading = true) }
                 searchRepository.search(query)
                 delay(2000)
                 _uiState.update { it.copy(isLoading = false) }
             }
-        } catch (e: Exception) {
-            _uiState.update { it.copy(isLoading = false, error = e.message) }
+            catch (e: CancellationException) {
+                throw e
+            }
+            catch (e: Exception) {
+                _uiState.update { it.copy(isLoading = false) }
+                errorMonitor.tryEmit(e.message ?: UNKNOWN_ERROR)
+            }
         }
 
     }
 
     fun clearSearchData() {
         viewModelScope.launch {
-            searchRepository.clear()
+            try {
+                searchRepository.clear()
+            }
+            catch (e: CancellationException) {
+                throw e
+            }catch (e: Exception) {
+                errorMonitor.tryEmit(e.message ?: UNKNOWN_ERROR)
+            }
         }
     }
 }

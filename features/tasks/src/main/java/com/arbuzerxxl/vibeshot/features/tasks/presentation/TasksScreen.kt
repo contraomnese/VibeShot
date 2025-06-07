@@ -10,16 +10,12 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -57,11 +53,10 @@ import com.arbuzerxxl.vibeshot.core.design.theme.padding24
 import com.arbuzerxxl.vibeshot.core.design.theme.padding32
 import com.arbuzerxxl.vibeshot.core.design.theme.padding8
 import com.arbuzerxxl.vibeshot.core.ui.DevicePreviews
-import com.arbuzerxxl.vibeshot.core.ui.widgets.BaseButton
-import com.arbuzerxxl.vibeshot.core.ui.widgets.ErrorBanner
+import com.arbuzerxxl.vibeshot.core.ui.widgets.FormTextField
 import com.arbuzerxxl.vibeshot.core.ui.widgets.LoadingIndicator
 import com.arbuzerxxl.vibeshot.core.ui.widgets.TaskBox
-import com.arbuzerxxl.vibeshot.core.ui.widgets.TaskGeneratorButton
+import com.arbuzerxxl.vibeshot.core.ui.widgets.TaskGeneratorBoard
 import com.arbuzerxxl.vibeshot.core.ui.widgets.TaskGeneratorPanel
 import com.arbuzerxxl.vibeshot.domain.models.photo_tasks.MoodResource
 import com.arbuzerxxl.vibeshot.domain.models.photo_tasks.SeasonResource
@@ -85,7 +80,7 @@ internal fun TasksRoute(
         modifier = modifier,
         uiState = uiState,
         onEvent = viewmodel::onEvent,
-        onChangeExpandedTaskGeneratorPanel = viewmodel::onChangeExpandedTaskGeneratorPanel
+        onChangeExpandedTaskGeneratorPanel = viewmodel::onExpandTaskGeneratorPanel
     )
 }
 
@@ -107,26 +102,51 @@ internal fun TasksScreen(
 
         when {
             uiState.isLoading -> LoadingIndicator(modifier = Modifier.align(Alignment.Center))
-            else -> TaskContent(
+            else -> TasksContent(
                 uiState = uiState,
                 onEvent = onEvent,
                 onChangeExpandedTaskGeneratorPanel = onChangeExpandedTaskGeneratorPanel
             )
         }
-        if (uiState.error != null) ErrorBanner(message = uiState.error)
+
     }
 }
 
 @Composable
-private fun TaskContent(
+private fun TasksContent(
     modifier: Modifier = Modifier,
     uiState: TasksUiState,
     onEvent: (TasksEvent) -> Unit,
     onChangeExpandedTaskGeneratorPanel: () -> Unit,
 ) {
+    val currentContext = LocalContext.current
 
-    val onRefreshTaskEvent = remember { { onEvent(TasksEvent.RefreshTaskClicked) } }
-    val onGenerateTaskEvent = remember { { onEvent(TasksEvent.GenerateTaskClicked) } }
+    val intentEvent = remember { { intent: PhotoTaskIntent -> onEvent(TasksEvent.ReceivePhotoTaskIntent(intent)) } }
+    val pickImageFromAlbumLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+            val intent = PhotoTaskIntent.OnFinishPickingImageWith(
+                currentContext,
+                uri
+            )
+            intentEvent(intent)
+        }
+    val permissionLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { permissionGranted ->
+            if (permissionGranted) {
+                intentEvent(PhotoTaskIntent.OnPermissionGrantedWith(currentContext))
+            } else {
+                intentEvent(PhotoTaskIntent.OnPermissionDenied)
+            }
+        }
+
+    val cameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { isImageSaved ->
+        if (isImageSaved) {
+            intentEvent(PhotoTaskIntent.OnImageSavedWith(currentContext))
+        } else {
+            intentEvent(PhotoTaskIntent.OnImageSavingCanceled)
+        }
+    }
+
     val moodClickEvent = remember {
         { title: String -> onEvent(TasksEvent.MoodClicked(title)) }
     }
@@ -136,10 +156,30 @@ private fun TaskContent(
     val topicClickEvent = remember {
         { title: String -> onEvent(TasksEvent.TopicClicked(title)) }
     }
+    val publishTitleChangeEvent = remember {
+        { title: String -> onEvent(TasksEvent.PublishTitleChange(title)) }
+    }
+    val publishDescriptionChangeEvent = remember {
+        { description: String -> onEvent(TasksEvent.PublishDescriptionChange(description)) }
+    }
+
+    val onGenerateTaskEvent = remember { { onEvent(TasksEvent.GenerateTaskClicked) } }
+    val onRefreshTaskEvent = remember { { onEvent(TasksEvent.RefreshTaskClicked) } }
+    val onCapturePhotoEvent = remember { { permissionLauncher.launch(Manifest.permission.CAMERA) } }
+    val onTakePhotoFromGalleryEvent = remember { {
+        val mediaRequest = PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+        pickImageFromAlbumLauncher.launch(mediaRequest)
+    } }
+    val onPublishPhotoEvent = remember { { onEvent(TasksEvent.PublishClicked) } }
+
+
+    LaunchedEffect(uiState.selectedPictureTempFileUrl) {
+        uiState.selectedPictureTempFileUrl?.let {
+            cameraLauncher.launch(it)
+        }
+    }
 
     val scrollState = rememberScrollState()
-
-
 
     uiState.categoriesForTaskGeneration?.let { categories ->
 
@@ -150,7 +190,7 @@ private fun TaskContent(
                 .padding(horizontal = padding8),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            TaskGeneratorPanel(
+            TaskGeneratorBoard(
                 categoryResource = categories,
                 currentMood = uiState.selectionMoodTitle(),
                 currentSeason = uiState.selectionSeasonTitle(),
@@ -161,48 +201,61 @@ private fun TaskContent(
                 isExpanded = uiState.isExpandedTaskGeneratorPanel,
                 onExpandedChange = onChangeExpandedTaskGeneratorPanel
             )
-            TaskGeneratorButton(
-                onClick = onGenerateTaskEvent,
+            TaskGeneratorPanel(
+                modifier = Modifier.fillMaxWidth(),
+                onGenerateTaskClick = onGenerateTaskEvent,
                 onRefreshTaskClick = onRefreshTaskEvent,
-                enabled = uiState.tasks != null
+                onCapturePictureClick = onCapturePhotoEvent,
+                onTakePictureClick = onTakePhotoFromGalleryEvent,
+                onPublishPictureClick = onPublishPhotoEvent,
+                isRefreshTaskButtonEnabled = uiState.tasks != null,
+                isCapturePhotoButtonEnabled = uiState.currentTask != null,
+                isTakePhotoButtonEnabled = uiState.currentTask != null,
+                isPublishPhotoButtonEnabled = uiState.selectedPicture != null,
             )
             uiState.currentTask?.let {
-                when (uiState.photoUploadStatus) {
-                    PhotoUploadStatus.Idle -> {
-                        TaskBox(task = it.task)
-                        CameraContent(
-                            uiState = uiState,
-                            onEvent = onEvent
-                        )
-                    }
-                    PhotoUploadStatus.Loading -> Box(
-                        modifier = modifier
-                            .size(64.dp)
-                            .padding(12.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        LoadingIndicator()
-                    }
-                    PhotoUploadStatus.Failed -> PhotoUploadStatus(
-                        modifier = Modifier
-                            .align(Alignment.CenterHorizontally)
-                            .padding(vertical = padding24),
-                        iconVector = VibeShotIcons.Error,
-                        boxColor = MaterialTheme.colorScheme.error,
-                        contentDescription = stringResource(R.string.loading_error),
-                        onExpandedChange = onChangeExpandedTaskGeneratorPanel
-                    )
-                    PhotoUploadStatus.Success -> PhotoUploadStatus(
-                        modifier = Modifier
-                            .align(Alignment.CenterHorizontally)
-                            .padding(vertical = padding24),
-                        iconVector = VibeShotIcons.Check,
-                        boxColor = MaterialTheme.colorScheme.tertiary,
-                        contentDescription = stringResource(R.string.photo_upload_success),
-                        onExpandedChange = onChangeExpandedTaskGeneratorPanel
-                    )
-                }
+                TaskBox(task = it.task)
             }
+            when (uiState.photoUploadStatus) {
+                PhotoUploadStatus.Idle -> uiState.selectedPicture?.let {
+                    FormTextField(
+                        value = uiState.publishTitle,
+                        onChange = publishTitleChangeEvent,
+                        placeholder = "Title"
+                    )
+                    FormTextField(
+                        value = uiState.publishDescription,
+                        onChange = publishDescriptionChangeEvent,
+                        placeholder = "Description"
+                    )
+                    SelectedPictureContent(picture = it)
+                }
+                PhotoUploadStatus.Loading -> Box(
+                    modifier = modifier
+                        .size(64.dp)
+                        .padding(12.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    LoadingIndicator()
+                }
+                PhotoUploadStatus.Failed -> PhotoUploadStatus(
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .padding(vertical = padding24),
+                    iconVector = VibeShotIcons.Error,
+                    boxColor = MaterialTheme.colorScheme.error,
+                    contentDescription = stringResource(R.string.loading_error),
+                )
+                PhotoUploadStatus.Success -> PhotoUploadStatus(
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .padding(vertical = padding24),
+                    iconVector = VibeShotIcons.Check,
+                    boxColor = MaterialTheme.colorScheme.tertiary,
+                    contentDescription = stringResource(R.string.photo_upload_success),
+                )
+            }
+
         }
     } ?: TasksContentEmpty()
 }
@@ -225,93 +278,14 @@ private fun TasksContentEmpty(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun CameraContent(
-    modifier: Modifier = Modifier,
-    uiState: TasksUiState,
-    onEvent: (TasksEvent) -> Unit,
-) {
-
-    val currentContext = LocalContext.current
-
-    val intentEvent = remember {
-        { intent: PhotoTaskIntent -> onEvent(TasksEvent.ReceivePhotoTaskIntent(intent)) }
-    }
-    val onPublishClicked = remember { { onEvent(TasksEvent.PublishClicked) } }
-
-    val pickImageFromAlbumLauncher =
-        rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-            val intent = PhotoTaskIntent.OnFinishPickingImageWith(
-                currentContext,
-                uri
-            )
-            intentEvent(intent)
-        }
-
-    val cameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { isImageSaved ->
-        if (isImageSaved) {
-            intentEvent(PhotoTaskIntent.OnImageSavedWith(currentContext))
-        } else {
-            intentEvent(PhotoTaskIntent.OnImageSavingCanceled)
-        }
-    }
-
-    val permissionLauncher =
-        rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { permissionGranted ->
-            if (permissionGranted) {
-                intentEvent(PhotoTaskIntent.OnPermissionGrantedWith(currentContext))
-            } else {
-                intentEvent(PhotoTaskIntent.OnPermissionDenied)
-            }
-        }
-
-    LaunchedEffect(uiState.selectedPictureTempFileUrl) {
-        uiState.selectedPictureTempFileUrl?.let {
-            cameraLauncher.launch(it)
-        }
-    }
-
-    Row(
-        modifier = modifier
-            .fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        BaseButton(
-            modifier = Modifier.weight(1f),
-            onClicked = {
-                permissionLauncher.launch(Manifest.permission.CAMERA)
-            }, title = "Take a photo"
-        )
-        Spacer(modifier = Modifier.width(16.dp))
-        BaseButton(
-            modifier = Modifier.weight(1f),
-            onClicked = {
-                val mediaRequest = PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                pickImageFromAlbumLauncher.launch(mediaRequest)
-            }, title = "Pick a picture"
-        )
-    }
-    uiState.selectedPicture?.let {
-        SelectedPictureContent(picture = it, onPublishClicked = onPublishClicked)
-    }
-}
-
-@Composable
-private fun SelectedPictureContent(picture: ImageBitmap, onPublishClicked: () -> Unit) {
+private fun SelectedPictureContent(picture: ImageBitmap) {
     Column {
         Image(
             modifier = Modifier
-                .padding(padding16)
                 .clip(RoundedCornerShape(cornerSize16)),
             bitmap = picture,
             contentDescription = null,
             contentScale = ContentScale.FillWidth
-        )
-        BaseButton(
-            modifier = Modifier
-                .padding(vertical = padding16)
-                .fillMaxWidth(),
-            onClicked = onPublishClicked,
-            title = "Publish"
         )
     }
 }
@@ -319,7 +293,6 @@ private fun SelectedPictureContent(picture: ImageBitmap, onPublishClicked: () ->
 @Composable
 private fun PhotoUploadStatus(
     modifier: Modifier,
-    onExpandedChange: () -> Unit,
     iconVector: ImageVector,
     contentDescription: String,
     boxColor: Color,
@@ -329,10 +302,8 @@ private fun PhotoUploadStatus(
 
     LaunchedEffect(Unit) {
         showUploadStatus = true
-        delay(3000)
+        delay(5000)
         showUploadStatus = false
-        delay(2000)
-        onExpandedChange()
     }
 
     val transition = updateTransition(targetState = showUploadStatus, label = "PhotoUploadTransition")

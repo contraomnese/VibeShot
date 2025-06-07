@@ -15,7 +15,9 @@ class PostNetworkParams(
     private val consumerKey: String,
     private val consumerSecret: String,
     private val tokenSecret: String,
-    private val title: String
+    private val title: String,
+    private val description: String,
+    private val tags: String,
 ) {
     companion object {
         const val oauthVersion = "1.0"
@@ -50,6 +52,8 @@ class PostNetworkParams(
         params["oauth_token"] = token
         params["oauth_version"] = oauthVersion
         params["title"] = title
+        params["description"] = description
+        params["tags"] = tags
 
         val paramString = params.entries.joinToString("&") { (key, value) ->
             "${key.rfc3986Encode()}=${value.rfc3986Encode()}"

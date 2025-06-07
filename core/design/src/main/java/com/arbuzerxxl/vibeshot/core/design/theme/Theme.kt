@@ -33,7 +33,7 @@ private val DarkColorScheme = darkColorScheme(
 
     error = FluorescentRed,
     onError = Color.Black,
-    errorContainer = RichRed,
+    errorContainer = MutedRed,
     onErrorContainer = Color.White,
 
     tertiary = ScreenGlow,

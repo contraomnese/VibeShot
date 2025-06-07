@@ -14,7 +14,8 @@ val detailsModule = module {
             photosRepository = get(),
             searchRepository = get(),
             parentDestination = destination,
-            networkMonitor = get()
+            networkMonitor = get(),
+            errorMonitor = get()
         )
     }
 }

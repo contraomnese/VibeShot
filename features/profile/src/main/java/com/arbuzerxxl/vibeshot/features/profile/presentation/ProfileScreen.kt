@@ -21,9 +21,7 @@ import com.arbuzerxxl.vibeshot.core.ui.widgets.BaseButton
 import com.arbuzerxxl.vibeshot.core.ui.widgets.LoadingIndicator
 import com.arbuzerxxl.vibeshot.ui.R
 import org.koin.androidx.compose.koinViewModel
-import org.koin.core.annotation.KoinExperimentalAPI
 
-@OptIn(KoinExperimentalAPI::class)
 @Composable
 internal fun ProfileRoute(
     modifier: Modifier = Modifier,
@@ -55,9 +53,9 @@ internal fun ProfileScreen(
             .background(MaterialTheme.colorScheme.background),
         contentAlignment = Alignment.Center
     ) {
-        when (uiState) {
-            ProfileUiState.Loading -> LoadingIndicator()
-            is ProfileUiState.Success -> Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        when {
+            uiState.isLoading -> LoadingIndicator()
+            else -> Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
                     text = "Hello, ${uiState.username}",
                     style = MaterialTheme.typography.titleLarge,
@@ -81,7 +79,7 @@ internal fun ProfileScreen(
 fun ProfileScreenPreview() {
     VibeShotTheme {
         ProfileScreen(
-            uiState = ProfileUiState.Success(username = "Sergey Belov"),
+            uiState = ProfileUiState(username = "Sergey Belov"),
             onLogOutClicked = {},
             logOut = {}
         )

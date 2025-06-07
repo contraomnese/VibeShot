@@ -11,19 +11,25 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 
+
+sealed interface NetworkStatus {
+    data object Connected : NetworkStatus
+    data object Disconnected : NetworkStatus
+}
+
 @SuppressLint("MissingPermission")
 class NetworkMonitor(context: Context) {
 
     private val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
-    val isConnected: Flow<Boolean> = callbackFlow {
+    val networkStatus: Flow<NetworkStatus> = callbackFlow {
         val callback = object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
-                trySend(true)
+                trySend(NetworkStatus.Connected)
             }
 
             override fun onLost(network: Network) {
-                trySend(false)
+                trySend(NetworkStatus.Disconnected)
             }
         }
 
@@ -37,9 +43,10 @@ class NetworkMonitor(context: Context) {
         }
     }.distinctUntilChanged()
 
-    private fun checkInternet(): Boolean {
+    private fun checkInternet(): NetworkStatus {
         val activeNetwork = connectivityManager.activeNetwork
         val capabilities = connectivityManager.getNetworkCapabilities(activeNetwork)
-        return capabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
+        return if (capabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true) NetworkStatus.Connected
+        else NetworkStatus.Disconnected
     }
 }

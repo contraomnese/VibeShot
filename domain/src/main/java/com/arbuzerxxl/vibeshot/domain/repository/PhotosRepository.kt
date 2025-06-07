@@ -10,5 +10,5 @@ interface PhotosRepository {
 
     suspend fun getSizes(photoId: String): PhotoSizesResource
 
-    suspend fun uploadPhoto(token: String, tokenSecret: String, photoUrl: Uri, title: String): String?
+    suspend fun uploadPhoto(token: String, tokenSecret: String, photoUrl: Uri, title: String, description: String): String?
 }

@@ -78,7 +78,13 @@ class PhotosRepositoryImpl(
         }
     }
 
-    override suspend fun uploadPhoto(token: String, tokenSecret: String, photoUrl: Uri, title: String): String? =
+    override suspend fun uploadPhoto(
+        token: String,
+        tokenSecret: String,
+        photoUrl: Uri,
+        title: String,
+        description: String,
+    ): String? =
         withContext(dispatcher) {
             try {
 
@@ -94,6 +100,7 @@ class PhotosRepositoryImpl(
                 val nonce = UUID.randomUUID().toString()
                 val timestamp = System.currentTimeMillis().toString()
                 val postMethod = "services/upload/"
+                val tags = "VibeShotApp"
 
                 val params = PostNetworkParams(
                     baseUrl = apiBaseUrl + postMethod,
@@ -103,13 +110,17 @@ class PhotosRepositoryImpl(
                     consumerKey = apiKey,
                     consumerSecret = apiSecret,
                     tokenSecret = tokenSecret,
-                    title = title
+                    title = title,
+                    description = description,
+                    tags = tags
                 )
 
                 val response = uploadApi.uploadPhoto(
                     photo = photo,
                     authorizationHeader = params.authorizationHeader,
-                    title = title.toRequestBody("text/plain".toMediaTypeOrNull())
+                    title = title.toRequestBody("text/plain".toMediaTypeOrNull()),
+                    description = description.toRequestBody("text/plain".toMediaTypeOrNull()),
+                    tags = tags.toRequestBody("text/plain".toMediaTypeOrNull()),
                 )
 
                 if (response.status == "ok") {

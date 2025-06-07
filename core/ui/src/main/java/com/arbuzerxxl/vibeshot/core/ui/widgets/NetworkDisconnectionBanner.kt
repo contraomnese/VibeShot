@@ -1,79 +1,71 @@
 package com.arbuzerxxl.vibeshot.core.ui.widgets
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.arbuzerxxl.vibeshot.core.design.icon.VibeShotIcons
 import com.arbuzerxxl.vibeshot.core.design.theme.VibeShotThemePreview
-import com.arbuzerxxl.vibeshot.core.design.theme.cornerSize8
-import com.arbuzerxxl.vibeshot.core.design.theme.padding16
+import com.arbuzerxxl.vibeshot.core.design.theme.padding24
 import com.arbuzerxxl.vibeshot.core.design.theme.padding4
-import com.arbuzerxxl.vibeshot.core.design.theme.padding8
+import com.arbuzerxxl.vibeshot.core.design.theme.padding40
 import com.arbuzerxxl.vibeshot.core.ui.DevicePreviews
 import com.arbuzerxxl.vibeshot.ui.R
 
 @Composable
-fun ConnectionBanner(
-    modifier: Modifier,
+fun BoxScope.NetworkDisconnectionBanner(
+    modifier: Modifier = Modifier,
 ) {
     AnimatedVisibility(
-        modifier = modifier.alpha(0.5f),
+        modifier = modifier.alpha(0.8f).align(Alignment.TopEnd).padding(top = padding40, end = padding24),
         visible = true,
-        enter = slideInVertically { -it },
-        exit = slideOutVertically { -it }
+        enter = slideInHorizontally { -it },
+        exit = slideOutHorizontally { -it }
     ) {
         Box(
             Modifier
-                .padding(horizontal = 24.dp)
-                .clip(RoundedCornerShape(cornerSize8))
+                .clip(CircleShape)
                 .background(MaterialTheme.colorScheme.tertiaryContainer)
-                .fillMaxWidth()
                 .zIndex(1f),
             contentAlignment = Alignment.Center
         ) {
             Row(
                 modifier = Modifier
                     .padding(padding4)
-                    .fillMaxWidth(),
+                    .wrapContentWidth(),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    imageVector = VibeShotIcons.InternetDisabled,
+                    imageVector = VibeShotIcons.SignalCellularOff,
                     contentDescription = stringResource(
                         id = R.string.no_internet_connection_error,
                     ),
                     tint = MaterialTheme.colorScheme.onTertiaryContainer,
                 )
-                Text(
-                    modifier = Modifier.padding(start = padding8),
-                    text = stringResource(R.string.no_internet_connection_error),
-                    style = MaterialTheme.typography.labelMedium.copy(
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp
+                Icon(
+                    imageVector = VibeShotIcons.WifiOff,
+                    contentDescription = stringResource(
+                        id = R.string.no_internet_connection_error,
                     ),
-                    color = MaterialTheme.colorScheme.onTertiaryContainer,
+                    tint = MaterialTheme.colorScheme.onTertiaryContainer,
                 )
             }
         }
@@ -82,14 +74,10 @@ fun ConnectionBanner(
 
 @DevicePreviews
 @Composable
-private fun ConnectionBannerPreview(modifier: Modifier = Modifier) {
+private fun ConnectionBannerPreview() {
     VibeShotThemePreview {
         Box(modifier = Modifier.fillMaxSize()) {
-            ConnectionBanner(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = padding16),
-            )
+            NetworkDisconnectionBanner()
         }
 
     }

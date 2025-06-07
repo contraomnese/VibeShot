@@ -14,15 +14,19 @@ import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.material.icons.outlined.Exposure
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.FileUpload
+import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material.icons.outlined.Interests
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.PhotoCamera
+import androidx.compose.material.icons.outlined.Publish
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.ShutterSpeed
 import androidx.compose.material.icons.outlined.SignalCellularConnectedNoInternet0Bar
+import androidx.compose.material.icons.outlined.SignalCellularOff
 import androidx.compose.material.icons.outlined.Straighten
 import androidx.compose.material.icons.outlined.Visibility
+import androidx.compose.material.icons.outlined.WifiOff
 import androidx.compose.material.icons.rounded.ArrowDropDown
 import androidx.compose.material.icons.rounded.ArrowDropUp
 import androidx.compose.material.icons.rounded.CalendarMonth
@@ -58,4 +62,9 @@ object VibeShotIcons {
     val Check = Icons.Outlined.Check
     val Error = Icons.Outlined.ErrorOutline
     val InternetDisabled = Icons.Outlined.SignalCellularConnectedNoInternet0Bar
+    val SignalCellularOff = Icons.Outlined.SignalCellularOff
+    val WifiOff = Icons.Outlined.WifiOff
+    val GenerateTask = Icons.Outlined.AddTask
+    val Gallery = Icons.Outlined.Image
+    val Publish = Icons.Outlined.Publish
 }

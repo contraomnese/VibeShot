@@ -2,10 +2,10 @@ package com.arbuzerxxl.vibeshot.features.searching.presentation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,9 +21,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.arbuzerxxl.vibeshot.core.design.theme.VibeShotThemePreview
-import com.arbuzerxxl.vibeshot.core.design.theme.cornerSize2
 import com.arbuzerxxl.vibeshot.core.ui.DevicePreviews
-import com.arbuzerxxl.vibeshot.core.ui.widgets.ErrorBanner
 import com.arbuzerxxl.vibeshot.core.ui.widgets.PhotoGrid
 import com.arbuzerxxl.vibeshot.core.ui.widgets.SearchTextField
 import com.arbuzerxxl.vibeshot.domain.models.interest.SearchResource
@@ -61,53 +59,41 @@ internal fun SearchScreen(
     onClearSearchData: () -> Unit,
 ) {
 
-    Box(
-        modifier = modifier
+    var searchQuery by remember { mutableStateOf("") }
+    val refreshSearch = remember { { onSearchTriggered(searchQuery) } }
+
+    Column(
+        modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background),
-        contentAlignment = Alignment.TopCenter
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Top
     ) {
-        var searchQuery by remember { mutableStateOf("") }
-        val refreshSearch = remember { { onSearchTriggered(searchQuery) } }
-
-        when {
-            uiState.error != null -> ErrorBanner(
-                modifier = Modifier.align(Alignment.TopCenter),
-                message = stringResource(R.string.loading_error)
+        SearchTextField(
+            searchQuery = searchQuery,
+            onSearchQueryChanged = { value: String -> searchQuery = value },
+            onSearchTriggered = onSearchTriggered
+        )
+        if (items.itemSnapshotList.isNotEmpty()) {
+            Text(
+                modifier = Modifier
+                    .clickable(onClick = onClearSearchData)
+                    .clip(CircleShape),
+                text = stringResource(R.string.clear),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.primary
             )
-
-            else -> Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                SearchTextField(
-                    searchQuery = searchQuery,
-                    onSearchQueryChanged = { value: String -> searchQuery = value },
-                    onSearchTriggered = onSearchTriggered
-                )
-
-                Text(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(cornerSize2))
-                        .align(Alignment.CenterHorizontally)
-                        .clickable(onClick = onClearSearchData),
-                    text = stringResource(R.string.clear),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.primary
-                )
-
-                PhotoGrid(
-                    modifier = Modifier.fillMaxSize(),
-                    items = items,
-                    onPhotoClickNavigate = onPhotoClicked,
-                    parentDestinationName = SearchDestination::class.java.name,
-                    isRefreshing = uiState.isLoading,
-                    onRefresh = refreshSearch
-                )
-            }
         }
-
+        PhotoGrid(
+            modifier = Modifier.fillMaxSize(),
+            items = items,
+            onPhotoClickNavigate = onPhotoClicked,
+            parentDestinationName = SearchDestination::class.java.name,
+            isRefreshing = uiState.isLoading,
+            onRefresh = refreshSearch
+        )
     }
+
 }
 
 @DevicePreviews
@@ -116,7 +102,6 @@ private fun SearchScreenPreview() {
     VibeShotThemePreview {
         val state = SearchUiState(
             isLoading = true,
-            error = null,
             data = flowOf(),
         )
         SearchScreen(

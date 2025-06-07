@@ -21,7 +21,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyListState
@@ -45,12 +44,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
@@ -60,22 +59,21 @@ import com.arbuzerxxl.vibeshot.core.design.theme.bottomSheetHiddenOffset
 import com.arbuzerxxl.vibeshot.core.design.theme.cornerRadius8
 import com.arbuzerxxl.vibeshot.core.design.theme.cornerSize2
 import com.arbuzerxxl.vibeshot.core.design.theme.cornerSize28
-import com.arbuzerxxl.vibeshot.core.design.theme.itemHeight24
 import com.arbuzerxxl.vibeshot.core.design.theme.itemHeight4
 import com.arbuzerxxl.vibeshot.core.design.theme.itemHeight40
 import com.arbuzerxxl.vibeshot.core.design.theme.itemWidth40
 import com.arbuzerxxl.vibeshot.core.design.theme.padding16
 import com.arbuzerxxl.vibeshot.core.design.theme.padding160
-import com.arbuzerxxl.vibeshot.core.design.theme.padding20
 import com.arbuzerxxl.vibeshot.core.design.theme.padding24
 import com.arbuzerxxl.vibeshot.core.design.theme.padding4
 import com.arbuzerxxl.vibeshot.core.design.theme.padding8
 import com.arbuzerxxl.vibeshot.core.design.theme.padding80
 import com.arbuzerxxl.vibeshot.core.design.theme.zero
 import com.arbuzerxxl.vibeshot.core.ui.DevicePreviews
+import com.arbuzerxxl.vibeshot.core.ui.utils.NetworkStatus
 import com.arbuzerxxl.vibeshot.core.ui.widgets.CameraCard
-import com.arbuzerxxl.vibeshot.core.ui.widgets.ErrorBanner
 import com.arbuzerxxl.vibeshot.core.ui.widgets.LoadingIndicator
+import com.arbuzerxxl.vibeshot.core.ui.widgets.NetworkDisconnectionBanner
 import com.arbuzerxxl.vibeshot.core.ui.widgets.OwnerItem
 import com.arbuzerxxl.vibeshot.core.ui.widgets.PhotoDetailsItem
 import com.arbuzerxxl.vibeshot.core.ui.widgets.PhotoImage
@@ -86,7 +84,6 @@ import com.arbuzerxxl.vibeshot.domain.models.photo.PhotoResource
 import com.arbuzerxxl.vibeshot.domain.utils.formatDateTimeWithLocale
 import com.arbuzerxxl.vibeshot.domain.utils.formatUnixTimeWithSystemLocale
 import com.arbuzerxxl.vibeshot.features.details.navigation.ParentDestination
-import com.arbuzerxxl.vibeshot.ui.R
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
 import org.koin.core.parameter.parametersOf
@@ -110,46 +107,43 @@ internal fun DetailsRoute(
     val uiState by viewmodel.uiState.collectAsStateWithLifecycle()
     val items = uiState.photos.collectAsLazyPagingItems()
 
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
-        contentAlignment = Alignment.Center
-    ) {
-        when {
-            items.loadState.hasError -> ErrorBanner(
-                modifier = Modifier.align(Alignment.TopCenter),
-                message = stringResource(R.string.loading_error)
-            )
-
-            uiState.isLoading -> LoadingIndicator()
-
-            else -> DetailsScreen(
-                modifier = modifier,
-                items = items,
-                photo = uiState.currentPhoto,
-                photoPosition = photoPosition,
-                onSelectPhoto = viewmodel::setPhoto
-            )
-        }
-    }
+    DetailsScreen(
+        modifier = modifier,
+        items = items,
+        uiState = uiState,
+        currentPhotoPosition = photoPosition,
+        onUpdateCurrentPhoto = viewmodel::onUpdateCurrentPhoto
+    )
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 private fun DetailsScreen(
-    photoPosition: Int,
-    photo: PhotoResource?,
+    uiState: DetailsUiState,
+    currentPhotoPosition: Int,
     modifier: Modifier = Modifier,
     items: LazyPagingItems<DetailsPhoto>,
-    onSelectPhoto: (DetailsPhoto) -> Unit,
+    onUpdateCurrentPhoto: (DetailsPhoto) -> Unit,
 ) {
 
+    val photosLazyListState = rememberLazyListState(initialFirstVisibleItemIndex = currentPhotoPosition)
 
-    val listState = rememberLazyListState(initialFirstVisibleItemIndex = photoPosition)
+    val currentPhotoInfo by remember(items) {
+        derivedStateOf {
+            val currentPhotoIndex = photosLazyListState.firstVisibleItemIndex
+            val isLoaded = items.loadState.refresh is LoadState.NotLoading
+            if (isLoaded && items.itemSnapshotList.isNotEmpty()) items[currentPhotoIndex] else null
+        }
+    }
 
-    LaunchedEffect(Unit) {
-        listState.scrollToItem(photoPosition)
+    LaunchedEffect(currentPhotoInfo) {
+        currentPhotoInfo?.let {
+            when (uiState.networkStatus) {
+                is NetworkStatus.Connected -> onUpdateCurrentPhoto(it)
+                is NetworkStatus.Disconnected -> Unit
+            }
+        }
     }
 
     Box(
@@ -158,46 +152,26 @@ private fun DetailsScreen(
             .background(MaterialTheme.colorScheme.background),
         contentAlignment = Alignment.Center
     ) {
-
-        val currentPhoto by remember(listState) {
-            derivedStateOf {
-                if (items.itemSnapshotList.isNotEmpty()) {
-                    items[listState.firstVisibleItemIndex]
-
-                } else null
-            }
-        }
-
-        LaunchedEffect(currentPhoto) {
-            currentPhoto?.let {
-                onSelectPhoto(it)
-            }
-        }
-
         ScreenContent(
             items = items,
-            currentPhoto = photo,
-            listState = listState
+            currentPhoto = uiState.currentPhoto,
+            isLoading = uiState.isLoading,
+            photosLazyListState = photosLazyListState
         )
-
-        if (!items.loadState.isIdle) {
-            LoadingIndicator(
-                modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .padding(top = padding20)
-                    .size(itemHeight24)
+        if (uiState.networkStatus == NetworkStatus.Disconnected)
+            NetworkDisconnectionBanner(
+                modifier = Modifier.padding(top = padding16)
             )
-        }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ScreenContent(
-    modifier: Modifier = Modifier,
     items: LazyPagingItems<DetailsPhoto>,
     currentPhoto: PhotoResource?,
-    listState: LazyListState,
+    isLoading: Boolean,
+    photosLazyListState: LazyListState,
 ) {
 
     val density = LocalDensity.current
@@ -213,20 +187,21 @@ private fun ScreenContent(
         val layoutWidth = constraints.maxWidth
         val layoutHeight = constraints.maxHeight
 
-        val sheetLayout = subcompose(slotId = LAYOUT_SHEET_ID) {
-            SheetLayout(
+        val photoInfoLayout = subcompose(slotId = LAYOUT_SHEET_ID) {
+            PhotoInfoLayout(
                 layoutHeight = layoutHeight,
-                state = anchoredDraggableState,
-                currentPhoto = currentPhoto
+                draggableState = anchoredDraggableState,
+                currentPhoto = currentPhoto,
+                isLoading = isLoading,
             )
         }.first().measure(constraints)
 
 
-        val bodyLayout = subcompose(slotId = LAYOUT_BODY_ID) {
-            BodyLayout(
+        val photoLayout = subcompose(slotId = LAYOUT_BODY_ID) {
+            PhotoLayout(
                 items = items,
                 itemWidth = layoutWidth.dp,
-                listState = listState
+                listState = photosLazyListState,
             )
         }.first().measure(
             constraints.copy(
@@ -240,25 +215,25 @@ private fun ScreenContent(
             val sheetOffsetY = anchoredDraggableState.requireOffset().roundToInt()
             val sheetOffsetX = 0
 
-            bodyLayout.place(x = 0, y = 0)
-            sheetLayout.place(sheetOffsetX, sheetOffsetY)
+            photoLayout.place(x = 0, y = 0)
+            photoInfoLayout.place(sheetOffsetX, sheetOffsetY)
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun SheetLayout(
-    modifier: Modifier = Modifier,
-    state: AnchoredDraggableState<SheetValue>,
-    layoutHeight: Int,
+private fun PhotoInfoLayout(
+    draggableState: AnchoredDraggableState<SheetValue>,
     currentPhoto: PhotoResource?,
+    isLoading: Boolean,
+    layoutHeight: Int,
 ) {
 
     val density = LocalDensity.current
 
     val flingBehavior = AnchoredDraggableDefaults.flingBehavior(
-        state = state,
+        state = draggableState,
         positionalThreshold = { with(density) { 56.dp.toPx() } },
         animationSpec = tween(
             durationMillis = TWEEN_ANIMATION_DURATION,
@@ -279,20 +254,25 @@ private fun SheetLayout(
                         SheetValue.Expanded at maxOf(layoutHeight * 0.15f, 0f)
                     }
                 }
-                state.updateAnchors(newAnchors, state.targetValue)
+                draggableState.updateAnchors(newAnchors, draggableState.targetValue)
             },
     ) {
-        SheetContent(state = state, flingBehavior = flingBehavior, photo = currentPhoto)
+        PhotoInfoContent(
+            state = draggableState,
+            photo = currentPhoto,
+            isLoading = isLoading,
+            flingBehavior = flingBehavior,
+        )
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun SheetContent(
-    modifier: Modifier = Modifier,
+private fun PhotoInfoContent(
     state: AnchoredDraggableState<SheetValue>,
     flingBehavior: TargetedFlingBehavior,
     photo: PhotoResource?,
+    isLoading: Boolean,
 ) {
     Box(
         modifier = Modifier
@@ -310,38 +290,42 @@ private fun SheetContent(
                 .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.5f))
         )
 
-        photo?.let {
-            Column(
-                modifier = Modifier.padding(top = padding16),
-                verticalArrangement = Arrangement.spacedBy(padding24)
-            ) {
-                OwnerBlock(
-                    owner = it.owner,
-                    iconUrl = it.ownerIconUrl
+        when {
+            isLoading ->
+                LoadingIndicator(
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .padding(top = padding80)
+                        .height(
+                            itemHeight40
+                        )
                 )
-                TitleBlock(
-                    title = it.title,
-                    description = it.description
-                )
-                MetaBlock(
-                    dateUpload = it.dateUpload,
-                    dateTaken = it.dateTaken,
-                    views = it.views,
-                    comments = it.comments
-                )
-                CameraBlock(camera = it.cameraResource)
-                TagsBlock(tags = it.tags)
-                MoreBlock(license = it.license)
-            }
-        } ?: Box(Modifier.fillMaxSize()) {
-            LoadingIndicator(
-                modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .padding(top = padding80)
-                    .height(
-                        itemHeight40
-                    )
-            )
+
+            else ->
+                photo?.let {
+                    Column(
+                        modifier = Modifier.padding(top = padding16),
+                        verticalArrangement = Arrangement.spacedBy(padding24)
+                    ) {
+                        OwnerBlock(
+                            owner = it.owner,
+                            iconUrl = it.ownerIconUrl
+                        )
+                        TitleBlock(
+                            title = it.title,
+                            description = it.description
+                        )
+                        MetaBlock(
+                            dateUpload = it.dateUpload,
+                            dateTaken = it.dateTaken,
+                            views = it.views,
+                            comments = it.comments
+                        )
+                        CameraBlock(camera = it.cameraResource)
+                        TagsBlock(tags = it.tags)
+                        MoreBlock(license = it.license)
+                    }
+                }
         }
     }
 }
@@ -473,12 +457,29 @@ private fun TagsBlock(
             }
         }
     }
+}
 
+@Composable
+private fun MoreBlock(
+    modifier: Modifier = Modifier,
+    license: String,
+) {
+    Box(
+        modifier = modifier
+            .wrapContentWidth()
+    ) {
+        Column(verticalArrangement = Arrangement.spacedBy(padding16)) {
+            PhotoDetailsItem(
+                icon = VibeShotIcons.Copyright,
+                text = license
+            )
+        }
+    }
 }
 
 
 @Composable
-private fun BodyLayout(
+private fun PhotoLayout(
     modifier: Modifier = Modifier,
     items: LazyPagingItems<DetailsPhoto>,
     itemWidth: Dp,
@@ -517,32 +518,13 @@ private fun BodyLayout(
     }
 }
 
-@Composable
-private fun MoreBlock(
-    modifier: Modifier = Modifier,
-    license: String,
-) {
-    Box(
-        modifier = modifier
-            .wrapContentWidth()
-    ) {
-        Column(verticalArrangement = Arrangement.spacedBy(padding16)) {
-            PhotoDetailsItem(
-                icon = VibeShotIcons.Copyright,
-                text = license
-            )
-        }
-    }
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @DevicePreviews
 @Composable
-private fun SheetContentPreview(modifier: Modifier = Modifier) {
+private fun SheetContentPreview() {
     VibeShotThemePreview {
-        SheetLayout(
-            state = AnchoredDraggableState<SheetValue>(initialValue = SheetValue.Hidden),
-            layoutHeight = 2400,
+
+        val uiState = DetailsUiState(
             currentPhoto = PhotoResource(
                 id = "1234",
                 url = "www.ww.com",
@@ -577,6 +559,15 @@ private fun SheetContentPreview(modifier: Modifier = Modifier) {
                 ),
                 license = "All Rights Reserved"
             ),
+            isLoading = false,
+            networkStatus = NetworkStatus.Connected
+        )
+
+        PhotoInfoLayout(
+            draggableState = AnchoredDraggableState<SheetValue>(initialValue = SheetValue.Hidden),
+            layoutHeight = 2400,
+            currentPhoto = uiState.currentPhoto,
+            isLoading = uiState.isLoading
         )
     }
 }
@@ -584,12 +575,37 @@ private fun SheetContentPreview(modifier: Modifier = Modifier) {
 @OptIn(ExperimentalMaterial3Api::class)
 @DevicePreviews
 @Composable
-private fun SheetContentEmptyPreview(modifier: Modifier = Modifier) {
+private fun PhotoInfoLayoutEmptyPreview() {
     VibeShotThemePreview {
-        SheetLayout(
-            state = AnchoredDraggableState<SheetValue>(initialValue = SheetValue.Hidden),
+
+        val uiState = DetailsUiState(
+            isLoading = true,
+            networkStatus = NetworkStatus.Connected
+        )
+
+        PhotoInfoLayout(
+            draggableState = AnchoredDraggableState<SheetValue>(initialValue = SheetValue.Hidden),
             layoutHeight = 2400,
-            currentPhoto = null,
+            currentPhoto = uiState.currentPhoto,
+            isLoading = uiState.isLoading
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@DevicePreviews
+@Composable
+private fun DetailsScreenNetworkIsDisabledPreview() {
+    VibeShotThemePreview {
+
+        val uiState = DetailsUiState()
+        val items = uiState.photos.collectAsLazyPagingItems()
+
+        DetailsScreen(
+            uiState = uiState,
+            currentPhotoPosition = 2,
+            items = items,
+            onUpdateCurrentPhoto = {}
         )
     }
 }

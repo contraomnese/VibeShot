@@ -9,14 +9,13 @@
     <string name="skip_now_button">Skip for now</string>
     <string name="have_account">Have an account?</string>
     <string name="logout_title_button">Logout</string>
-    <string name="clear">Clear</string>
+    <string name="clear">Clear photos</string>
 
     !--    Bottom menu-->
     <string name="interests">interests</string>
     <string name="profile">profile</string>
     <string name="search">Search</string>
     <string name="tasks">Tasks</string>
-    <string name="refresh_task">Refresh task</string>
 
     !--    Camera-->
     <string name="camera">Camera</string>
@@ -38,6 +37,10 @@
     <string name="generate_photo_task">Generate task</string>
     <string name="photo_upload_success">Upload Success</string>
     <string name="categories_empty">Categories for generating tasks could not be loaded</string>
+    <string name="generate_task">Generate task</string>
+    <string name="refresh_task">Refresh task</string>
+    <string name="capture_photo">Capture photo</string>
+    <string name="take_photo">Take a photo from gallery</string>
 
     !--    Errors-->
     <string name="unexpected_error">Unexpected error</string>

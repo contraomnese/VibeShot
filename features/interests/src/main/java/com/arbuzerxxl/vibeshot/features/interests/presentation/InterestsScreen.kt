@@ -8,16 +8,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.arbuzerxxl.vibeshot.core.ui.widgets.ErrorBanner
 import com.arbuzerxxl.vibeshot.core.ui.widgets.PhotoGrid
 import com.arbuzerxxl.vibeshot.domain.models.interest.InterestsResource
 import com.arbuzerxxl.vibeshot.features.interests.navigation.InterestsDestination
-import com.arbuzerxxl.vibeshot.ui.R
 import org.koin.androidx.compose.koinViewModel
 
 
@@ -52,20 +49,13 @@ internal fun InterestsScreen(
             .background(MaterialTheme.colorScheme.background),
         contentAlignment = Alignment.Center
     ) {
-        when {
-            items.loadState.hasError -> ErrorBanner(
-                modifier = Modifier.align(Alignment.TopCenter),
-                message = stringResource(R.string.loading_error)
-            )
-
-            else -> PhotoGrid(
-                modifier = Modifier.fillMaxSize(),
-                items = items,
-                onPhotoClickNavigate = onPhotoClickNavigate,
-                parentDestinationName = InterestsDestination::class.java.name,
-                isRefreshing = items.loadState.refresh == LoadState.Loading,
-                onRefresh = onRefresh
-            )
-        }
+        PhotoGrid(
+            modifier = Modifier.fillMaxSize(),
+            items = items,
+            onPhotoClickNavigate = onPhotoClickNavigate,
+            parentDestinationName = InterestsDestination::class.java.name,
+            isRefreshing = items.loadState.refresh == LoadState.Loading,
+            onRefresh = onRefresh
+        )
     }
 }
