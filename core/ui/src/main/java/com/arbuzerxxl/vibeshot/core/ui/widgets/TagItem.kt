@@ -2,6 +2,7 @@ package com.arbuzerxxl.vibeshot.core.ui.widgets
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -17,7 +18,10 @@ import com.arbuzerxxl.vibeshot.core.design.theme.itemWidth0_5
 import com.arbuzerxxl.vibeshot.core.ui.DevicePreviews
 
 @Composable
-fun TagItem(tag: String) {
+fun TagItem(
+    tag: String,
+    onClick: () -> Unit,
+) {
     Box(
         modifier = Modifier
             .border(
@@ -29,6 +33,7 @@ fun TagItem(tag: String) {
                 color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.1f),
                 shape = RoundedCornerShape(cornerRadius8)
             )
+            .clickable(onClick = onClick)
     ) {
         Text(
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
@@ -45,6 +50,8 @@ fun TagItem(tag: String) {
 @Composable
 fun TagItemPreview(modifier: Modifier = Modifier) {
     VibeShotTheme {
-        TagItem(tag="lion")
+        TagItem(
+            tag = "lion", onClick = {},
+        )
     }
 }

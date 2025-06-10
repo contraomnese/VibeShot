@@ -67,11 +67,16 @@ sealed class ParentDestination {
 }
 
 @OptIn(KoinExperimentalAPI::class)
-fun NavGraphBuilder.details(onNavigateUp: () -> Unit) {
+fun NavGraphBuilder.details(
+    onNavigateUp: () -> Unit,
+    onNavigateToSearchByTag: (String) -> Unit
+) {
 
-    composable<DetailsDestination>(typeMap = mapOf(
-        typeOf<ParentDestination>() to ParentDestination.navType
-    )) { navBackStackEntry ->
+    composable<DetailsDestination>(
+        typeMap = mapOf(
+            typeOf<ParentDestination>() to ParentDestination.navType
+        )
+    ) { navBackStackEntry ->
 
         val args = remember {
             navBackStackEntry.toRoute<DetailsDestination>()
@@ -85,8 +90,8 @@ fun NavGraphBuilder.details(onNavigateUp: () -> Unit) {
         DetailsRoute(
             photoPosition = photoPosition,
             parentDestination = parentDestination,
-            onNavigateUp = onNavigateUp
+            onNavigateUp = onNavigateUp,
+            onNavigateToSearchByTag = onNavigateToSearchByTag
         )
     }
-
 }

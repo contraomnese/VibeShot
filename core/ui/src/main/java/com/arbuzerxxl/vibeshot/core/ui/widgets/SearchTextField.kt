@@ -111,7 +111,9 @@ fun SearchTextField(
         )
     }
     LaunchedEffect(Unit) {
-        focusRequester.requestFocus()
+        if (searchQuery.isBlank()) {
+            focusRequester.requestFocus()
+        }
     }
 }
 

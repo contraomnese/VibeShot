@@ -10,9 +10,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,11 +27,13 @@ import com.arbuzerxxl.vibeshot.features.searching.navigation.SearchDestination
 import com.arbuzerxxl.vibeshot.ui.R
 import kotlinx.coroutines.flow.flowOf
 import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
 internal fun SearchRoute(
     modifier: Modifier = Modifier,
-    viewmodel: SearchViewModel = koinViewModel(),
+    searchTag: String?,
+    viewmodel: SearchViewModel = koinViewModel(parameters = { parametersOf(searchTag) }),
     onPhotoClicked: (Int, String) -> Unit,
 ) {
     val uiState by viewmodel.uiState.collectAsStateWithLifecycle()
@@ -44,8 +44,9 @@ internal fun SearchRoute(
         items = items,
         uiState = uiState,
         onPhotoClicked = onPhotoClicked,
-        onSearchTriggered = viewmodel::onSearch,
-        onClearSearchData = viewmodel::clearSearchData
+        onSearchTriggered = viewmodel::onSearchByText,
+        onClearSearchData = viewmodel::clearSearchData,
+        onSearchQueryChanged = viewmodel::onSearchQueryChanged
     )
 }
 
@@ -57,10 +58,10 @@ internal fun SearchScreen(
     onPhotoClicked: (Int, String) -> Unit,
     onSearchTriggered: (String) -> Unit,
     onClearSearchData: () -> Unit,
+    onSearchQueryChanged: (String) -> Unit
 ) {
 
-    var searchQuery by remember { mutableStateOf("") }
-    val refreshSearch = remember { { onSearchTriggered(searchQuery) } }
+    val refreshSearch = remember { { onSearchTriggered(uiState.searchQuery) } }
 
     Column(
         modifier = Modifier
@@ -70,8 +71,8 @@ internal fun SearchScreen(
         verticalArrangement = Arrangement.Top
     ) {
         SearchTextField(
-            searchQuery = searchQuery,
-            onSearchQueryChanged = { value: String -> searchQuery = value },
+            searchQuery = uiState.searchQuery,
+            onSearchQueryChanged = onSearchQueryChanged,
             onSearchTriggered = onSearchTriggered
         )
         if (items.itemSnapshotList.isNotEmpty()) {
@@ -108,7 +109,8 @@ private fun SearchScreenPreview() {
             uiState = state, items = state.data.collectAsLazyPagingItems(),
             onPhotoClicked = { i: Int, s: String -> },
             onSearchTriggered = {},
-            onClearSearchData = {}
+            onClearSearchData = {},
+            onSearchQueryChanged = {},
         )
     }
 }

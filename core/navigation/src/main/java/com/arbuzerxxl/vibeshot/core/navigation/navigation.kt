@@ -16,13 +16,16 @@ interface TopLevelDestination {
     val destinationRoute: String
 }
 
+
 // Describe the navigation stack according to the presentation
 fun NavHostController.navigateSingleTopTo(route: Any) {
     navigate(route) {
+        popBackStack()
         popUpTo(this@navigateSingleTopTo.graph.findStartDestination().id) {
             saveState = true
         }
         launchSingleTop = true
         restoreState = true
+
     }
 }

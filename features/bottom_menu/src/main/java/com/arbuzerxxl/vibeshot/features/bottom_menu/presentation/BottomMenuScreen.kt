@@ -32,6 +32,7 @@ import com.arbuzerxxl.vibeshot.features.bottom_menu.navigation.searchNavigator
 import com.arbuzerxxl.vibeshot.features.interests.navigation.InterestsDestination
 import com.arbuzerxxl.vibeshot.features.interests.navigation.interests
 import com.arbuzerxxl.vibeshot.features.profile.navigation.profile
+import com.arbuzerxxl.vibeshot.features.searching.navigation.SearchDestination
 import com.arbuzerxxl.vibeshot.features.searching.navigation.search
 import com.arbuzerxxl.vibeshot.features.tasks.navigation.tasks
 import com.kiparo.pizzaapp.presentation.features.bottom_menu.BottomMenuViewModel
@@ -43,6 +44,7 @@ internal fun BottomMenuRoute(
     modifier: Modifier = Modifier,
     viewmodel: BottomMenuViewModel = koinViewModel(),
     externalNavigator: BottomMenuNavigator,
+    initialSearchTag: String?
 ) {
 
     val uiState by viewmodel.uiState.collectAsStateWithLifecycle()
@@ -61,7 +63,8 @@ internal fun BottomMenuRoute(
         topLevelDestinations = uiState.topLevelDestinations,
         externalNavigator = externalNavigator,
         snackBarHostState = snackBarHostState,
-        networkStatus = uiState.networkStatus
+        networkStatus = uiState.networkStatus,
+        initialSearchTag = initialSearchTag
     )
 
 }
@@ -72,11 +75,13 @@ internal fun BottomMenuScreen(
     externalNavigator: BottomMenuNavigator,
     snackBarHostState: SnackbarHostState,
     topLevelDestinations: ImmutableList<TopLevelDestination>,
+    initialSearchTag: String?
 ) {
     val navController: NavHostController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
+    val startDestination = initialSearchTag?.let { SearchDestination(initialSearchTag) } ?: InterestsDestination
 
     Scaffold(
         bottomBar = {
@@ -107,7 +112,7 @@ internal fun BottomMenuScreen(
         }
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
-            NavHost(navController = navController, startDestination = InterestsDestination) {
+            NavHost(navController = navController, startDestination = startDestination) {
                 interests(navController.interestsNavigator(externalNavigator))
                 search(navController.searchNavigator(externalNavigator))
                 tasks()

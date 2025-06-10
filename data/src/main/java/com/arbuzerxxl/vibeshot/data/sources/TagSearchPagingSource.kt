@@ -11,11 +11,11 @@ import com.arbuzerxxl.vibeshot.data.utils.NetworkUtils
 import com.arbuzerxxl.vibeshot.domain.models.interest.SearchResource
 import kotlinx.coroutines.CancellationException
 
-class SearchPagingSource(
+class TagSearchPagingSource(
     private val context: Context,
     private val key: String,
     private val searchApi: FlickrSearchApi,
-    private val query: String,
+    private var tag: String
 ): PagingSource<Int, SearchResource>() {
     override fun getRefreshKey(state: PagingState<Int, SearchResource>): Int? {
         return state.anchorPosition?.let { anchorPosition ->
@@ -33,8 +33,8 @@ class SearchPagingSource(
         return try {
             val nextPageNumber = params.key ?: 1
 
-            val searchResponse = searchApi.searchByQuery(
-                query = query,
+            val searchResponse = searchApi.searchByTag(
+                tag = tag,
                 page = nextPageNumber,
                 key = key,
                 pageSize = params.loadSize

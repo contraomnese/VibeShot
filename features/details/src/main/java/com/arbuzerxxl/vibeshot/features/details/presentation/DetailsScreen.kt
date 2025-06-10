@@ -97,11 +97,12 @@ private const val TWEEN_ANIMATION_DURATION = 800
 @OptIn(KoinExperimentalAPI::class)
 @Composable
 internal fun DetailsRoute(
-    onNavigateUp: () -> Unit,
+    modifier: Modifier = Modifier,
     photoPosition: Int = 0,
     parentDestination: ParentDestination,
-    modifier: Modifier = Modifier,
     viewmodel: DetailsViewModel = koinViewModel(parameters = { parametersOf(parentDestination) }),
+    onNavigateUp: () -> Unit,
+    onNavigateToSearchByTag: (String) -> Unit,
 ) {
 
     val uiState by viewmodel.uiState.collectAsStateWithLifecycle()
@@ -112,7 +113,8 @@ internal fun DetailsRoute(
         items = items,
         uiState = uiState,
         currentPhotoPosition = photoPosition,
-        onUpdateCurrentPhoto = viewmodel::onUpdateCurrentPhoto
+        onUpdateCurrentPhoto = viewmodel::onUpdateCurrentPhoto,
+        onNavigateToSearchByTag = onNavigateToSearchByTag
     )
 }
 
@@ -125,6 +127,7 @@ private fun DetailsScreen(
     modifier: Modifier = Modifier,
     items: LazyPagingItems<DetailsPhoto>,
     onUpdateCurrentPhoto: (DetailsPhoto) -> Unit,
+    onNavigateToSearchByTag: (String) -> Unit,
 ) {
 
     val photosLazyListState = rememberLazyListState(initialFirstVisibleItemIndex = currentPhotoPosition)
@@ -156,7 +159,8 @@ private fun DetailsScreen(
             items = items,
             currentPhoto = uiState.currentPhoto,
             isLoading = uiState.isLoading,
-            photosLazyListState = photosLazyListState
+            photosLazyListState = photosLazyListState,
+            onNavigateToSearchByTag = onNavigateToSearchByTag
         )
         if (uiState.networkStatus == NetworkStatus.Disconnected)
             NetworkDisconnectionBanner(
@@ -172,6 +176,7 @@ private fun ScreenContent(
     currentPhoto: PhotoResource?,
     isLoading: Boolean,
     photosLazyListState: LazyListState,
+    onNavigateToSearchByTag: (String) -> Unit,
 ) {
 
     val density = LocalDensity.current
@@ -193,6 +198,7 @@ private fun ScreenContent(
                 draggableState = anchoredDraggableState,
                 currentPhoto = currentPhoto,
                 isLoading = isLoading,
+                onNavigateToSearchByTag = onNavigateToSearchByTag
             )
         }.first().measure(constraints)
 
@@ -228,6 +234,7 @@ private fun PhotoInfoLayout(
     currentPhoto: PhotoResource?,
     isLoading: Boolean,
     layoutHeight: Int,
+    onNavigateToSearchByTag: (String) -> Unit,
 ) {
 
     val density = LocalDensity.current
@@ -262,6 +269,7 @@ private fun PhotoInfoLayout(
             photo = currentPhoto,
             isLoading = isLoading,
             flingBehavior = flingBehavior,
+            onNavigateToSearchByTag = onNavigateToSearchByTag
         )
     }
 }
@@ -273,6 +281,7 @@ private fun PhotoInfoContent(
     flingBehavior: TargetedFlingBehavior,
     photo: PhotoResource?,
     isLoading: Boolean,
+    onNavigateToSearchByTag: (String) -> Unit,
 ) {
     Box(
         modifier = Modifier
@@ -322,7 +331,8 @@ private fun PhotoInfoContent(
                             comments = it.comments
                         )
                         CameraBlock(camera = it.cameraResource)
-                        TagsBlock(tags = it.tags)
+                        TagsBlock(tags = it.tags,
+                            onNavigateToSearchByTag = onNavigateToSearchByTag)
                         MoreBlock(license = it.license)
                     }
                 }
@@ -442,6 +452,7 @@ private fun CameraBlock(
 private fun TagsBlock(
     modifier: Modifier = Modifier,
     tags: List<String>,
+    onNavigateToSearchByTag: (String) -> Unit,
 ) {
     if (tags.isNotEmpty()) {
         val scrollState = rememberScrollState()
@@ -453,7 +464,9 @@ private fun TagsBlock(
             horizontalArrangement = Arrangement.spacedBy(padding8)
         ) {
             tags.forEach { tag ->
-                TagItem(tag = tag)
+                TagItem(tag = tag,
+                    onClick = { onNavigateToSearchByTag(tag) }
+                )
             }
         }
     }
@@ -567,7 +580,8 @@ private fun SheetContentPreview() {
             draggableState = AnchoredDraggableState<SheetValue>(initialValue = SheetValue.Hidden),
             layoutHeight = 2400,
             currentPhoto = uiState.currentPhoto,
-            isLoading = uiState.isLoading
+            isLoading = uiState.isLoading,
+            onNavigateToSearchByTag = {}
         )
     }
 }
@@ -587,7 +601,8 @@ private fun PhotoInfoLayoutEmptyPreview() {
             draggableState = AnchoredDraggableState<SheetValue>(initialValue = SheetValue.Hidden),
             layoutHeight = 2400,
             currentPhoto = uiState.currentPhoto,
-            isLoading = uiState.isLoading
+            isLoading = uiState.isLoading,
+            onNavigateToSearchByTag = {}
         )
     }
 }
@@ -605,7 +620,8 @@ private fun DetailsScreenNetworkIsDisabledPreview() {
             uiState = uiState,
             currentPhotoPosition = 2,
             items = items,
-            onUpdateCurrentPhoto = {}
+            onUpdateCurrentPhoto = {},
+            onNavigateToSearchByTag = {}
         )
     }
 }

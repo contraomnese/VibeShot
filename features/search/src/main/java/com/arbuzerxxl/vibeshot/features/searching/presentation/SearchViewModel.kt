@@ -22,6 +22,7 @@ private const val UNKNOWN_ERROR = "Unknown error"
 
 @Immutable
 internal data class SearchUiState(
+    val searchQuery: String = "",
     val isLoading: Boolean = false,
     val data: Flow<PagingData<SearchResource>> = flowOf(),
 )
@@ -29,6 +30,7 @@ internal data class SearchUiState(
 internal class SearchViewModel(
     private val searchRepository: SearchRepository,
     private val errorMonitor: ErrorMonitor,
+    private val searchTag: String? = null
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SearchUiState(isLoading = true))
@@ -53,14 +55,37 @@ internal class SearchViewModel(
                 errorMonitor.tryEmit(e.message ?: UNKNOWN_ERROR)
             }
         }
+        searchTag?.let {
+            onSearchByTag(it)
+        }
     }
 
-    fun onSearch(query: String) {
+    fun onSearchByText(text: String) {
 
         viewModelScope.launch {
             try {
                 _uiState.update { it.copy(isLoading = true) }
-                searchRepository.search(query)
+                searchRepository.searchByText(text)
+                delay(2000)
+                _uiState.update { it.copy(isLoading = false) }
+            }
+            catch (e: CancellationException) {
+                throw e
+            }
+            catch (e: Exception) {
+                _uiState.update { it.copy(isLoading = false) }
+                errorMonitor.tryEmit(e.message ?: UNKNOWN_ERROR)
+            }
+        }
+
+    }
+
+    private fun onSearchByTag(tag: String) {
+
+        viewModelScope.launch {
+            try {
+                _uiState.update { it.copy(isLoading = true, searchQuery = tag) }
+                searchRepository.searchByTag(tag)
                 delay(2000)
                 _uiState.update { it.copy(isLoading = false) }
             }
@@ -86,5 +111,9 @@ internal class SearchViewModel(
                 errorMonitor.tryEmit(e.message ?: UNKNOWN_ERROR)
             }
         }
+    }
+
+    fun onSearchQueryChanged(newSearchQuery: String) {
+        _uiState.update { it.copy(searchQuery = newSearchQuery) }
     }
 }

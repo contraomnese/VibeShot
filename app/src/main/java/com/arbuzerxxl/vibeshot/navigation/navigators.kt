@@ -1,8 +1,10 @@
 package com.arbuzerxxl.vibeshot.navigation
 
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.arbuzerxxl.vibeshot.features.auth.navigation.AuthNavigator
 import com.arbuzerxxl.vibeshot.features.auth.navigation.navigateToAuth
+import com.arbuzerxxl.vibeshot.features.bottom_menu.navigation.BottomMenuDestination
 import com.arbuzerxxl.vibeshot.features.bottom_menu.navigation.BottomMenuNavigator
 import com.arbuzerxxl.vibeshot.features.bottom_menu.navigation.navigateToBottomMenu
 import com.arbuzerxxl.vibeshot.features.details.navigation.ParentDestination
@@ -46,4 +48,18 @@ fun NavHostController.bottomMenuNavigator(): BottomMenuNavigator = object : Bott
 
         navigateToDetails(initialPhotoPosition, parentRoute)
     }
+
+    override fun onNavigateToSearchByTag(tag: String) {
+
+        navigate(BottomMenuDestination(tag)) {
+            popUpTo(this@bottomMenuNavigator.graph.findStartDestination().id) {
+                saveState = true
+                inclusive = true
+            }
+            launchSingleTop = true
+            restoreState = true
+
+        }
+    }
+
 }
