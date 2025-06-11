@@ -13,7 +13,7 @@ fun String.formatUnixTimeWithSystemLocale(): String {
 
     val formatter = DateTimeFormatter
         .ofLocalizedDate(FormatStyle.LONG)
-        .withLocale(Locale.getDefault())
+        .withLocale(Locale.ENGLISH)
 
     return instant.atZone(ZoneId.systemDefault())
         .format(formatter)
@@ -27,7 +27,7 @@ fun String.formatDateTimeWithLocale(): String {
 
     val outputFormatter = DateTimeFormatter
         .ofLocalizedDate(FormatStyle.LONG)
-        .withLocale(Locale.getDefault())
+        .withLocale(Locale.ENGLISH)
 
     return dateTime.format(outputFormatter)
 }

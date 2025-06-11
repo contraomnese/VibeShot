@@ -1,5 +1,3 @@
-import com.android.tools.r8.internal.di
-
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
@@ -66,9 +64,6 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.runtime.compose)
-
-    // auth
-    implementation(libs.androidx.browser)
 
     // tests
     testImplementation(libs.junit)

@@ -6,7 +6,8 @@ import com.arbuzerxxl.vibeshot.data.network.model.response.photos.Tag
 
 data class DetailsPhotoDto(
     @ColumnInfo(name = PHOTO_ID) val photoId: String,
-    @ColumnInfo(name = PHOTO_URL) val photoUrl: String,
+    @ColumnInfo(name = RESOURCE_PHOTO_URL) val resourceUrl: String,
+    @ColumnInfo(name = FLICKR_PHOTO_URL) val flickrUrl: String,
 
     // Основная информация о фото
     @ColumnInfo(name = TITLE) val title: String,
@@ -36,7 +37,8 @@ data class DetailsPhotoDto(
     companion object {
 
         const val PHOTO_ID = "alias_details_photo_id"
-        const val PHOTO_URL = "alias_details_photo_url"
+        const val RESOURCE_PHOTO_URL = "alias_details_resource_photo_url"
+        const val FLICKR_PHOTO_URL = "alias_details_flickr_photo_url"
         const val LICENSE = "alias_details_license"
         const val VIEWS = "alias_details_views"
         const val OWNER_NSID = "alias_details_owner_nsid"

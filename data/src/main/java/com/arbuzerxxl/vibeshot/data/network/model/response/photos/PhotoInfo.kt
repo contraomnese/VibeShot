@@ -26,6 +26,7 @@ data class PhotoInfo(
     @SerializedName("views") val views: String,
     @SerializedName("comments") val comments: Content,
     @SerializedName("tags") val tags: Tags,
+    @SerializedName("urls") val urls: Urls,
 )
 
 data class Owner(
@@ -54,4 +55,13 @@ data class Tags(
 
 data class Tag (
     @SerializedName("raw") val raw: String,
+)
+
+data class Urls(
+    @SerializedName("url") val url: List<Url>
+)
+
+data class Url (
+    @SerializedName("type") val type: String,
+    @SerializedName("_content") val content: String
 )

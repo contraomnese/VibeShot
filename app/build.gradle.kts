@@ -140,7 +140,7 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
 
-    // auth
+    // tab helper
     implementation(libs.androidx.browser)
 
     // ai

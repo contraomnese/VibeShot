@@ -1,8 +1,6 @@
 package com.arbuzerxxl.vibeshot.features.auth.presentation
 
 
-import android.content.Context
-import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -11,11 +9,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arbuzerxxl.vibeshot.core.design.theme.VibeShotTheme
 import com.arbuzerxxl.vibeshot.core.design.theme.padding80
 import com.arbuzerxxl.vibeshot.core.ui.DevicePreviews
+import com.arbuzerxxl.vibeshot.core.ui.utils.TabHelper
 import com.arbuzerxxl.vibeshot.core.ui.widgets.LogIn
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
@@ -76,24 +74,10 @@ internal fun AuthScreen(
                 -> onNavigateAfterAuth()
 
             is AuthUiState.Authorize,
-                -> openTab(context = context, url = uiState.authUrl)
+                -> TabHelper.openInTab(context = context, url = uiState.authUrl)
 
         }
     }
-}
-
-// TODO openTab works when chrome installed only
-private fun openTab(context: Context, url: String) {
-
-    val builder = CustomTabsIntent.Builder()
-    builder.setShowTitle(true)
-    builder.setInstantAppsEnabled(true)
-
-    val customBuilder = builder.build()
-
-    customBuilder.intent.setPackage("com.android.chrome")
-    customBuilder.launchUrl(context, url.toUri())
-
 }
 
 @DevicePreviews
@@ -104,7 +88,7 @@ private fun AuthScreenPreview() {
             uiState = AuthUiState.Loading,
             onLogInClick = {},
             onNavigateAfterAuth = {},
-            onSkipNowClick = {}
+            onSkipNowClick = {},
         )
     }
 }

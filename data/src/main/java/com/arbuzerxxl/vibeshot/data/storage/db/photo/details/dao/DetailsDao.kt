@@ -14,7 +14,8 @@ interface DetailsDao {
     suspend fun insert(photo: DetailsPhotoEntity)
 
     @Query("SELECT photo_id as ${DetailsPhotoDto.PHOTO_ID}," +
-            " photo_url as ${DetailsPhotoDto.PHOTO_URL}," +
+            " resource_photo_url as ${DetailsPhotoDto.RESOURCE_PHOTO_URL}," +
+            " flickr_photo_url as ${DetailsPhotoDto.FLICKR_PHOTO_URL}," +
             " title as ${DetailsPhotoDto.TITLE}," +
             " description as ${DetailsPhotoDto.DESCRIPTION}," +
             " comments as ${DetailsPhotoDto.COMMENTS}," +

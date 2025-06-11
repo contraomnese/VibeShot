@@ -2,7 +2,8 @@ package com.arbuzerxxl.vibeshot.domain.models.photo
 
 data class PhotoResource(
     val id: String,
-    val url: String,
+    val resourceUrl: String,
+    val fullPhotoPageUrl: String,
     val owner: String,
     val ownerIconUrl: String,
     val title: String,

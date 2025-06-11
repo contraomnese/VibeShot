@@ -5,6 +5,7 @@ import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.AnchoredDraggableDefaults
 import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.foundation.gestures.DraggableAnchors
@@ -43,6 +44,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -71,6 +73,7 @@ import com.arbuzerxxl.vibeshot.core.design.theme.padding80
 import com.arbuzerxxl.vibeshot.core.design.theme.zero
 import com.arbuzerxxl.vibeshot.core.ui.DevicePreviews
 import com.arbuzerxxl.vibeshot.core.ui.utils.NetworkStatus
+import com.arbuzerxxl.vibeshot.core.ui.utils.TabHelper
 import com.arbuzerxxl.vibeshot.core.ui.widgets.CameraCard
 import com.arbuzerxxl.vibeshot.core.ui.widgets.LoadingIndicator
 import com.arbuzerxxl.vibeshot.core.ui.widgets.NetworkDisconnectionBanner
@@ -318,11 +321,13 @@ private fun PhotoInfoContent(
                     ) {
                         OwnerBlock(
                             owner = it.owner,
-                            iconUrl = it.ownerIconUrl
+                            ownerIconUrl = it.ownerIconUrl,
+                            tabPhotoUrl = it.fullPhotoPageUrl
                         )
                         TitleBlock(
                             title = it.title,
-                            description = it.description
+                            description = it.description,
+                            tabPhotoUrl = it.fullPhotoPageUrl
                         )
                         MetaBlock(
                             dateUpload = it.dateUpload,
@@ -331,8 +336,10 @@ private fun PhotoInfoContent(
                             comments = it.comments
                         )
                         CameraBlock(camera = it.cameraResource)
-                        TagsBlock(tags = it.tags,
-                            onNavigateToSearchByTag = onNavigateToSearchByTag)
+                        TagsBlock(
+                            tags = it.tags,
+                            onNavigateToSearchByTag = onNavigateToSearchByTag
+                        )
                         MoreBlock(license = it.license)
                     }
                 }
@@ -344,14 +351,20 @@ private fun PhotoInfoContent(
 private fun OwnerBlock(
     modifier: Modifier = Modifier,
     owner: String,
-    iconUrl: String,
+    ownerIconUrl: String,
+    tabPhotoUrl: String,
 ) {
+    val context = LocalContext.current
+
     Row(
-        modifier = modifier,
+        modifier = Modifier.clickable {
+            TabHelper.openInTab(context = context, url = tabPhotoUrl)
+        },
         verticalAlignment = Alignment.CenterVertically
     ) {
         OwnerItem(
-            owner = owner, url = iconUrl
+            owner = owner,
+            url = ownerIconUrl
         )
     }
 }
@@ -361,11 +374,17 @@ private fun TitleBlock(
     modifier: Modifier = Modifier,
     title: String,
     description: String,
+    tabPhotoUrl: String,
 ) {
+    val context = LocalContext.current
+
     Column(
         modifier = modifier,
     ) {
         Text(
+            modifier = Modifier.clickable {
+                TabHelper.openInTab(context = context, url = tabPhotoUrl)
+            },
             text = title,
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onSurface,
@@ -540,7 +559,8 @@ private fun SheetContentPreview() {
         val uiState = DetailsUiState(
             currentPhoto = PhotoResource(
                 id = "1234",
-                url = "www.ww.com",
+                resourceUrl = "www.ww.com",
+                fullPhotoPageUrl = "www.ww.com",
                 owner = "Gerd Michael Kozik",
                 title = "L.A.K.E.",
                 ownerIconUrl = "",

@@ -11,7 +11,8 @@ data class DetailsPhotoEntity(
     @PrimaryKey
     @ColumnInfo(name = PHOTO_ID) val photoId: String,
 
-    @ColumnInfo(name = PHOTO_URL) val photoUrl: String,
+    @ColumnInfo(name = RESOURCE_PHOTO_URL) val resourceUrl: String,
+    @ColumnInfo(name = FLICKR_PHOTO_URL) val flickrUrl: String,
     @ColumnInfo(name = SECRET) val secret: String,
     @ColumnInfo(name = SERVER) val server: String,
     @ColumnInfo(name = FARM) val farm: Int,
@@ -48,7 +49,8 @@ data class DetailsPhotoEntity(
         const val TABLE_NAME = "photo_details"
 
         const val PHOTO_ID = "photo_id"
-        const val PHOTO_URL = "photo_url"
+        const val RESOURCE_PHOTO_URL = "resource_photo_url"
+        const val FLICKR_PHOTO_URL = "flickr_photo_url"
         const val SECRET = "secret"
         const val SERVER = "server"
         const val FARM = "farm"

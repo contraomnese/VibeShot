@@ -16,9 +16,9 @@ internal sealed interface AuthUiState {
     data object Loading : AuthUiState
 
     @Immutable
-    data class Authorize(val authUrl: String): AuthUiState
+    data class Authorize(val authUrl: String) : AuthUiState
 
-    data object Error: AuthUiState
+    data object Error : AuthUiState
 
     data object GuestSuccess : AuthUiState
 
@@ -27,7 +27,7 @@ internal sealed interface AuthUiState {
 
 internal class AuthViewModel(
     private val authRepository: AuthRepository,
-    private val observeAuthStateUseCase: ObserveAuthStateUseCase
+    private val observeAuthStateUseCase: ObserveAuthStateUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<AuthUiState>(AuthUiState.Loading)

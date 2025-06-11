@@ -74,6 +74,9 @@ dependencies {
     implementation(libs.androidx.paging.runtime.ktx)
     implementation(libs.androidx.paging.compose)
 
+    // tab helper
+    implementation(libs.androidx.browser)
+
     // tests
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

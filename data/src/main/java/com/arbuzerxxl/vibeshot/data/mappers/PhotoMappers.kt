@@ -50,7 +50,8 @@ internal fun PhotoSizes.toDomain(): PhotoSizesResource {
 internal fun DetailsPhotoDto.toDomain(): PhotoResource {
     return PhotoResource(
         id = photoId,
-        url = photoUrl,
+        resourceUrl = resourceUrl,
+        fullPhotoPageUrl = flickrUrl,
         owner = if (ownerRealName.isNotEmpty()) ownerRealName else ownerUserName,
         ownerIconUrl = "https://farm${ownerIconFarm}.staticflickr.com/${ownerIconServer}/buddyicons/${ownerNsid}_r.jpg",
         title = title.trim(),
@@ -78,7 +79,8 @@ internal fun DetailsPhotoDto.toDomain(): PhotoResource {
 internal fun PhotoInfo.toEntity(exif: PhotoExif?, url: String): DetailsPhotoEntity =
     DetailsPhotoEntity(
         photoId = id,
-        photoUrl = url,
+        resourceUrl = url,
+        flickrUrl = urls.url.first { it.type == "photopage" }.content,
         secret = secret,
         server = server,
         farm = farm,
