@@ -26,21 +26,21 @@ This product uses the Flickr API, but is not endorsed or certified by SmugMug, I
 
 The application implements OAuth Core 1.0 Revision A authentication with signature generation, storing authenticated user data (access token and secret) in the application datastore.
 
-![Auth Gif](https://i.pinimg.com/originals/f1/b0/74/f1b074952fee9eabb627a37168d167bc.gif)
+![](demo/auth_output.mp4)]
 
 ## Interests feature
 
 When switching to the *Interesting* tab, the user receives a list (*500 photos*) of popular photos for the current day, using the Flickr API.
 Photos are saved in the storage. The storage is updated every 24 hours. With the help of **Pagging 3**, data is paired, photos are loaded 25 at a time - previously loaded photos are taken from the database, and new photos from the Internet. When clicking on a photo, a window with detailed information about it opens. In the "Detailed" window, it is also possible to scroll through photos and load them. Both windows - *Interesting* and *Detailed* are **synchronized by one stream of photos**.
 
-![Interests Gif](https://i.imgur.com/mELbXY8.gif)
+![](demo/interests_output.mp4)]
 
 ## Tab to Flickr
 
 Flickr members deserve credit for the content they create, including the useful information around their photo (such as licenses, tags, and geo location).
 All of this data is maintained on the photo page on Flickr, so the app has added a link to the photo's copyright page.
 
-![Tab Gif](https://i.imgur.com/u8rjV06.gif)
+![](demo/openOnTab_output.mp4)]
 
 ## Tasks feature
 
@@ -49,20 +49,20 @@ After receiving a task, the user can either take a photo immediately or upload i
 If necessary, the user can add a title and description for the photo. By default, the received task is added to the description.
 This function is available only for users authorized in the Flickr service.
 
-![Tasks Gif](https://i.imgur.com/CM82tTv.gif)
+![](demo/tasks_output.mp4)]
 
 ## Search feature
 
 Published photos, as well as any other photos, are easy to find using search.
 Also, in the "Details" window, you can click on the tag of the photo and you will go to the search screen for this tag.
 
-![Search Gif](https://i.imgur.com/8JG9pHQ.gif)
+![](demo/search_output.mp4)]
 
-![SearchTag Fif](https://i.imgur.com/q3hITzA.gif)
+![](demo/searchTag_output.mp4)]
 
 ## Log out and clear user data
 
 The user data, in our case the theme style and authorization tokens, are saved in the application.
 Clicking on Logout takes the user back to the Authorization screen. The database with uploaded photos is also cleared.
 
-![LogOut Gif](https://i.imgur.com/yLAwXqo.gif)
+![](demo/logoutAndClearData_output.mp4)]
