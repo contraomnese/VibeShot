@@ -21,7 +21,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import com.arbuzerxxl.vibeshot.core.design.icon.VibeShotIcons
 import com.arbuzerxxl.vibeshot.core.design.theme.VibeShotThemePreview
-import com.arbuzerxxl.vibeshot.core.design.theme.itemWidth1
+import com.arbuzerxxl.vibeshot.core.design.theme.itemWidth2
 import com.arbuzerxxl.vibeshot.core.design.theme.itemWidth48
 import com.arbuzerxxl.vibeshot.core.design.theme.padding4
 import com.arbuzerxxl.vibeshot.core.design.theme.padding8
@@ -49,7 +49,7 @@ fun CircleIcon(
                     enabled = enabled
                 )
                 .border(
-                    width = itemWidth1,
+                    width = itemWidth2,
                     color = if (enabled) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.onBackground,
                     shape = CircleShape
                 )

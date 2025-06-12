@@ -61,7 +61,7 @@ class SearchRepositoryImpl(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override suspend fun clear() {
+    override suspend fun clearData() {
         _data.emit(PagingData.empty())
     }
 }

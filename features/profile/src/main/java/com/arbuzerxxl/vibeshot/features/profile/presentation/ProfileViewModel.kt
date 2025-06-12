@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arbuzerxxl.vibeshot.core.ui.utils.ErrorMonitor
 import com.arbuzerxxl.vibeshot.domain.models.auth.AuthState
+import com.arbuzerxxl.vibeshot.domain.repository.PhotosRepository
 import com.arbuzerxxl.vibeshot.domain.repository.UserDataRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,7 +22,8 @@ internal data class ProfileUiState(
 
 internal class ProfileViewModel(
     private val userDataRepository: UserDataRepository,
-    private val errorMonitor: ErrorMonitor,
+    private val photosRepository: PhotosRepository,
+    private val errorMonitor: ErrorMonitor
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProfileUiState(isLoading = true))
@@ -36,21 +38,22 @@ internal class ProfileViewModel(
                     errorMonitor.tryEmit(e.message ?: "Unknown error")
                 }
                 .collect { data ->
-                    _uiState.update {
+                    _uiState.update { currentState ->
                         when (val authState = data.authState) {
-                            is AuthState.Authenticated -> ProfileUiState(username = authState.user.username)
-                            is AuthState.Guest -> ProfileUiState(username = authState.user.username)
-                            AuthState.Unauthenticated -> ProfileUiState()
+                            is AuthState.Authenticated -> currentState.copy(username = authState.user.username, isLoading = false)
+                            is AuthState.Guest -> currentState.copy(username = authState.user.username, isLoading = false)
+                            AuthState.Unauthenticated -> currentState.copy(isLoading = false)
                         }
                     }
                 }
         }
     }
 
-    fun logout() {
+    fun onClearData() {
         viewModelScope.launch {
             try {
                 userDataRepository.clearUserData()
+                photosRepository.clearData()
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {

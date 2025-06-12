@@ -13,7 +13,6 @@ import com.arbuzerxxl.vibeshot.ui.R
 import kotlinx.serialization.Serializable
 import org.koin.compose.module.rememberKoinModules
 import org.koin.core.annotation.KoinExperimentalAPI
-import kotlin.jvm.java
 
 @Serializable
 object ProfileDestination
@@ -36,6 +35,6 @@ fun NavGraphBuilder.profile(onLogOutClicked: () -> Unit) {
     composable<ProfileDestination> {
         rememberKoinModules(unloadOnForgotten = true) { listOf(profileModule) }
 
-        ProfileRoute(onLogOutClicked = onLogOutClicked)
+        ProfileRoute(onNavigateToAuth = onLogOutClicked)
     }
 }

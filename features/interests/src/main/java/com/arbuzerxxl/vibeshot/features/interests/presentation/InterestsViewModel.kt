@@ -59,7 +59,7 @@ internal class InterestsViewModel(
     fun onRefreshClick() {
         viewModelScope.launch {
             try {
-                interestsRepository.load()
+                interestsRepository.loadData()
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {

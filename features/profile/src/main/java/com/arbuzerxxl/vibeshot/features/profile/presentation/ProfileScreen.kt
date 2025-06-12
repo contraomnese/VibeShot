@@ -26,7 +26,7 @@ import org.koin.androidx.compose.koinViewModel
 internal fun ProfileRoute(
     modifier: Modifier = Modifier,
     viewmodel: ProfileViewModel = koinViewModel(),
-    onLogOutClicked: () -> Unit
+    onNavigateToAuth: () -> Unit,
 ) {
 
     val uiState by viewmodel.uiState.collectAsStateWithLifecycle()
@@ -34,8 +34,8 @@ internal fun ProfileRoute(
     ProfileScreen(
         modifier = modifier,
         uiState = uiState,
-        onLogOutClicked = onLogOutClicked,
-        logOut = viewmodel::logout
+        onNavigateToAuth = onNavigateToAuth,
+        onClearData = viewmodel::onClearData
     )
 }
 
@@ -43,8 +43,8 @@ internal fun ProfileRoute(
 internal fun ProfileScreen(
     modifier: Modifier = Modifier,
     uiState: ProfileUiState,
-    onLogOutClicked: () -> Unit,
-    logOut: () -> Unit
+    onNavigateToAuth: () -> Unit,
+    onClearData: () -> Unit,
 ) {
 
     Box(
@@ -61,7 +61,6 @@ internal fun ProfileScreen(
                     style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.onBackground
                 )
-
             }
         }
         BaseButton(
@@ -69,7 +68,10 @@ internal fun ProfileScreen(
             modifier = Modifier
                 .padding(bottom = padding40, start = padding24, end = padding24)
                 .align(Alignment.BottomCenter),
-            onClicked = { logOut(); onLogOutClicked() }
+            onClicked = {
+                onClearData()
+                onNavigateToAuth()
+            }
         )
     }
 }
@@ -80,8 +82,8 @@ fun ProfileScreenPreview() {
     VibeShotTheme {
         ProfileScreen(
             uiState = ProfileUiState(username = "Sergey Belov"),
-            onLogOutClicked = {},
-            logOut = {}
+            onNavigateToAuth = {},
+            onClearData = {}
         )
     }
 }

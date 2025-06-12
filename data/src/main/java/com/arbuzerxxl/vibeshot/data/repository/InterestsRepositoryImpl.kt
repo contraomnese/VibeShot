@@ -35,10 +35,10 @@ class InterestsRepositoryImpl(
     override val data: SharedFlow<PagingData<InterestsResource>> = _data
 
     init {
-        load()
+        loadData()
     }
 
-    override fun load() {
+    override fun loadData() {
 
         CoroutineScope(dispatcher).launch {
             Pager(

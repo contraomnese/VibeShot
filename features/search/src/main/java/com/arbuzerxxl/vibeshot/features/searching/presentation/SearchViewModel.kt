@@ -103,7 +103,7 @@ internal class SearchViewModel(
     fun clearSearchData() {
         viewModelScope.launch {
             try {
-                searchRepository.clear()
+                searchRepository.clearData()
             }
             catch (e: CancellationException) {
                 throw e

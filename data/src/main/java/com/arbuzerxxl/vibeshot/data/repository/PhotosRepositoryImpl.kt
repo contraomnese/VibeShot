@@ -135,6 +135,10 @@ class PhotosRepositoryImpl(
             }
         }
 
+    override suspend fun clearData() {
+        storage.detailsDao().clearAll()
+        storage.interestsDao().clearAll()
+    }
 
     private suspend fun updateStorage() {
         if (!skipUpdateStorage()) {

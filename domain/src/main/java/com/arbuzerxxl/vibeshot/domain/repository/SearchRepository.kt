@@ -12,5 +12,5 @@ interface SearchRepository {
 
     suspend fun searchByTag(tag: String)
 
-    suspend fun clear()
+    suspend fun clearData()
 }
