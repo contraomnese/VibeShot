@@ -80,10 +80,6 @@ dependencies {
     // parsing
     implementation(libs.kotlinx.serialization.json)
 
-    // ai
-    implementation(libs.tensorflow.lite)
-    implementation(libs.gson.v290)
-
     // tests
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

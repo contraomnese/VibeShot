@@ -143,10 +143,6 @@ dependencies {
     // tab helper
     implementation(libs.androidx.browser)
 
-    // ai
-    implementation(libs.tensorflow.lite)
-    implementation(libs.gson.v290)
-
     // tests
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
