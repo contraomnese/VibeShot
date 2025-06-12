@@ -26,7 +26,7 @@ This product uses the Flickr API, but is not endorsed or certified by SmugMug, I
 
 The application implements OAuth Core 1.0 Revision A authentication with signature generation, storing authenticated user data (access token and secret) in the application datastore.
 
-![Auth Gif](https://i.imgur.com/fYZWsKd.gif)
+![Auth Gif](https://i.pinimg.com/originals/f1/b0/74/f1b074952fee9eabb627a37168d167bc.gif)
 
 ## Interests feature
 
