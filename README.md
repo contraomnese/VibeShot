@@ -1,5 +1,3 @@
-# VibeShotApp
-
 ## About
 
 A multi-module Android application for creating photo tasks and publishing photos to the Flickr service.
